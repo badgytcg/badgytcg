@@ -3216,22 +3216,6 @@
     "image": "https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BaronFishpockets.png"
   },
   {
-    "id": "eth-fishsicle",
-    "identifier": "Fishsicle",
-    "name": "Fishsicle",
-    "set": "Enter the Huddle",
-    "setCode": "Eth",
-    "cardNumber": "202",
-    "color": "Colorless",
-    "type": "Other",
-    "attribute": "EMPTY",
-    "ability": "Produces one _T_, then goes away.\nDoes NOT count toward the Baron's win condition.",
-    "cost": null,
-    "vibe": null,
-    "rarity": "",
-    "image": "https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Fishsicle.png"
-  },
-  {
     "id": "eth-qrcode",
     "identifier": "QRCode",
     "name": "QR Code",
@@ -3262,22 +3246,6 @@
     "vibe": null,
     "rarity": "",
     "image": "https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BasicRod.png"
-  },
-  {
-    "id": "eth-fishsicle",
-    "identifier": "Fishsicle",
-    "name": "Fishsicle",
-    "set": "Enter the Huddle",
-    "setCode": "Eth",
-    "cardNumber": "205",
-    "color": "Rod",
-    "type": "Other",
-    "attribute": "EMPTY",
-    "ability": "Produces one _T_, then goes away.\nDoes NOT count toward the Baron's win condition.",
-    "cost": null,
-    "vibe": null,
-    "rarity": "",
-    "image": "https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Fishsicle.png"
   },
   {
     "id": "lotl-lilshaker",

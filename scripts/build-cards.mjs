@@ -20,6 +20,11 @@ const RARITY_NAMES = {
   Mythic: "Epic",
 };
 
+// Excluded entirely: not real sellable singles (token cards, etc).
+// Keyed by `${Set}-${CardID}` since some excluded cards share an
+// Identifier with another printing (e.g. the two Fishsicle tokens).
+const EXCLUDED_CARDS = new Set(["Eth-202", "Eth-205"]);
+
 function slugify(value) {
   return value
     .toLowerCase()
@@ -29,7 +34,8 @@ function slugify(value) {
 }
 
 const raw = readFileSync(csvPath, "utf8");
-const rows = parse(raw, { columns: true, skip_empty_lines: true });
+const allRows = parse(raw, { columns: true, skip_empty_lines: true });
+const rows = allRows.filter((row) => !EXCLUDED_CARDS.has(`${row.Set}-${row.CardID}`));
 
 const cards = rows.map((row) => ({
   id: slugify(`${row.Set}-${row.Identifier}`),
