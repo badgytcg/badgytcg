@@ -9,11 +9,17 @@ const DEFAULT_PRICE_BY_RARITY: Record<string, number> = {
   Common: 0.25,
   Uncommon: 0.5,
   Rare: 1.5,
-  Mythic: 8.0,
+  Epic: 8.0,
 };
 
 type Override = { price: number; stock: number };
 const overrideMap = overrides as Record<string, Override>;
+
+// Some official S3 card images are broken (404/403). Override with a local
+// copy in public/cards/ when that happens.
+const IMAGE_OVERRIDES: Record<string, string> = {
+  "eth-baronfishpockets": "/cards/baron-fishpockets.png",
+};
 
 interface GeneratedCard {
   id: string;
@@ -36,6 +42,7 @@ export const cards: Card[] = (generated as GeneratedCard[]).map((c) => {
   const override = overrideMap[c.id];
   return {
     ...c,
+    image: IMAGE_OVERRIDES[c.id] ?? c.image,
     price: override?.price ?? DEFAULT_PRICE_BY_RARITY[c.rarity] ?? 0.5,
     stock: override?.stock ?? 0,
   };
