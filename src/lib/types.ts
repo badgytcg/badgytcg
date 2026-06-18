@@ -23,10 +23,11 @@ export interface CartLine {
 }
 
 export interface WishlistLine {
-  cardName: string; // kept even if card isn't in DB at all
-  cardId: string | null; // null if not found in DB
+  cardName: string; // kept even if card isn't in our catalog at all
+  cardId: string | null; // null if not found in catalog
   qty: number;
   note?: string; // e.g. "from deck import: Purple at the Disco"
+  dbId?: string; // set when synced from the server (signed-in users only)
 }
 
 export interface ParsedDeckEntry {

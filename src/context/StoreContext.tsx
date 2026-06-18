@@ -3,11 +3,13 @@
 import {
   createContext,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
 } from "react";
+import { useSession } from "next-auth/react";
 import { getCardById } from "@/data/cards";
 import { CartLine, WishlistLine } from "@/lib/types";
 
@@ -18,8 +20,8 @@ interface StoreState {
   removeFromCart: (cardId: string) => void;
   setCartQty: (cardId: string, qty: number) => void;
   addManyToCart: (lines: CartLine[]) => void;
-  addToWishlist: (lines: WishlistLine[]) => void;
-  removeFromWishlist: (index: number) => void;
+  addToWishlist: (lines: WishlistLine[]) => Promise<void>;
+  removeFromWishlist: (index: number) => Promise<void>;
   clearCart: () => void;
   cartCount: number;
   cartTotal: number;
@@ -40,14 +42,35 @@ function load<T>(key: string, fallback: T): T {
   }
 }
 
+interface DbWishlistItem {
+  id: string;
+  cardId: string | null;
+  cardName: string;
+  qty: number;
+  note: string | null;
+}
+
+function fromDb(item: DbWishlistItem): WishlistLine {
+  return {
+    dbId: item.id,
+    cardId: item.cardId,
+    cardName: item.cardName,
+    qty: item.qty,
+    note: item.note ?? undefined,
+  };
+}
+
 export function StoreProvider({ children }: { children: ReactNode }) {
+  const { status } = useSession();
+  const signedIn = status === "authenticated";
+
   const [cart, setCart] = useState<CartLine[]>([]);
   const [wishlist, setWishlist] = useState<WishlistLine[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
+  // Cart stays local-only for now (no checkout yet to attach it to an account).
   useEffect(() => {
     setCart(load(CART_KEY, []));
-    setWishlist(load(WISHLIST_KEY, []));
     setHydrated(true);
   }, []);
 
@@ -55,9 +78,42 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (hydrated) window.localStorage.setItem(CART_KEY, JSON.stringify(cart));
   }, [cart, hydrated]);
 
+  const refetchWishlist = useCallback(async () => {
+    const res = await fetch("/api/wishlist");
+    const data = await res.json();
+    setWishlist((data.items as DbWishlistItem[]).map(fromDb));
+  }, []);
+
+  // Guest wishlist lives in localStorage. On sign-in, migrate any local
+  // items up to the account once, then switch to the server as the source
+  // of truth.
   useEffect(() => {
-    if (hydrated) window.localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
-  }, [wishlist, hydrated]);
+    if (status === "loading") return;
+
+    if (!signedIn) {
+      setWishlist(load(WISHLIST_KEY, []));
+      return;
+    }
+
+    (async () => {
+      const local = load<WishlistLine[]>(WISHLIST_KEY, []);
+      if (local.length > 0) {
+        await fetch("/api/wishlist", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ lines: local }),
+        });
+        window.localStorage.removeItem(WISHLIST_KEY);
+      }
+      await refetchWishlist();
+    })();
+  }, [signedIn, status, refetchWishlist]);
+
+  useEffect(() => {
+    if (!signedIn && hydrated) {
+      window.localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
+    }
+  }, [wishlist, hydrated, signedIn]);
 
   function addToCart(cardId: string, qty: number) {
     setCart((prev) => {
@@ -86,12 +142,27 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     });
   }
 
-  function addToWishlist(lines: WishlistLine[]) {
-    setWishlist((prev) => [...prev, ...lines]);
+  async function addToWishlist(lines: WishlistLine[]) {
+    if (signedIn) {
+      await fetch("/api/wishlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lines }),
+      });
+      await refetchWishlist();
+    } else {
+      setWishlist((prev) => [...prev, ...lines]);
+    }
   }
 
-  function removeFromWishlist(index: number) {
-    setWishlist((prev) => prev.filter((_, i) => i !== index));
+  async function removeFromWishlist(index: number) {
+    const line = wishlist[index];
+    if (signedIn && line?.dbId) {
+      await fetch(`/api/wishlist/${line.dbId}`, { method: "DELETE" });
+      await refetchWishlist();
+    } else {
+      setWishlist((prev) => prev.filter((_, i) => i !== index));
+    }
   }
 
   function removeFromCart(cardId: string) {
