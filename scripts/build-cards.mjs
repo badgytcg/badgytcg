@@ -23,7 +23,7 @@ const RARITY_NAMES = {
 // Excluded entirely: not real sellable singles (token cards, etc).
 // Keyed by `${Set}-${CardID}` since some excluded cards share an
 // Identifier with another printing (e.g. the two Fishsicle tokens).
-const EXCLUDED_CARDS = new Set(["Eth-202", "Eth-205"]);
+const EXCLUDED_CARDS = new Set(["Eth-202", "Eth-205", "Eth-204"]);
 
 function slugify(value) {
   return value

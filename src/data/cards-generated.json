@@ -3232,22 +3232,6 @@
     "image": "https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/QRCode.png"
   },
   {
-    "id": "eth-basicrod",
-    "identifier": "BasicRod",
-    "name": "Basic Rod",
-    "set": "Enter the Huddle",
-    "setCode": "Eth",
-    "cardNumber": "204",
-    "color": "Rod",
-    "type": "Rod",
-    "attribute": "EMPTY",
-    "ability": null,
-    "cost": null,
-    "vibe": null,
-    "rarity": "",
-    "image": "https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BasicRod.png"
-  },
-  {
     "id": "lotl-lilshaker",
     "identifier": "LilShaker",
     "name": "Lil Shaker",
