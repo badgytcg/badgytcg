@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { cards } from "@/data/cards";
 import CardTile from "@/components/CardTile";
+
+const PAGE_SIZE_OPTIONS = [25, 50, 100, 250];
 
 // "Relic"/"Rod" show up in the Color column for non-colored cards, but
 // they're really Types, not colors — exclude them from the color filter.
@@ -85,6 +87,8 @@ export default function VibesBrowsePage() {
   const [vibeMax, setVibeMax] = useState("");
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sort, setSort] = useState<SortKey>("name");
+  const [pageSize, setPageSize] = useState(100);
+  const [page, setPage] = useState(1);
 
   const filtered = useMemo(() => {
     const result = cards.filter((c) => {
@@ -139,6 +143,14 @@ export default function VibesBrowsePage() {
     }
     return sorted;
   }, [query, sets, colors, types, rarities, attributeGroups, costMin, costMax, vibeMin, vibeMax, inStockOnly, sort]);
+
+  // Jump back to page 1 whenever the result set changes underneath the user.
+  useEffect(() => {
+    setPage(1);
+  }, [filtered]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   function clearFilters() {
     setQuery("");
@@ -203,30 +215,67 @@ export default function VibesBrowsePage() {
         </aside>
 
         <div>
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-zinc-500">{filtered.length} card(s)</p>
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as SortKey)}
-              className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-sm text-zinc-100"
-            >
-              <option value="name">Name A–Z</option>
-              <option value="cost-asc">Cost: Low to High</option>
-              <option value="cost-desc">Cost: High to Low</option>
-              <option value="vibe-asc">Vibe: Low to High</option>
-              <option value="vibe-desc">Vibe: High to Low</option>
-              <option value="rarity">Rarity</option>
-            </select>
+            <div className="flex items-center gap-3">
+              <label className="flex items-center gap-2 text-sm text-zinc-400">
+                Show
+                <select
+                  value={pageSize}
+                  onChange={(e) => setPageSize(Number(e.target.value))}
+                  className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-sm text-zinc-100"
+                >
+                  {PAGE_SIZE_OPTIONS.map((size) => (
+                    <option key={size} value={size}>{size}</option>
+                  ))}
+                </select>
+                at a time
+              </label>
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value as SortKey)}
+                className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-sm text-zinc-100"
+              >
+                <option value="name">Name A–Z</option>
+                <option value="cost-asc">Cost: Low to High</option>
+                <option value="cost-desc">Cost: High to Low</option>
+                <option value="vibe-asc">Vibe: Low to High</option>
+                <option value="vibe-desc">Vibe: High to Low</option>
+                <option value="rarity">Rarity</option>
+              </select>
+            </div>
           </div>
 
           {filtered.length === 0 ? (
             <p className="text-zinc-500">No cards match your filters.</p>
           ) : (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {filtered.map((card) => (
-                <CardTile key={card.id} card={card} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                {paged.map((card) => (
+                  <CardTile key={card.id} card={card} />
+                ))}
+              </div>
+
+              {totalPages > 1 && (
+                <div className="mt-6 flex items-center justify-center gap-3">
+                  <button
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="rounded-lg border border-zinc-700 px-3 py-1.5 text-sm text-zinc-300 disabled:opacity-40"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-sm text-zinc-400">Page {page} of {totalPages}</span>
+                  <button
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                    className="rounded-lg border border-zinc-700 px-3 py-1.5 text-sm text-zinc-300 disabled:opacity-40"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
