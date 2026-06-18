@@ -1,0 +1,1147 @@
+Set,CardID,Name,Identifier,Color,Type,Attribute,Ability,Cost,Vibe,Rarity,FeaturingPudgy,IllusName,imageURL
+Eth,1,Contemplation Penguin,ContemplationPenguin,Red,Character,Penguin,,1,2,Common,6715,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ContemplationPenguin.png
+Eth,2,Bamboo Penguin,BambooPenguin,Red,Character,Penguin,,2,4,Common,6106,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BambooPenguin.png
+Eth,3,Carnival Penguin,CarnivalPenguin,Red,Character,Penguin,"Whenever you play your third Action this Cycle,
+choose a Character with vibe 6 or less.
+Ice that Character.",7,10,Common,7707,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/CarnivalPenguin.png
+Eth,4,Chef Penguin,ChefPenguin,Red,Character,Penguin,"Whenever you play a Red Action, you get a Fishsicle.
+(A Fishsicle produces one _T_, then goes away).",6,2,Rare,5181,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ChefPenguin.png
+Eth,5,"Chub, Who Lives for Action",ChubWhoLivesforAction,Red,Character,Penguin,"Whenever you play a Red Action,
+put 2 vibe counters on this Character.",8,6,Rare,6162,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ChubWhoLivesforAction.png
+Eth,6,Chubopolis Unleashed,ChubopolisUnleashed,Red,Character,Penguin,"Whenever you play a Red Action, put 2 vibe counters
+on this Character. When this Character is iced from play,
+draw cards equal to half the number of vibe counters
+ on this Character rounded up.",10,10,Mythic,7128,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ChubopolisUnleashed.png
+Eth,7,Insomniac Penguin,InsomniacPenguin,Red,Character,Penguin,"Whenever you play an Action, unflop this Character.",5,2,Uncommon,1007,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/InsomniacPenguin.png
+Eth,8,Juggling Penguin,JugglingPenguin,Red,Character,Penguin,"Enters flopped.
+This Character doesn't unflop at the Unfloppening.
+At the end of Action Time, if you played an Action,
+unflop this Character.",2,5,Common,8752,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/JugglingPenguin.png
+Eth,9,Keyturning Penguin,KeyturningPenguin,Red,Character,Penguin,"When this Character enters the huddle,
+look at the top card of your deck.
+You may put it on the bottom of your deck.",2,1,Common,7565,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/KeyturningPenguin.png
+Eth,10,Mukbang Penguin,MukbangPenguin,Red,Character,Penguin,"When this Character enters the huddle,
+the next time you would draw a card, skip it.",3,9,Uncommon,3531,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/MukbangPenguin.png
+Eth,11,Peace Out Penguin,PeaceOutPenguin,Red,Character,Penguin,"This Character can only [ACT]
+if you've played a Red Action this Cycle.
+[ACT] _F_: Choose up to two Characters with
+total vibe 10 or less. Ice those Characters
+and this Character.",3,4,Uncommon,941,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PeaceOutPenguin.png
+Eth,12,Popcorn Penguin,PopcornPenguin,Red,Character,Penguin,"At the start of Action Time,
+ice the Character in play that's vibing the least.
+If there's a tie, you pick.",4,2,Rare,142,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PopcornPenguin.png
+Eth,13,Red Mega Penguin,RedMegaPenguin,Red,Character,Mega Penguin,"As an additional cost to play this Character,
+ice a Character in your huddle. Whenever an Action
+is played that chooses this Character, copy that Action.
+(You make new choices for the copy).",5,6,Mythic,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RedMegaPenguin.png
+Eth,14,Red Wizard Penguin,RedWizardPenguin,Red,Character,Wizard Penguin,Enters flopped.,2,2,Uncommon,4112,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RedWizardPenguin.png
+Eth,15,Ribbon-Dancing Penguin,RibbonDancingPenguin,Red,Character,Penguin,"Whenever you play a Red Action,
+this Character can produce _R__R_ for the rest of this Cycle.",3,4,Common,4002,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RibbonDancingPenguin.png
+Eth,16,Risk-Taking Penguin,RiskTakingPenguin,Red,Character,Penguin,"When this Character enters the huddle,
+choose a Character with vibe 6 or less and flip a coin.
+If heads, return the chosen Character
+to its owner's hand.",4,6,Common,6842,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RiskTakingPenguin.png
+Eth,17,Run-It-Back Penguin,RunItBackPenguin,Red,Character,Penguin,"[ACT] _F_: Pick a Red Action card in your ice
+and return it to your hand. Ice this Character.",4,6,Common,4236,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RunItBackPenguin.png
+Eth,18,Screaming Penguin,ScreamingPenguin,Red,Character,Penguin,"Whenever you play an Action,
+boost this Character's vibe by 2
+for the rest of this Cycle.",5,6,Uncommon,68,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ScreamingPenguin.png
+Eth,19,Serene Penguin,SerenePenguin,Red,Character,Penguin,"Whenever your opponent plays an Action,
+flop this Character.",4,10,Common,6485,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SerenePenguin.png
+Eth,20,Striking Swordsman Penguin,StrikingSwordsmanPenguin,Red,Character,Swordsman Penguin,[ACT] _F_: This Character can't be iced this Cycle.,3,4,Rare,3743,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/StrikingSwordsmanPenguin.png
+Eth,21,A Drop in Attention,ADropinAttention,Red,Action,EMPTY,"You can only play this Action if it's the fourth
+Action you've played this Cycle.
+Ice all Characters.",R,EMPTY,Rare,4338,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ADropinAttention.png
+Eth,22,"Again, Again",AgainAgain,Red,Action,EMPTY,"The next time you play an Action
+with Pudge cost _R__R_ this Cycle, copy that Action.
+(You make new choices for the copy).",R,EMPTY,Uncommon,986,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/AgainAgain.png
+Eth,23,Bearish Sentiment,BearishSentiment,Red,Action,EMPTY,"Choose a Character.
+It loses all abilities for the rest of this Cycle.
+Draw a card.",RR,EMPTY,Common,"4311, 995",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BearishSentiment.png
+Eth,24,Best Seats in the House,BestSeatsintheHouse,Red,Action,EMPTY,"If you have no cards in hand, draw two cards.",RR,EMPTY,Common,"5650, 3466",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BestSeatsintheHouse.png
+Eth,25,Grow Together,GrowTogether,Red,Action,EMPTY,"Each player may choose a Character.
+Put a vibe counter on each of those Characters.
+Draw a card.",RR,EMPTY,Common,"5655, 6877",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GrowTogether.png
+Eth,26,Have an Encore,HaveanEncore,Red,Action,EMPTY,"You can only play this Action
+if you've played another Red Action this Cycle.
+Choose up to two Red Characters in your huddle
+and unflop those Characters. Draw a card.",R,EMPTY,Common,4767,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HaveanEncore.png
+Eth,27,"Heads I Win, Tails You Lose",HeadsIWinTailsYouLose,Red,Action,EMPTY,"Choose a player and flip a coin. If heads,
+you draw a card. If tails, the chosen player
+ices a card from their hand.",R,EMPTY,Common,6148,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HeadsIWinTailsYouLose.png
+Eth,28,Hit the High Note,HittheHighNote,Red,Action,EMPTY,"Choose a Relic and return it to its owner's hand.
+Draw a card.",R,EMPTY,Uncommon,8452,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HittheHighNote.png
+Eth,29,Not a Rod Anymore!,NotaRodAnymore,Red,Action,Saucy,"You can only play this Action if it's face-down
+as a Rod. Flip this card over to play it.
+Choose a Character and boost its vibe
+by 2 for the rest of this Cycle.",0,EMPTY,Rare,4666,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/NotaRodAnymore.png
+Eth,30,Put on a Show,PutonaShow,Red,Action,EMPTY,"Choose a Character with vibe 10 or greater.
+Ice that Character.",RRR,EMPTY,Uncommon,"2445, 4287, 1721",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PutonaShow.png
+Eth,31,Stand in the Rain,StandintheRain,Red,Action,EMPTY,Unflop all Characters. Draw a card.,RRR,EMPTY,Rare,"5865, 4745, 8316",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/StandintheRain.png
+Eth,32,Sunburn a Penguin,SunburnaPenguin,Red,Action,EMPTY,"Choose a Character with vibe
+4 or less. Ice that Character.",RR,EMPTY,Uncommon,"1612, 3746",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SunburnaPenguin.png
+Eth,33,Trust Fall,TrustFall,Red,Action,EMPTY,"Choose a Character.
+Reduce its vibe by 2 for the rest of this Cycle.
+If that Character has 0 vibe, it can't be iced this Cycle.
+Draw a card.",RR,EMPTY,Common,"4003, 1691",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TrustFall.png
+Eth,34,Use Whoopee Cushion,UseWhoopeeCushion,Red,Action,EMPTY,"Choose a Character with vibe 10 or greater.
+Reduce its vibe by 4 for the rest of this Cycle.
+Draw a card.",RR,EMPTY,Common,"6834, 1704",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/UseWhoopeeCushion.png
+Eth,35,Dashing Swordsman Penguin,DashingSwordsmanPenguin,Yellow,Character,Swordsman Penguin,"At the start of Action Time, if you don't have
+the Baron, boost this Character's vibe by 4
+for the rest of this Cycle.",3,4,Rare,3584,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/DashingSwordsmanPenguin.png
+Eth,36,Daydreaming Penguin,DaydreamingPenguin,Yellow,Character,Penguin,"[ACT] _F_: Choose a Character with vibe 2 or less.
+Ice that Character and ice this Character.",2,2,Uncommon,3579,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/DaydreamingPenguin.png
+Eth,37,Extrovert Penguin,ExtrovertPenguin,Yellow,Character,Penguin,"Whenever another Character enters your huddle,
+put 2 vibe counters on this Character.",4,2,Common,513,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ExtrovertPenguin.png
+Eth,38,Flying Penguin,FlyingPenguin,Yellow,Character,Penguin,,1,2,Common,5210,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FlyingPenguin.png
+Eth,39,Hyper Penguin,HyperPenguin,Yellow,Character,Penguin,"Whenever a Character in your huddle wins
+Vibe Check, reveal the top card of your deck.
+If it's a Yellow Character card, put it into your hand.
+If you do, ice a card from your hand.",3,4,Common,5082,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HyperPenguin.png
+Eth,40,Jubilant Penguin,JubilantPenguin,Yellow,Character,Penguin,"Whenever a Character in your huddle
+wins Vibe Check, draw a card.",7,4,Rare,1803,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/JubilantPenguin.png
+Eth,41,Lucky Penguin,LuckyPenguin,Yellow,Character,Penguin,"When this Character is put in your ice from play,
+you may pick a Yellow Character card in your ice
+with vibe 2 or less and put it into your huddle.",3,4,Common,850,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LuckyPenguin.png
+Eth,42,Mysterious Penguin,MysteriousPenguin,Yellow,Character,Penguin,"When this Character enters the huddle,
+if there are four or more Yellow Characters
+in your huddle including this one,
+choose a Character and flop it.",3,4,Common,6848,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/MysteriousPenguin.png
+Eth,43,"Napengulon, Legendary Host",NapengulonLegendaryHost,Yellow,Character,Penguin,"At the start of Action Time,
+put vibe counters on this Character equal to
+the number of Yellow Characters in your huddle.",10,12,Mythic,5670,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/NapengulonLegendaryHost.png
+Eth,44,Paper Penguin,PaperPenguin,Yellow,Character,Paper Penguin,"Whenever another Rock, Paper, or Scissors Penguin
+enters a huddle, put a vibe counter on this Character.
+Rock Penguins do not participate in Vibe Check.",2,2,Common,3400,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PaperPenguin.png
+Eth,45,Penguin of the Falling Leaves,PenguinoftheFallingLeaves,Yellow,Character,Penguin,,2,4,Common,1016,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinoftheFallingLeaves.png
+Eth,46,Penguin That Doesn't Mind Goodbyes,PenguinThatDoesntMindGoodbyes,Yellow,Character,Penguin,"Whenever another Yellow Character
+in your huddle is iced, draw a card.",6,6,Common,1278,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinThatDoesntMindGoodbyes.png
+Eth,47,Penguin Who Might Bring a Plus One,PenguinWhoMightBringaPlusOne,Yellow,Character,Penguin,"When this Character enters the huddle,
+reveal the top card of your deck. If it's
+a Character card with Fish cost 2 or less,
+draw it. If not, put it on the bottom
+of your deck.",2,2,Rare,4530,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhoMightBringaPlusOne.png
+Eth,48,Penguin Who Spills the Tea,PenguinWhoSpillstheTea,Yellow,Character,Penguin,"[ACT] _F_: Pick a Yellow Character card in your ice
+with vibe 4 or less. Return it to your hand
+and return this Character to its owner's hand.",7,2,Common,8070,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhoSpillstheTea.png
+Eth,49,Penguin Who Zooms,PenguinWhoZooms,Yellow,Character,Speedy Penguin,"As an additional cost to play this Character,
+return a non-Speedy Character from your huddle
+to its owner's hand.",1,3,Uncommon,6854,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhoZooms.png
+Eth,50,Penguin Who's Late to the Party,PenguinWhosLatetotheParty,Yellow,Character,Penguin,"When this Character enters the huddle,
+if your huddle has at least three more Characters
+than your opponent's huddle including this Character,
+it enters with 6 vibe counters.",2,2,Common,3895,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhosLatetotheParty.png
+Eth,51,Shocking Penguin,ShockingPenguin,Yellow,Character,Penguin,"When this Character enters the huddle,
+return each other Character in your huddle
+to its owner's hand.",6,10,Uncommon,2137,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ShockingPenguin.png
+Eth,52,Pot-Stirring Penguin,PotStirringPenguin,Yellow,Character,Penguin,"As long as your huddle has three or more Characters,
+including this one, this Character can produce _Y__Y_.",2,2,Common,192,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PotStirringPenguin.png
+Eth,53,Rock Penguin,RockPenguin,Yellow,Character,Rock Penguin,"Whenever another Rock, Paper, or Scissors Penguin
+enters a huddle, put a vibe counter on this Character.
+Scissors Penguins do not participate in Vibe Check.",2,2,Common,5242,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RockPenguin.png
+Eth,54,Scissors Penguin,ScissorsPenguin,Yellow,Character,Scissors Penguin,"Whenever another Rock, Paper, or Scissors Penguin
+enters a huddle, put a vibe counter on this Character.
+Paper Penguins do not participate in Vibe Check.",2,2,Common,5347,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ScissorsPenguin.png
+Eth,55,Shapenguzad,Shapenguzad,Yellow,Character,Penguin,"Enters flopped. This Character enters the huddle with vibe counters equal to the number of vibe counters on all Characters in your huddle. When this Character enters the huddle, remove all vibe counters from all other Characters in your huddle.",7,0,Rare,2484,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Shapenguzad.png
+Eth,56,"Pleepem, Who Stands Alone",PleepemWhoStandsAlone,Yellow,Character,Penguin,"When this Character enters the huddle,
+put 2 vibe counters on it for each other
+Yellow Character in your huddle.",8,4,Rare,6438,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PleepemWhoStandsAlone.png
+Eth,57,Shy Penguin,ShyPenguin,Yellow,Character,Penguin,"You can only play this Character
+if you've played another Character this turn.",4,10,Common,6218,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ShyPenguin.png
+Eth,58,Yellow Mega Penguin,YellowMegaPenguin,Yellow,Character,Mega Penguin,"As an additional cost to play this Character,
+ice a Character in your huddle. When this Character
+enters the huddle, reveal the top card of your deck.
+If it's a Yellow Character card, put it into your huddle.",5,6,Mythic,534,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/YellowMegaPenguin.png
+Eth,59,Yellow Wizard Penguin,YellowWizardPenguin,Yellow,Character,Wizard Penguin,Enters flopped.,2,2,Uncommon,4806,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/YellowWizardPenguin.png
+Eth,60,Buddy Up,BuddyUp,Yellow,Action,EMPTY,"For the rest of this Cycle,
+Yellow Characters in your huddle gain the ability
+""[ACT] _F_: Choose a Character and flop it"".",YY,EMPTY,Common,"837, 3654",Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BuddyUp.png
+Eth,61,Check the Yellow Pages,ChecktheYellowPages,Yellow,Action,EMPTY,"Reveal the top three cards of your deck.
+Put all the Yellow Character cards you reveal
+into your hand. Put the rest on the bottom
+of your deck in any order.",YYY,EMPTY,Uncommon,"652, 7264, 1797",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ChecktheYellowPages.png
+Eth,62,Put Your Flippers in the Air,PutYourFlippersintheAir,Yellow,Action,EMPTY,"Choose a Character.
+Boost its vibe by twice the number of
+Yellow Characters in your huddle
+for the rest of this Cycle.",YYYY,EMPTY,Uncommon,"2707, 7692, 7227, 8513",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PutYourFlippersintheAir.png
+Eth,63,Join the Trend,JointheTrend,Yellow,Action,EMPTY,"Choose a Character in your huddle and ice it.
+Turn the top card of your deck into a Rod.
+Return this Action to your hand.",YYYY,EMPTY,Common,"7799, 1424, 472, 1374",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/JointheTrend.png
+Eth,64,Not Your Keys,NotYourKeys,Yellow,Action,EMPTY,Choose a Character and ice it.,YYYY,EMPTY,Uncommon,"1946, 1696, 5918, 4349",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/NotYourKeys.png
+Eth,65,Prepare for a Wild Night,PrepareforaWildNight,Yellow,Action,EMPTY,"Reveal the top five cards of your deck.
+Put all the Action cards you reveal into your hand.
+ Put the rest on the bottom of your deck in any order.",YYY,EMPTY,Uncommon,"5590, 5137, 5761",Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PrepareforaWildNight.png
+Eth,66,They're Twins,TheyreTwins,Yellow,Action,EMPTY,"Choose a Character in your huddle.
+Search your deck for a Character card
+with the same name and put it into your hand.
+Shuffle your deck.",YY,EMPTY,Common,"8655, 4804",Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TheyreTwins.png
+Eth,67,What a Twist!,WhataTwist,Yellow,Action,Saucy,"You can only play this Action if it's face-down
+as a Rod. Flip this card over to play it.
+Choose a Character and unflop it.",0,EMPTY,Rare,2627,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/WhataTwist.png
+Eth,68,Yum Yum,YumYum,Yellow,Action,EMPTY,Ice all Characters.,YYYYY,EMPTY,Rare,"5297, 3031, 2773, 1199, 461",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/YumYum.png
+Eth,69,Balanced Penguin,BalancedPenguin,Green,Character,Penguin,"[ACT] _G__G_, _F_: You get a Fishsicle.
+(A Fishsicle produces one _T_, then goes away).",4,4,Rare,2927,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BalancedPenguin.png
+Eth,70,Blossoming Penguin,BlossomingPenguin,Green,Character,Penguin,,2,4,Common,6758,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BlossomingPenguin.png
+Eth,71,Curious Penguin,CuriousPenguin,Green,Character,Penguin,,3,6,Common,6067,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/CuriousPenguin.png
+Eth,72,Flower-Arranging Penguin,FlowerArrangingPenguin,Green,Character,Penguin,"Whenever a Character in your huddle wins Vibe Check,
+put two vibe counters on that Character.",6,6,Common,2404,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FlowerArrangingPenguin.png
+Eth,73,Green Mega Penguin,GreenMegaPenguin,Green,Character,Mega Penguin,"As an additional cost to play this Character,
+ice a Character in your huddle. This Character can't
+be chosen by anything. At the start of Action Time,
+put a vibe counter on this Character.",5,6,Mythic,184,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GreenMegaPenguin.png
+Eth,74,Green Wizard Penguin,GreenWizardPenguin,Green,Character,Wizard Penguin,Enters flopped.,2,2,Uncommon,1665,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GreenWizardPenguin.png
+Eth,75,Karate Penguin,KaratePenguin,Green,Character,Penguin,"As an additional cost to play this Character,
+ice a card from your hand.",4,10,Common,3071,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/KaratePenguin.png
+Eth,76,Peppy Penguin,PeppyPenguin,Green,Character,Penguin,"At the start of Action Time,
+if this Character has vibe 6 or greater,
+boost its vibe by 6 for the rest of this Cycle.",3,2,Common,1978,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PeppyPenguin.png
+Eth,77,Ornate Swordsman Penguin,OrnateSwordsmanPenguin,Green,Character,Swordsman Penguin,"Whenever this Character wins Vibe Check,
+each opponent chooses a Character in their huddle.
+Ice those Characters.",3,2,Rare,4733,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/OrnateSwordsmanPenguin.png
+Eth,78,Penguin in Color,PenguininColor,Green,Character,Penguin,"When this Character enters the huddle, you get a Fishsicle. (A Fishsicle produces one _T_, then goes away).",5,7,Common,1940,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguininColor.png
+Eth,79,Penguin Who Is the Garden,PenguinWhoIstheGarden,Green,Character,Penguin,"Whenever this Character wins Vibe Check,
+the loser of Vibe Check skips the next time
+they would draw a card.",5,4,Common,7067,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhoIstheGarden.png
+Eth,80,Penguin Whose Garden Grows,PenguinWhoseGardenGrows,Green,Character,Penguin,"At the start of Action Time,
+if another Character in your huddle is, or is tied with,
+the Character in play that's vibing the most,
+boost this Character's vibe by 6
+for the rest of this Cycle.",2,2,Common,7237,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhoseGardenGrows.png
+Eth,81,Penguin With Great Mystique,PenguinWithGreatMystique,Green,Character,Penguin,"This Character doesn't participate in Vibe Check.
+[ACT] _F_: Put 6 vibe counters on this Character.",6,6,Uncommon,2953,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWithGreatMystique.png
+Eth,82,Koi Penguin,KoiPenguin,Green,Character,Penguin,"When this Character enters the huddle,
+choose a Character with the highest vibe in your huddle
+and put vibe counters on it until it's tied
+for the highest vibe among all Characters.",5,4,Rare,7077,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/KoiPenguin.png
+Eth,83,Pointsrich Penguin,PointsrichPenguin,Green,Character,Penguin,,6,10,Uncommon,2947,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PointsrichPenguin.png
+Eth,84,Sir Vibesalot,SirVibesalot,Green,Character,Penguin,,10,20,Mythic,8278,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SirVibesalot.png
+Eth,85,Romulus Who Roams,RomulusWhoRoams,Green,Character,Penguin,,7,12,Rare,8053,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RomulusWhoRoams.png
+Eth,86,Sketching Penguin,SketchingPenguin,Green,Character,Penguin,"At the start of Action Time, choose a Character
+and boost its vibe by 4 for the rest of this Cycle.
+If you lose or tie Vibe Check, ice Sketching Penguin.",4,4,Uncommon,4433,James Zhang & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SketchingPenguin.png
+Eth,87,Sliding Penguin,SlidingPenguin,Green,Character,Penguin,"At the start of Action Time, choose a Character
+and boost its vibe by 2 for the rest of this Cycle.",4,4,Common,3174,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SlidingPenguin.png
+Eth,88,Stargazing Penguin,StargazingPenguin,Green,Character,Penguin,"When this Character enters the huddle,
+choose a Character with vibe 6 or less
+and put a vibe counter on it.",2,2,Common,1824,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/StargazingPenguin.png
+Eth,89,Success Penguin,SuccessPenguin,Green,Character,Penguin,"[ACT] _F_: Choose another Character in your huddle.
+Boost that Character's vibe by 6 for the rest of this Cycle
+and ice this Character.",3,4,Common,7824,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SuccessPenguin.png
+Eth,90,Window-Washing Penguin,WindowWashingPenguin,Green,Character,Penguin,"When this Character enters the huddle,
+choose a Character in your huddle
+and put 4 vibe counters on it.",6,2,Common,346,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/WindowWashingPenguin.png
+Eth,91,Chisel from Stone,ChiselfromStone,Green,Action,EMPTY,"Choose a Green Character in your huddle.
+Count its vibe, divide it by four, and round up.
+Draw that many cards.",GGGG,EMPTY,Uncommon,"1351, 1670, 1967, 5136",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ChiselfromStone.png
+Eth,92,Clean Up Good,CleanUpGood,Green,Action,EMPTY,"Choose a Green Character in your huddle.
+Unflop it and double its vibe
+for the rest of this Cycle.",GGG,EMPTY,Common,"5113, 8158, 6625",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/CleanUpGood.png
+Eth,93,Escape in Time,EscapeinTime,Green,Action,EMPTY,"Cancel an [ACT] or Action
+that chooses a Character in your huddle.",GG,EMPTY,Common,"5367, 7839",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/EscapeinTime.png
+Eth,94,Everybody Stay Clam,EverybodyStayClam,Green,Action,EMPTY,Flop all Characters in play. Draw a card.,GGG,EMPTY,Uncommon,"1762, 1204, 2450",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/EverybodyStayClam.png
+Eth,95,Got 'Em!,GotEm,Green,Action,Saucy,"You can only play this Action if it's face-down
+as a Rod. Flip this card over to play it.
+Choose a Character with vibe 2 or less.
+Ice that Character.",0,EMPTY,Rare,1369,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GotEm.png
+Eth,96,Lost in the Sauce,LostintheSauce,Green,Action,EMPTY,Choose a Character and put 2 vibe counters on it.,G,EMPTY,Common,4469,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LostintheSauce.png
+Eth,97,Raid the Snacks,RaidtheSnacks,Green,Action,EMPTY,"You get two Fishsicles.
+(A Fishsicle produces one _T_, then goes away).",GG,EMPTY,Common,"2919, 2792",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RaidtheSnacks.png
+Eth,98,Luca Saves the Penguins,LucaSavesthePenguins,Green,Action,EMPTY,"Choose a Character in your opponent's huddle.
+It joins your huddle.",GGGGG,EMPTY,Mythic,"6445, 5163, 3284, 371, 2877",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LucaSavesthePenguins.png
+Eth,99,Send Off,SendOff,Green,Action,EMPTY,"Choose a Character in your huddle. Ice that Character.
+You get Fishsicles equal to half that Character's vibe,
+rounded up. (A Fishsicle produces one _T_,
+then goes away).",GGG,EMPTY,Uncommon,"1428, 5485, 1481",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SendOff.png
+Eth,100,Too Cool for School,TooCoolforSchool,Green,Action,EMPTY,"You can only play this Action if there's
+a Character in your huddle that's vibing more than
+your opponent's highest vibing Character
+by 6 or more. Ice all Characters.",GGG,EMPTY,Rare,"8495, 7704, 6833",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TooCoolforSchool.png
+Eth,101,Walk the Runway,WalktheRunway,Green,Action,EMPTY,"Choose a Character in your huddle
+and a Character in your opponent's huddle.
+Ice the one that's vibing the least.
+If there's a tie, ice them both.",GG,EMPTY,Uncommon,"7334, 2723",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/WalktheRunway.png
+Eth,102,You Dropped This,YouDroppedThis,Green,Action,EMPTY,"As an additional cost to play this Action,
+ice a Character in your huddle with vibe
+6 or greater. Choose a Character and put
+6 vibe counters on it.",GG,EMPTY,Common,"1647, 7850",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/YouDroppedThis.png
+Eth,103,Bashful Swordsman Penguin,BashfulSwordsmanPenguin,Blue,Character,Swordsman Penguin,"Whenever a Character wins Vibe Check,
+if this Character is unflopped, ice that Character.
+(They still win Vibe Check).",3,14,Rare,6025,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BashfulSwordsmanPenguin.png
+Eth,104,Blue Mega Penguin,BlueMegaPenguin,Blue,Character,Mega Penguin,"As an additional cost to play this Character,
+ice a Character in your huddle. You can look
+at the top card of your deck at any time.
+If it's a Relic card, you can play it.",5,6,Mythic,3578,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BlueMegaPenguin.png
+Eth,105,Blue Wizard Penguin,BlueWizardPenguin,Blue,Character,Wizard Penguin,Enters flopped.,2,2,Uncommon,114,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BlueWizardPenguin.png
+Eth,106,Bottle Penguin,BottlePenguin,Blue,Character,Penguin,[ACT] _F_: Ice the top card of each player's deck.,2,2,Common,1522,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BottlePenguin.png
+Eth,107,Cannonball Penguin,CannonballPenguin,Blue,Character,Penguin,"When this Character enters the huddle, choose a player.
+Ice the top three cards of their deck.",4,6,Common,2580,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/CannonballPenguin.png
+Eth,108,Amazing Penguin,AmazingPenguin,Blue,Character,Penguin,,3,6,Common,4043,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/AmazingPenguin.png
+Eth,109,Thawing Penguin,ThawingPenguin,Blue,Character,Thawing Penguin,"Characters can't win Vibe Check
+unless their vibe is greater than four times
+the number of Thawing Penguins in your huddle.",3,4,Uncommon,8226,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ThawingPenguin.png
+Eth,110,Dragonrider Penguin,DragonriderPenguin,Blue,Character,Penguin,"When this Character enters the huddle,
+you may pick a card in your opponent's ice
+and put it on top of their deck.",6,6,Uncommon,4803,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/DragonriderPenguin.png
+Eth,111,Fact-Finding Penguin,FactFindingPenguin,Blue,Character,Penguin,"Whenever an Action card
+is put in your opponent's ice from their deck,
+put 2 vibe counters on this Character.",5,4,Uncommon,1078,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FactFindingPenguin.png
+Eth,112,Frosty the Penguin,FrostythePenguin,Blue,Character,Penguin,,2,4,Common,4742,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FrostythePenguin.png
+Eth,113,Jealous Penguin,JealousPenguin,Blue,Character,Penguin,"As you play Jealous Penguin, pick a Character card in your opponent's ice. This Character enters the huddle with the picked card on top of this one. This Character inherits all characteristics of that card.",5,?,Rare,4113,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/JealousPenguin.png
+Eth,114,"Miss Chief, Keeper of Keys",MissChiefKeeperofKeys,Blue,Character,Penguin,"[ACT] _F_: Choose an opponent. Ice cards
+from the top of their deck equal to
+half this Character's vibe, rounded up.",6,6,Common,4121,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/MissChiefKeeperofKeys.png
+Eth,115,"Miss Place, Forgetter of Things",MissPlaceForgetterofThings,Blue,Character,Penguin,"When this Character enters the huddle,
+pick a card in your opponent's ice.
+Cards with the same name as that card can't be
+played while this Character is in your huddle.",6,6,Common,3212,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/MissPlaceForgetterofThings.png
+Eth,116,Painter Penguin,PainterPenguin,Blue,Character,Penguin,"As an additional cost to play this Character,
+pick four Action cards in your ice and put them
+on the bottom of your deck.",4,10,Common,5176,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PainterPenguin.png
+Eth,117,Penguin Caught in Fishing Line,PenguinCaughtinFishingLine,Blue,Character,Penguin,[ACT] _F_: Flop all Characters. Ice this Character.,4,2,Common,8054,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinCaughtinFishingLine.png
+Eth,118,Penguin Who Explores the Reef,PenguinWhoExplorestheReef,Blue,Character,Penguin,"Whenever a Character in your huddle
+wins Vibe Check, choose an opponent.
+Ice cards from the top of that player's deck
+equal to half that Character's vibe, rounded up.",6,6,Uncommon,1273,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhoExplorestheReef.png
+Eth,119,Penguin Who's OK,PenguinWhosOK,Blue,Character,Penguin,"Whenever you draw a card, choose a player.
+Ice the top card of their deck.",2,2,Common,4874,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhosOK.png
+Eth,120,Penguin With Hoops,PenguinWithHoops,Blue,Character,Penguin,[ACT] _F_: Each player draws a card.,3,4,Uncommon,2131,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWithHoops.png
+Eth,121,Porthole Penguin,PortholePenguin,Blue,Character,Penguin,"Whenever you lose the Baron,
+look at the top card of your opponent's deck.
+You may put it on the bottom of their deck.
+(You look before they get their prize).",3,4,Common,1083,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PortholePenguin.png
+Eth,122,"Rad Chill, Who's Super Cool",RadChillWhosSuperCool,Blue,Character,Penguin,"Enters flopped.
+[ACT] _F_: Choose an opponent.
+Ice cards from the top of their deck
+equal to the number of cards
+that player already has in their ice.",10,10,Mythic,1,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RadChillWhosSuperCool.png
+Eth,123,Sneaky Penguin,SneakyPenguin,Blue,Character,Penguin,"At the start of your turn,
+look at the top card of your deck.
+You may put it on the bottom of your deck.",3,4,Common,3720,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SneakyPenguin.png
+Eth,124,Tidal Penguin,TidalPenguin,Blue,Character,Penguin,"[ACT] _F_: Choose an opponent and ice all cards
+in their hand. They draw that many cards, then
+ice that many cards from the top of their deck.",9,10,Rare,7459,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TidalPenguin.png
+Eth,125,Waterfall Penguin,WaterfallPenguin,Blue,Character,Penguin,"At the start of Action Time,
+if you don't have the Baron, choose an opponent.
+Ice the top three cards of their deck.",6,6,Common,5566,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/WaterfallPenguin.png
+Eth,126,Bedtime Story,BedtimeStory,Blue,Action,EMPTY,"Choose a Character with vibe less than
+or equal to twice the number of Character cards
+its controller has in their ice. Ice that Character.",BB,EMPTY,Uncommon,"2286, 6272",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BedtimeStory.png
+Eth,127,Bridge With Layer Zero,BridgeWithLayerZero,Blue,Action,EMPTY,"Choose a Character in your opponent's huddle.
+Swap it with a Character card in its owner's ice.
+(That Character enters the huddle, but is not played).",BB,EMPTY,Common,"3327, 709",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BridgeWithLayerZero.png
+Eth,128,Cool Story Bro!,CoolStoryBro,Blue,Action,Saucy,"You can only play this Action if it's face-down
+as a Rod. Flip this card over to play it. Choose
+a player and ice the top two cards of their deck.",0,EMPTY,Rare,7399,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/CoolStoryBro.png
+Eth,129,"Don't Trust, Verify",DontTrustVerify,Blue,Action,EMPTY,"Name a card. Reveal the top card of your deck.
+If it's the named card, put it into your hand
+and draw an additional card. Otherwise,
+put it back on top of your deck.",B,EMPTY,Uncommon,3602,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/DontTrustVerify.png
+Eth,130,Ingenious Idea,IngeniousIdea,Blue,Action,EMPTY,"Draw two cards. Pick a card in your hand
+and put it on top of your deck.",BBB,EMPTY,Uncommon,"5215, 8377, 951",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/IngeniousIdea.png
+Eth,131,Keep Digging,KeepDigging,Blue,Action,EMPTY,"Choose an opponent. They reveal their hand.
+Pick a non-Character card from it and ice that card.",BB,EMPTY,Rare,"4993, 5610",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/KeepDigging.png
+Eth,132,Questionable Methods,QuestionableMethods,Blue,Action,EMPTY,"Pick an Action card in your opponent's ice.
+Until the end of this Cycle, you can play that Action.
+You can spend Pudge of any color to play that Action.",BBB,EMPTY,Common,"1695, 5791, 8820",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/QuestionableMethods.png
+Eth,133,Send It Too Hard,SendItTooHard,Blue,Action,EMPTY,"You can only play this Action
+if your opponent has fifteen or more
+cards in their ice. Ice all Characters.",BB,EMPTY,Rare,"5449, 6922",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SendItTooHard.png
+Eth,134,Spring a Leak,SpringaLeak,Blue,Action,EMPTY,Choose an Action and cancel it.,BB,EMPTY,Common,"7780, 3641",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SpringaLeak.png
+Eth,135,Three Wise Penguins,ThreeWisePenguins,Blue,Action,EMPTY,"Choose two Rods you don't control
+and return each to its owner's hand.",BBB,EMPTY,Rare,"1279, 2493, 4836",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ThreeWisePenguins.png
+Eth,136,Unlikely Friends,UnlikelyFriends,Blue,Action,EMPTY,"Choose a Character in your opponent's huddle.
+That player may ice cards from the top of their deck
+equal to that Character's vibe. If they do not,
+ ice that Character.",BB,EMPTY,Common,"3906, 6787",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/UnlikelyFriends.png
+Eth,137,Absent-Minded Penguin,AbsentMindedPenguin,Purple,Character,Penguin,"[ACT] _F_: Choose a Character in your huddle and ice it.
+Put two vibe counters on this Character.",4,2,Common,2101,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/AbsentMindedPenguin.png
+Eth,138,Abstract Penguin,AbstractPenguin,Purple,Character,Penguin,"[ACT] _F_, Ice a card from your hand:
+Put 2 vibe counters on this Character.",3,4,Common,7350,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/AbstractPenguin.png
+Eth,139,Ambitious Penguin,AmbitiousPenguin,Purple,Character,Penguin,"Whenever a player plays an Action,
+if this Character is unflopped and
+you have less than fifteen cards in your ice,
+ return this Character to its owner's hand.",5,12,Common,2243,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/AmbitiousPenguin.png
+Eth,140,Ascending Penguin,AscendingPenguin,Purple,Character,Penguin,"Whenever a Character enters your huddle,
+ice cards from the top of your deck equal to
+half that Character's vibe, rounded up.",4,2,Common,5752,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/AscendingPenguin.png
+Eth,141,"Bizmo, PhD Candidate",BizmoPhDCandidate,Purple,Character,Penguin,"When this Character enters the huddle,
+if you have no cards in your deck,
+you win the game.",2,2,Uncommon,1221,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BizmoPhDCandidate.png
+Eth,142,Brainy Penguin,BrainyPenguin,Purple,Character,Penguin,"When this Character enters the huddle,
+ice up to two cards in your hand.
+Draw that many cards.",3,2,Rare,3700,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BrainyPenguin.png
+Eth,143,"Bubbles, the Great and Powerful",BubblestheGreatandPowerful,Purple,Character,Penguin,"This Character's vibe is equal to
+twice the number of Character cards in your ice.",8,?,Rare,6195,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BubblestheGreatandPowerful.png
+Eth,144,"Bunkus, Who Is the Stars",BunkusWhoIstheStars,Purple,Character,Penguin,"Playable from ice. As you play Bunkus,
+put up to twelve cards from your ice on the bottom
+of your deck to reduce Bunkus' cost by that amount.
+Bunkus' vibe is twice the number of
+Character cards in your ice.",12,?,Mythic,8773,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BunkusWhoIstheStars.png
+Eth,145,Charming Swordsman Penguin,CharmingSwordsmanPenguin,Purple,Character,Swordsman Penguin,"This Character can only [ACT] if its vibe is,
+or is tied with, the highest vibe in your huddle.
+[ACT] _F_: Choose a Character
+in your opponent's huddle and flop it.",3,4,Rare,209,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/CharmingSwordsmanPenguin.png
+Eth,146,Cooking Penguin,CookingPenguin,Purple,Character,Penguin,"Playable from ice by icing a Rod you control
+in addition to paying its Fish cost.",3,4,Uncommon,6701,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/CookingPenguin.png
+Eth,147,Demolition Penguin,DemolitionPenguin,Purple,Character,Penguin,"When this Character enters the huddle,
+you may pick a card in your ice.
+If you do, put it face-down as a Rod
+and ice a Rod you control.",3,2,Common,3493,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/DemolitionPenguin.png
+Eth,148,Galaxy Penguin,GalaxyPenguin,Purple,Character,Penguin,"When this Character enters the huddle,
+search your deck for a Character card
+and put it in your ice. Shuffle your deck.",5,6,Uncommon,4590,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GalaxyPenguin.png
+Eth,149,Gardenkeeper Penguin,GardenkeeperPenguin,Purple,Character,Penguin,"As an additional cost to play this Character,
+pick five cards in your ice and put them
+on the bottom of your deck. When this Character
+enters the huddle, ice the top five cards of your deck.",6,6,Common,4771,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GardenkeeperPenguin.png
+Eth,150,Penguin With a Flag,PenguinWithaFlag,Purple,Character,Penguin,"As an additional cost to play this Character,
+ice a Rod you control.",4,10,Uncommon,4981,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWithaFlag.png
+Eth,151,Moonlit Penguin,MoonlitPenguin,Purple,Character,Penguin,,2,4,Common,4279,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/MoonlitPenguin.png
+Eth,152,Penguin Who Breaks the Fourth Wall,PenguinWhoBreakstheFourthWall,Purple,Character,Penguin,"You can't play this Character from your
+hand. Playable from ice by icing two Rods
+you control in addition to paying its Fish cost.",2,9,Common,2535,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhoBreakstheFourthWall.png
+Eth,153,Penguin Who Carries the Berg,PenguinWhoCarriestheBerg,Purple,Character,Penguin,"Whenever one of your Rods is iced from play,
+put 2 vibe counters on this Character.",2,2,Common,4425,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhoCarriestheBerg.png
+Eth,154,Penguin Who Runs the Lift,PenguinWhoRunstheLift,Purple,Character,Penguin,"At the start of Action Time,
+if there are eight or more cards in your ice,
+boost this Character's vibe by 6
+for the rest of this Cycle.",2,2,Common,2863,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhoRunstheLift.png
+Eth,155,Prosperous Penguin,ProsperousPenguin,Purple,Character,Penguin,"When this Character enters the huddle,
+you may pick an Action card in your ice with
+Pudge cost 2. If you do, you can play it this Cycle.
+(You must still pay its costs).",3,2,Common,7092,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ProsperousPenguin.png
+Eth,156,Purple Mega Penguin,PurpleMegaPenguin,Purple,Character,Mega Penguin,"As an additional cost to play this Character,
+ice a Character in your huddle. When this Character
+enters the huddle, you may pick a card in your ice
+and put it into your hand.",5,6,Mythic,292,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PurpleMegaPenguin.png
+Eth,157,Purple Wizard Penguin,PurpleWizardPenguin,Purple,Character,Wizard Penguin,Enters flopped.,2,2,Uncommon,1019,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PurpleWizardPenguin.png
+Eth,158,Space Cadet Penguin,SpaceCadetPenguin,Purple,Character,Penguin,"As an additional cost to play this Character,
+ice a card from your hand. When this Character
+enters the huddle, choose a Rod you control
+and a Rod you don't control. Ice those Rods.",3,2,Common,1969,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SpaceCadetPenguin.png
+Eth,159,Unmasked Penguin,UnmaskedPenguin,Purple,Character,Penguin,,3,6,Common,8204,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/UnmaskedPenguin.png
+Eth,160,Adventure Squad,AdventureSquad,Purple,Action,EMPTY,"Choose a Character in your huddle
+and a Character in your opponent's huddle.
+Ice the one that's vibing the most.
+If there's a tie, ice them both.",PP,EMPTY,Uncommon,"1062, 2227",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/AdventureSquad.png
+Eth,161,Change Perspective,ChangePerspective,Purple,Action,EMPTY,"Reveal the top three cards of your deck.
+Your opponent separates those into two groups.
+Pick one group and put it into your hand.
+Ice the cards in the other group.",PPP,EMPTY,Uncommon,"8457, 4895, 7597",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ChangePerspective.png
+Eth,162,Chase Your Dreams,ChaseYourDreams,Purple,Action,EMPTY,"You can't play this Action from your hand.
+Playable from ice. Draw a card, then put this Action
+on the bottom of your deck.",PPP,EMPTY,Common,"2022, 8880, 737",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ChaseYourDreams.png
+Eth,163,Gather Together,GatherTogether,Purple,Action,EMPTY,"Pick a Character card in your ice. During your next turn,
+you can play that card by icing a Rod you control
+in addition to paying its Fish cost.",PPPP,EMPTY,Common,"203, 8036, 1840, 5274",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GatherTogether.png
+Eth,164,Have a Philosophical Debate,HaveaPhilosophicalDebate,Purple,Action,EMPTY,"Choose a Character. You may move cards
+from your ice to the bottom of your deck
+equal to that Character's Fish cost.
+If you do, ice that Character.",PP,EMPTY,Uncommon,"7577, 7553",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HaveaPhilosophicalDebate.png
+Eth,165,One With History,OneWithHistory,Purple,Action,EMPTY,Return all Character cards in your ice to your hand.,PPPPPPP,EMPTY,Rare,"7293, 2892, 2175, 6587, 6824, 2358, 1925",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/OneWithHistory.png
+Eth,166,Overwhelm With Knowledge,OverwhelmWithKnowledge,Purple,Action,EMPTY,"Playable from ice by icing a Rod you control
+instead of paying this card's Pudge cost.
+If you play this Action from your ice,
+put this card on the bottom of your deck.
+Draw a card.",P,EMPTY,Common,8519,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/OverwhelmWithKnowledge.png
+Eth,167,Sick Pull!,SickPull,Purple,Action,Saucy,"You can only play this Action if it's face-down
+as a Rod. Flip this card over to play it.
+Each player draws a card.",0,EMPTY,Rare,7766,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SickPull.png
+Eth,168,Spring Break,SpringBreak,Purple,Action,EMPTY,"You can only play this Action if you have
+fifteen or more cards in your ice.
+Ice all Characters.",PPPP,EMPTY,Rare,"2309, 640, 273, 4703",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SpringBreak.png
+Eth,169,Study All Night,StudyAllNight,Purple,Action,EMPTY,Draw two cards. Ice two cards from your hand.,P,EMPTY,Common,4350,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/StudyAllNight.png
+Eth,170,Wut?,Wut,Purple,???,EMPTY,"When this card is put in your ice,
+ice the top card of your deck.",EMPTY,EMPTY,Rare,635,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Wut.png
+Eth,171,Aha Penguin,AhaPenguin,Colorless,Character,Penguin,"Whenever an opponent wins Vibe Check,
+put 2 vibe counters on this Character.",3,2,Common,4406,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/AhaPenguin.png
+Eth,172,Boat-Tying Penguin,BoatTyingPenguin,Colorless,Character,Penguin,"[ACT] _F_: Choose a Character with vibe
+equal to or less than the number of
+Characters in your huddle and put
+2 vibe counters on it.",4,6,Common,1917,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BoatTyingPenguin.png
+Eth,173,Hungry Penguin,HungryPenguin,Colorless,Character,Penguin,"[ACT] _F_: Choose a Character with vibe greater than
+this Character's vibe and flop it.",6,6,Uncommon,7161,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HungryPenguin.png
+Eth,174,Inquisitive Penguin,InquisitivePenguin,Colorless,Character,Penguin,This Character doesn't participate in Vibe Check.,0,1,Common,8297,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/InquisitivePenguin.png
+Eth,175,Introvert Penguin,IntrovertPenguin,Colorless,Character,Penguin,"This Character doesn't participate in Vibe Check
+unless it's the only Character in your huddle.",2,6,Common,6904,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/IntrovertPenguin.png
+Eth,176,Primo Wizard Penguin,PrimoWizardPenguin,Colorless,Character,Wizard Penguin,"Enters flopped.
+This Character can produce _RB_ of any color.",3,2,Rare,8279,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PrimoWizardPenguin.png
+Eth,177,Penguin With a Rod of His Own,PenguinWithaRodofHisOwn,Colorless,Character,Penguin,"Enters flopped.
+This Character can produce _T_ as if it were a Rod.",4,4,Uncommon,4435,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWithaRodofHisOwn.png
+Eth,178,Teleporter Penguin,TeleporterPenguin,Colorless,Character,Penguin,"At the start of your turn,
+ice all Characters with vibe 4 or less.
+This Character can't have vibe counters placed on it.",7,4,Rare,8031,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TeleporterPenguin.png
+Eth,179,Skydiving Penguin,SkydivingPenguin,Colorless,Character,Penguin,"Whenever the Baron changes sides, draw a card.
+(You draw before prizes are given).",8,2,Uncommon,8217,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SkydivingPenguin.png
+Eth,180,Supportive Friend,SupportiveFriend,Colorless,Character,Penguin,"When this Character enters the huddle,
+you may choose a Character
+and put 2 vibe counters on it.",2,2,Common,6436,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SupportiveFriend.png
+Eth,181,Chalice of Everflowing Pudge,ChaliceofEverflowingPudge,Relic,Relic,EMPTY,"When you play this Relic, pick a color.
+Characters in your huddle can produce Pudge of that color.",5,EMPTY,Rare,7206,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ChaliceofEverflowingPudge.png
+Eth,182,Cookies of Truth,CookiesofTruth,Relic,Relic,EMPTY,"Players play with the top card
+of their deck revealed.",2,EMPTY,Uncommon,4114,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/CookiesofTruth.png
+Eth,183,Dummy Thicc Disco Ball,DummyThiccDiscoBall,Relic,Relic,EMPTY,"At the start of your turn, return all Characters
+in your opponent's huddles to their owner's hands.",15,EMPTY,Mythic,4182,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/DummyThiccDiscoBall.png
+Eth,184,Inspiring Story,InspiringStory,Relic,Relic,EMPTY,"At the start of Action Time, boost the vibe
+of every Character in your huddle by 2
+for the rest of this Cycle.",5,EMPTY,Uncommon,4679,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/InspiringStory.png
+Eth,185,Layer Two Technology,LayerTwoTechnology,Relic,Relic,EMPTY,All Character cards cost one less _T_ to play.,5,EMPTY,Uncommon,3316,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LayerTwoTechnology.png
+Eth,186,Orb of Hopium,OrbofHopium,Relic,Relic,EMPTY,"At the start of Action Time,
+each player draws a card.",4,EMPTY,Uncommon,3786,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/OrbofHopium.png
+Eth,187,Silent Snow Globe,SilentSnowGlobe,Relic,Relic,EMPTY,"All Characters lose all abilities.
+You can't play additional Characters
+as long as this Relic remains in play.
+(Characters can still produce Pudge).",5,EMPTY,Rare,4624,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SilentSnowGlobe.png
+Eth,188,The End of the Rainbow,TheEndoftheRainbow,Relic,Relic,EMPTY,"At the start of Action Time,
+if your huddle contains a Character of each color,
+draw a card.",4,EMPTY,Rare,6451,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TheEndoftheRainbow.png
+Eth,189,Too Much Caffeine,TooMuchCaffeine,Relic,Relic,EMPTY,"At the start of Action Time,
+each player may choose a Character.
+Flop those Characters.",1,EMPTY,Uncommon,4653,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TooMuchCaffeine.png
+Eth,190,Wizard Cap,WizardCap,Relic,Relic,EMPTY,"Whenever a Wizard Character produces Pudge,
+they produce another Pudge of that same color.",3,EMPTY,Uncommon,2496,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/WizardCap.png
+Eth,191,Bounce House Rod,BounceHouseRod,Rod,Rod,EMPTY,"Enters flopped.
+When you play this Rod, return
+a Rod you control to its owner's hand.
+(You can look at your face-down Rods at any time).",EMPTY,EMPTY,Common,4417,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BounceHouseRod.png
+Eth,192,Calligraphy Rod,CalligraphyRod,Rod,Rod,EMPTY,"You can only play this Rod if you control
+five or more Rods. Whenever you play
+your second Character this Cycle,
+unflop this Rod.",EMPTY,EMPTY,Rare,6499,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/CalligraphyRod.png
+Eth,193,Freezing Rod,FreezingRod,Rod,Rod,EMPTY,"This Rod produces _T__T_.
+Whenever you use this Rod, ice a Rod you control.",EMPTY,EMPTY,Rare,5167,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FreezingRod.png
+Eth,194,Hot Rod,HotRod,Rod,Rod,EMPTY,"You can only play this Rod if you control
+five or more Rods. At the start of Action Time,
+boost the vibe of the Character in your huddle
+with the highest vibe by 1 for the rest of this Cycle.
+If there's a tie, you pick.",EMPTY,EMPTY,Rare,2891,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HotRod.png
+Eth,195,Pudgy Man Rod,PudgyManRod,Rod,Rod,EMPTY,"Whenever a Rod is put in your ice from play,
+unflop this Rod.",EMPTY,EMPTY,Uncommon,903,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PudgyManRod.png
+Eth,196,Rod of Camaraderie,RodofCamaraderie,Rod,Rod,EMPTY,"Enters flopped.
+As an additional cost to play this Rod,
+ice three unflopped Rods you control.
+This Rod produces _T_ for each Character in your huddle.",EMPTY,EMPTY,Rare,5084,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RodofCamaraderie.png
+Eth,197,Umbrella Rod,UmbrellaRod,Rod,Rod,EMPTY,"You can only play this Rod if you control
+five or more Rods. Whenever you play
+your fourth Action each Cycle, copy it.
+(You make new choices for the copy).",EMPTY,EMPTY,Rare,3698,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/UmbrellaRod.png
+Eth,198,Rod of Cheesy Slices,RodofCheesySlices,Rod,Rod,EMPTY,"You can only play this Rod if you control
+five or more Rods. Whenever you use this Rod,
+choose an opponent and ice the top two cards
+of their deck.",EMPTY,EMPTY,Rare,454,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RodofCheesySlices.png
+Eth,199,Trampoline Rod,TrampolineRod,Rod,Rod,EMPTY,"Enters flopped.
+When you play this Rod, return a Character
+in your huddle to its owner's hand.",EMPTY,EMPTY,Common,164,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TrampolineRod.png
+Eth,200,Rod of Charming Melodies,RodofCharmingMelodies,Rod,Rod,EMPTY,"You can only play this Rod if you control
+five or more Rods. Whenever you use this Rod,
+ice the top two cards of your deck.",EMPTY,EMPTY,Rare,1342,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RodofCharmingMelodies.png
+Eth,201,Baron Fishpockets,BaronFishpockets,Colorless,Other,EMPTY,"The player with The Baron goes first. Vibe Check:
+The unflopped Character with the highest vibe wins
+Vibe Check. 1st Prize: You get The Baron. Turn the
+top card of your deck into a Rod. Consolation
+Prize: Draw a card. Ties: If there’s a tie, nobody gets a prize & The Baron stays put. Victory: At the start of your turn, if you have The Baron and at least fifteen cards in play, you win the game.",EMPTY,EMPTY,,,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BaronFishpockets.png
+Eth,202,Fishsicle,Fishsicle,Colorless,Other,EMPTY,"Produces one _T_, then goes away.
+Does NOT count toward the Baron's win condition.",EMPTY,EMPTY,,,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Fishsicle.png
+Eth,203,QR Code,QRCode,Colorless,Other,EMPTY,,EMPTY,EMPTY,,"1031, 2039, 4966, 2069, 3009, 3412",Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/QRCode.png
+Eth,204,Basic Rod,BasicRod,Rod,Rod,EMPTY,,EMPTY,EMPTY,,,,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BasicRod.png
+Eth,205,Fishsicle,Fishsicle,Rod,Other,EMPTY,"Produces one _T_, then goes away.
+Does NOT count toward the Baron's win condition.",EMPTY,EMPTY,,,,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Fishsicle.png
+Lotl,1,Lil Shaker,LilShaker,Red,Character,Lil Penguin,"[ACT] _F_, pick two cards in your ice
+and put them on the bottom of your deck:
+Choose a Red Character. That Character
+produces _R__R__R_ for the rest of this Cycle.",2,1,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilShaker.png
+Lotl,2,Lil Bamboo,LilBamboo,Red,Character,Lil Penguin,,3,6,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilBamboo.png
+Lotl,3,Lil Who Breaks Free,LilWhoBreaksFree,Red,Character,Lil Penguin,"Whenever this Character leaves the huddle,
+draw a card.",6,3,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilWhoBreaksFree.png
+Lotl,4,Lil Daydreamer,LilDaydreamer,Red,Character,Lil Penguin,"[ACT] _F_: Choose a Character with vibe 3 or less.
+Ice that Character and ice this Character.",3,3,Uncommon,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilDaydreamer.png
+Lotl,5,The Lord of Lightning,TheLordOfLightning,Red,Character,Lil Penguin,"Whenever a Lil in your huddle is flopped,
+boost this Character's vibe by 1
+for the rest of this Cycle.",3,1,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TheLordOfLightning.png
+Lotl,6,Lil Singer,LilSinger,Red,Character,Lil Penguin,"[ACT] _F_: Choose another unflopped
+Character in your huddle and flop it.
+Put a vibe counter on that Character.",3,5,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilSinger.png
+Lotl,7,Squibblestone the Wise,SquibblestoneTheWise,Red,Character,Lil Swordsman Penguin,"[ACT] _R__B_, _F_: Choose a flopped Lil
+and ice it.",4,1,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SquibblestoneTheWise.png
+Lotl,8,Lil Comic,LilComic,Red,Character,Lil Penguin,"When this Character
+enters the huddle, choose a player.
+That player reveals their hand. You may pick
+a Character card from their hand and ice it.
+If you do, that player draws a card.",4,1,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilComic.png
+Lotl,9,Penguin Who Shakes,PenguinWhoShakes,Red,Character,Penguin,"Whenever you play a Red Action, put a
+vibe counter on this Character. As long as it has
+3 or more vibe counters, it produces _R__R__R_ and has
+ the ability ""Whenever this Character is flopped,
+remove 3 vibe counters from it"".",4,1,Rare,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhoShakes.png
+Lotl,10,Lil Introvert,LilIntrovert,Red,Character,Lil Penguin,"Whenever this Character is flopped,
+boost its vibe by 7 for the rest of this Cycle.",5,7,Common,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilIntrovert.png
+Lotl,11,Simon Smasher,SimonSmasher,Red,Character,Lil Penguin,"This Character can only [ACT]
+if you've played a Red Action this Cycle.
+[ACT] _F_: Choose a Relic and ice it.",5,1,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SimonSmasher.png
+Lotl,12,Lil Juggler,LilJuggler,Red,Character,Lil Penguin,"Enters flopped.
+[ACT] _F_: Choose an Action.
+Cancel it, return it to its owner's hand,
+and return this Character to its owner's hand.",6,5,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilJuggler.png
+Lotl,13,Lil Zoomer,LilZoomer,Red,Character,Lil Speedy Penguin,"When this Character enters the huddle,
+choose a non-Speedy Character
+and return it to its owner's hand.",6,3,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilZoomer.png
+Lotl,14,Lil Insomniac,LilInsomniac,Red,Character,Lil Penguin,"Whenever you play a Red Action,
+put vibe counters on this Character equal
+to the Pudge cost of that Action.",8,1,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilInsomniac.png
+Lotl,15,Pack Attack,PackAttack,Red,Action,EMPTY,"Open a Vibes booster pack, reveal the cards,
+and put one of them into your hand.
+(A list of legal packs can be found at
+vibes.game/packattack).",R,EMPTY,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PackAttack.png
+Lotl,16,Toss Up,TossUp,Red,Action,EMPTY,"Flip a coin. If heads, draw a card.
+If tails, return this Action to your hand.",R,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TossUp.png
+Lotl,17,"Honey, I Shrunk the Pengs",HoneyIShrunkThePengs,Red,Action,EMPTY,"Choose a Character. That Character becomes 
+a Lil for the rest of this Cycle. Draw a card.",RR,EMPTY,Uncommon,2238,Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HoneyIShrunkThePengs.png
+Lotl,18,Ride the Train,RideTheTrain,Red,Action,EMPTY,"Draw a card. You may move any number
+of other cards named ""Ride the Train""
+from your ice to the bottom of your deck.
+If you do, draw a card for each card moved this way.",RR,EMPTY,Common,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RideTheTrain.png
+Lotl,19,Enter the Bounce House Dimension,EnterTheBounceHouseDimension,Red,Action,EMPTY,"As an additional cost to play this Action,
+return a Rod you control to its owner's hand.
+Draw a card.",RRR,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/EnterTheBounceHouseDimension.png
+Lotl,20,Band Together,BandTogether,Red,Action,EMPTY,"Search your deck for a Character card, reveal it,
+shuffle your deck, and put it on top.",RRR,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BandTogether.png
+Lotl,21,"Goodnight, Pengs",GoodnightPengs,Red,Action,EMPTY,"Your opponent's Actions and [ACT]s
+cannot ice or flop Characters in your huddle
+for the rest of this Cycle.",RRRR,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GoodnightPengs.png
+Lotl,22,Cross the River,CrossTheRiver,Red,Action,EMPTY,"Pick two non-Red Action cards
+in your ice and return them to your hand.
+This Action costs one less _R_ to play for each
+Action you've played this Cycle.",RRRRRRRR,EMPTY,Mythic,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/CrossTheRiver.png
+Lotl,23,Sheeeesh!,Sheeeesh,Red,Action,Saucy,"You can only play this Action if it's face-down
+as a Rod. Flip this card over to play it.
+This Action does nothing.
+Whenever you play a Red Action,
+return this card from your ice to your hand.",R,EMPTY,Rare,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Sheeeesh.png
+Lotl,24,Here's Pengy,HeresPengy,Red,Action,EMPTY,"Look at the top card of your opponent's deck.
+Draw a card.",R,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HeresPengy.png
+Lotl,25,Lil Paper,LilPaper,Yellow,Character,Lil Paper Penguin,"Whenever you win Vibe Check,
+put 2 vibe counters on each Scissors Penguin.",2,3,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilPaper.png
+Lotl,26,Lil Rock,LilRock,Yellow,Character,Lil Rock Penguin,"Whenever you win Vibe Check,
+put 2 vibe counters on each Paper Penguin.",2,3,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilRock.png
+Lotl,27,Lil Scissors,LilScissors,Yellow,Character,Lil Scissors Penguin,"Whenever you win Vibe Check,
+put 2 vibe counters on each Rock Penguin.",2,3,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilScissors.png
+Lotl,28,Penguin With Lil Mystique,PenguinWithLilMystique,Yellow,Character,Lil Penguin,"This Character doesn't participate in Vibe Check
+unless it has 6 or more vibe counters on it.",2,7,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWithLilMystique.png
+Lotl,29,Poppin' Pete,PoppinPete,Yellow,Character,Lil Penguin,"When this Character enters the huddle,
+you may choose a Relic with Fish cost 5 or less.
+If you do, return it to its owner's hand.",2,1,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PoppinPete.png
+Lotl,30,Lil Leafrider,LilLeafrider,Yellow,Character,Lil Penguin,,3,6,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilLeafrider.png
+Lotl,31,Lil Lifeguard,LilLifeguard,Yellow,Character,Lil Penguin,"[ACT] _F_, remove a vibe counter from this Character:
+Choose a Character and put 2 vibe counters on it.",3,1,Common,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilLifeguard.png
+Lotl,32,Lil Stargazer,LilStargazer,Yellow,Character,Lil Penguin,"Whenever this Character is chosen by anything,
+put a vibe counter on it.",3,5,Common,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilStargazer.png
+Lotl,33,Lil Extrovert,LilExtrovert,Yellow,Character,Lil Silly Penguin,"Whenever a Character in your huddle
+enters with or gets vibe counters
+from anything non-Silly,
+put a vibe counter on it.",4,5,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilExtrovert.png
+Lotl,34,Frosterous the Great,FrosterousTheGreat,Yellow,Character,Lil Swordsman Penguin,"[ACT] _Y__G_, _F_: Choose a flopped Lil
+and ice it.",4,1,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FrosterousTheGreat.png
+Lotl,35,Lil Raker,LilRaker,Yellow,Character,Lil Penguin,"[ACT] _F_, pick two cards in your ice
+and put them on the bottom of your deck:
+Choose a Character and put 2 vibe counters on it.",4,3,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilRaker.png
+Lotl,36,Lil Window Washer,LilWindowWasher,Yellow,Character,Lil Penguin,"When this Character enters the huddle,
+you may flop up to four other Yellow Characters
+in your huddle. If you do, put 2 vibe counters
+on this Character for each Character flopped this way.",4,3,Rare,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilWindowWasher.png
+Lotl,37,Penguin Who Rakes,PenguinWhoRakes,Yellow,Character,Penguin,"[ACT] _Y__Y__Y_, _F_: Choose a Character
+and put 3 vibe counters on it.",4,3,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhoRakes.png
+Lotl,38,The Champion of Clouds,TheChampionOfClouds,Yellow,Character,Lil Penguin,"Whenever another Lil enters a huddle,
+put a vibe counter on that Character
+and put a vibe counter on this Character.",5,3,Uncommon,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TheChampionOfClouds.png
+Lotl,39,"Josephine, Party Queen",JosephinePartyQueen,Yellow,Character,Lil Penguin,"[ACT] _F_: The next time you put a vibe counter
+on a Character this Cycle, draw a card.",6,5,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/JosephinePartyQueen.png
+Lotl,40,Sir Waddlesworth,SirWaddlesworth,Yellow,Character,Lil Penguin,"When this Character enters the huddle,
+put 5 vibe counters on each
+Yellow Character in your huddle.",9,3,Mythic,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SirWaddlesworth.png
+Lotl,41,"Flop, Drop, and Roll",FlopDropAndRoll,Yellow,Action,EMPTY,"Choose a Lil or choose a Character
+with vibe 6 or less. Flop it.",Y,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FlopDropAndRoll.png
+Lotl,42,See the Berg,SeeTheBerg,Yellow,Action,EMPTY,"Choose a Character and put
+a vibe counter on it. Draw a card.",YY,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SeeTheBerg.png
+Lotl,43,Be Merry and Go,BeMerryAndGo,Yellow,Action,EMPTY,"As an additional cost to play this Action, remove
+all of the vibe counters on a Character in your huddle.
+Choose a Character, ice it if the Character's Fish cost
+is less than or equal to the number of vibe counters removed this way.",YYY,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BeMerryAndGo.png
+Lotl,44,Frolic,Frolic,Yellow,Action,EMPTY,"Choose three Characters.
+Put 3 vibe counters on each of them.",YYY,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Frolic.png
+Lotl,45,Into the Night,IntoTheNight,Yellow,Action,EMPTY,"Choose an Action with Pudge cost
+less than or equal to the number of
+Lils in your huddle and cancel it.",YYY,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/IntoTheNight.png
+Lotl,46,Do a Lil Math,DoALilMath,Yellow,Action,EMPTY,"Double the number of vibe counters
+on every Lil in your huddle.",YYYY,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/DoALilMath.png
+Lotl,47,Jeepers!,Jeepers,Yellow,Action,Saucy,"You can only play this Action if it's face-down
+as a Rod. Flip this card over to play it.
+Choose a Lil with no vibe counters.
+Return it to its owner's hand.",YY,EMPTY,Rare,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Jeepers.png
+Lotl,48,Wen?,Wen,Yellow,???,EMPTY,"Wen you draw this card, you may reveal it.
+If you do, choose up to one Character
+and put a vibe counter on it.",0,1,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Wen.png
+Lotl,49,Lil Who Blooms,LilWhoBlooms,Green,Character,Lil Penguin,,1,2,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilWhoBlooms.png
+Lotl,50,Lil Baker,LilBaker,Green,Character,Lil Penguin,"[ACT] _F_, pick two cards in your ice
+and put them on the bottom of your deck:
+You get a Fishsicle.",2,1,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilBaker.png
+Lotl,51,Lil Skydiver,LilSkydiver,Green,Character,Lil Penguin,"Whenever this Character wins Vibe Check,
+you get a Fishsicle.",2,3,Common,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilSkydiver.png
+Lotl,52,Penguin Who Bakes,PenguinWhoBakes,Green,Character,Penguin,"When this Character enters the huddle,
+you get a Fishsicle.",2,1,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhoBakes.png
+Lotl,53,Tubbins the Bold,TubbinsTheBold,Green,Character,Lil Swordsman Penguin,"[ACT] _G__P_, _F_: Choose a flopped Lil
+and ice it.",4,1,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TubbinsTheBold.png
+Lotl,54,Lil Painter,LilPainter,Green,Character,Lil Penguin,"Whenever you play your first Action each Cycle,
+you get a Fishsicle.",4,1,Uncommon,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilPainter.png
+Lotl,55,"Samantha Feathers, Pop Idol",SamanthaFeathersPopIdol,Green,Character,Lil Penguin,"You can only pay this Character's Fish cost
+with Fishsicles.",4,11,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SamanthaFeathersPopIdol.png
+Lotl,56,Lil Chef,LilChef,Green,Character,Lil Penguin,"When this Character enters the huddle,
+put a vibe counter on it.
+[ACT] _F_, remove a vibe counter
+from this Character: You get a Fishsicle.",5,5,Common,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilChef.png
+Lotl,57,The Savior of Skies,TheSaviorOfSkies,Green,Character,Lil Penguin,"This Character's vibe is twice
+the number of Lils
+in your huddle.",5,?,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TheSaviorOfSkies.png
+Lotl,58,Lil Who Can't Stop Eating,LilWhoCantStopEating,Green,Character,Lil Penguin,"Whenever you use a Fishsicle,
+put a vibe counter on this Character.",5,3,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilWhoCantStopEating.png
+Lotl,59,Son of Lil,SonOfLil,Green,Character,Lil Silly Penguin,"Whenever you get Fishsicles
+from anything non-Silly,
+you get an additional Fishsicle.",5,3,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SonOfLil.png
+Lotl,60,Dima the Destroyer,DimaTheDestroyer,Green,Character,Lil Penguin,"[ACT] _F_: Choose a Relic and ice it.
+If it was a Relic you controlled,
+you get a Fishsicle.",6,1,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/DimaTheDestroyer.png
+Lotl,61,Lil Lodger,LilLodger,Green,Character,Lil Penguin,"At the end of Action Time,
+put vibe counters on this Character equal to
+the number of Fishsicles you have.",6,1,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilLodger.png
+Lotl,62,Miss Tweeny,MissTweeny,Green,Character,Lil Penguin,"Whenever you win Vibe Check,
+double the number of Fishsicles you have.",8,8,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/MissTweeny.png
+Lotl,63,Sir Vibesalil,SirVibesalil,Green,Character,Lil Penguin,"Fishsicles used to pay this card's Fish cost
+count for 2 _T_.
+At the start of Action Time, draw a card.",16,21,Mythic,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SirVibesalil.png
+Lotl,64,Fishing Trip,FishingTrip,Green,Action,EMPTY,"Flop all unflopped Characters in your huddle.
+You get a Fishsicle for each Green Character
+flopped this way.",GG,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FishingTrip.png
+Lotl,65,Mystery of the Everlasting Fish,MysteryOfTheEverlastingFish,Green,Action,EMPTY,"You get a Fishsicle.
+Whenever you use a Fishsicle,
+if this card is in your ice,
+return it to your hand.",GG,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/MysteryOfTheEverlastingFish.png
+Lotl,66,Overwhelm With Fish,OverwhelmWithFish,Green,Action,EMPTY,"Choose a Character. If its vibe is equal to or less than
+the number of Fishsicles you have, ice it.",GG,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/OverwhelmWithFish.png
+Lotl,67,Be a Lil Evil,BeALilEvil,Green,Action,EMPTY,"As an additional cost to play this Action,
+ice a card from your hand. 
+Choose an Action with a single choice,
+cancel it, and copy that Action.
+(You make new choices for the copy).",GG,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BeALilEvil.png
+Lotl,68,Be Weird and Silly,BeWeirdAndSilly,Green,Action,EMPTY,"Choose an Action, cancel it,
+and return it to its owner's hand.
+Draw a card. You get a Fishsicle.",GGG,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BeWeirdAndSilly.png
+Lotl,69,Capture the Moment,CaptureTheMoment,Green,Action,EMPTY,"Choose a Character. Unflop it
+and put vibe counters on it equal to
+the number of Fishsicles you have.",GGGG,EMPTY,Uncommon,2238,Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/CaptureTheMoment.png
+Lotl,70,Look Inside,LookInside,Green,Action,EMPTY,"Choose a Character, Relic, or Rod.
+Return it to its owner's hand.
+Its owner ices a card from their hand.",GGGGG,EMPTY,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LookInside.png
+Lotl,71,No Way!,NoWay,Green,Action,Saucy,"You can only play this Action if it's face-down
+as a Rod. Flip this card over to play it.
+Choose a Character with vibe 3 or less and ice it.",GG,EMPTY,Rare,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/NoWay.png
+Lotl,72,Lil Gardenkeeper,LilGardenkeeper,Green,Character,Lil Penguin,"Whenever a Location enters play,
+you get a Fishsicle.",3,3,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilGardenkeeper.png
+Lotl,73,Lil Frosty,LilFrosty,Blue,Character,Lil Penguin,,1,2,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilFrosty.png
+Lotl,74,Lil Who Hoops,LilWhoHoops,Blue,Character,Lil Penguin,"At the end of Action Time, ice this Character.
+[ACT] _F_: Draw a card.",2,1,Uncommon,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilWhoHoops.png
+Lotl,75,Lil Contemplator,LilContemplator,Blue,Character,Lil Penguin,"Whenever any number of Lils become
+unflopped, put a vibe counter on this Character.",3,1,Uncommon,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilContemplator.png
+Lotl,76,Lil Milkmaid,LilMilkmaid,Blue,Character,Lil Penguin,"This Character's vibe is twice the number
+of cards in your opponent's hand.",3,?,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilMilkmaid.png
+Lotl,77,Lil Waker,LilWaker,Blue,Character,Lil Silly Penguin,"[ACT] _F_, pick two cards in your ice
+and put them on the bottom of your deck:
+Choose a flopped non-Silly Character and unflop it.",3,3,Common,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilWaker.png
+Lotl,78,Tina Who Tears,TinaWhoTears,Blue,Character,Lil Penguin,"When this Character enters the huddle,
+you may choose a Relic.
+If you do, turn it face-down as a Rod.",3,1,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TinaWhoTears.png
+Lotl,79,The Herald of Horizons,TheHeraldOfHorizons,Blue,Character,Lil Penguin,"[ACT] _F_: Boost the vibe of every Lil
+in your huddle by 2 for the rest of this Cycle.",4,5,Uncommon,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TheHeraldOfHorizons.png
+Lotl,80,Lil Jelly,LilJelly,Blue,Character,Lil Penguin,"[ACT] _F_, ice a card from your hand:
+Draw a card.",5,1,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilJelly.png
+Lotl,81,Blizzby the Swift,BlizzbyTheSwift,Blue,Character,Lil Swordsman Penguin,"[ACT] _B__Y_, _F_: Choose a flopped Lil
+and ice it.",4,1,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BlizzbyTheSwift.png
+Lotl,82,Penguin Who Wakes,PenguinWhoWakes,Blue,Character,Silly Penguin,"[ACT] _F_: Choose a flopped
+non-Silly Lil and unflop it.",4,3,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhoWakes.png
+Lotl,83,liL mOCkeR,LilMocker,Blue,Character,Lil Penguin,"Whenever this Character becomes unflopped,
+if it's not at the Unfloppening,
+choose a Character and flop it.",5,3,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilMocker.png
+Lotl,84,Marilyl,Marilyl,Blue,Character,Lil Penguin,"When this Character enters the huddle,
+each player ices the top two cards of their deck.",5,7,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Marilyl.png
+Lotl,85,"Binkus, Who Eats the Stars",BinkusWhoEatsTheStars,Blue,Character,Lil Penguin,"Playable from ice. As you play Binkus,
+put up to thirteen cards from your opponent's ice
+on the bottom of their deck to reduce Binkus' cost
+by that amount. Binkus' vibe is twice the number
+of Character cards in your opponent's ice.",13,?,Mythic,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BinkusWhoEatsTheStars.png
+Lotl,86,Lil Dragonrider,LilDragonrider,Blue,Character,Lil Penguin,"When this Character enters the huddle,
+pick up to two cards in your opponent's ice
+and put them on top of their deck in any order.
+(Your opponent knows the order).",6,5,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilDragonrider.png
+Lotl,87,Is This a Rod,IsThisARod,Blue,Action,EMPTY,"Choose a Rod. Return it to its owner's hand.
+If it wasn't a Rod you owned,
+its owner gets a Fishsicle.",B,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/IsThisARod.png
+Lotl,88,An Offer You Can't Refuse,AnOfferYouCantRefuse,Blue,Action,EMPTY,"Choose an unflopped Lil.
+Put it on top of its owner's deck.",BB,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/AnOfferYouCantRefuse.png
+Lotl,89,"Ooo, Shiny",OooShiny,Blue,Action,EMPTY,"Choose a Lil or choose a Character with
+vibe 6 or less. At the end of Action Time,
+unflop that Character.",BB,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/OooShiny.png
+Lotl,90,Tie Game,TieGame,Blue,Action,EMPTY,Each player ices a Character in their huddle.,BB,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TieGame.png
+Lotl,91,Win the Race,WinTheRace,Blue,Action,EMPTY,"Choose a flopped Character in your huddle
+and unflop it. Ice that Character
+at the end of this Cycle.",BB,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/WinTheRace.png
+Lotl,92,Go With the Flow,GoWithTheFlow,Blue,Action,EMPTY,"Each player draws cards equal to
+the number of unflopped Lils
+in their huddle.",BBB,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GoWithTheFlow.png
+Lotl,93,Turn to Rod,TurnToRod,Blue,Action,EMPTY,Choose a Character and turn it face-down as a Rod.,BBB,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TurnToRod.png
+Lotl,94,Four of a Kind,FourOfAKind,Blue,Action,EMPTY,"Choose four Characters in your huddle
+with the same name. You win the game.",BBBB,EMPTY,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FourOfAKind.png
+Lotl,95,Force of Lil,ForceOfLil,Blue,Action,EMPTY,"Choose an Action and cancel it.
+You may play this Action without paying
+its Pudge cost if there are at least
+five flopped Lils in your huddle.",BBBBB,EMPTY,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ForceOfLil.png
+Lotl,96,Inconceivable!,Inconceivable,Blue,Action,Saucy,"You can only play this Action if it's face-down
+as a Rod. Flip this card over to play it.
+Choose a Lil and a non-Lil Character.
+Unflop those Characters.",B,EMPTY,Rare,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Inconceivable.png
+Lotl,97,Lil Moonlight,LilMoonlight,Purple,Character,Lil Penguin,,1,2,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilMoonlight.png
+Lotl,98,Lil Quaker,LilQuaker,Purple,Character,Lil Penguin,"[ACT] _F_, pick two Location cards in your ice
+and put them on the bottom of your deck:
+Draw a card.",2,1,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilQuaker.png
+Lotl,99,Penguin Who Quakes,PenguinWhoQuakes,Purple,Character,Penguin,"When this Character enters the huddle,
+reveal the top card of your deck. If it's
+a Relic card with Fish cost 4 or less,
+draw it. If not, put it on the bottom
+of your deck.",2,1,Rare,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhoQuakes.png
+Lotl,100,Lil Lucky,LilLucky,Purple,Character,Lil Penguin,"Whenever another Purple Character 
+in your huddle or a Relic you control is iced,
+you get a Fishsicle.",3,3,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilLucky.png
+Lotl,101,Lil Solo Adventurer,LilSoloAdventurer,Purple,Character,Lil Penguin,"Whenever a Location enters play, draw a card.
+Whenever another Lil Solo Adventurer
+enters a huddle, ice this Character.",3,3,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilSoloAdventurer.png
+Lotl,102,Lil Space Cadet,LilSpaceCadet,Purple,Character,Lil Penguin,"This Character's vibe is twice
+the number of Relic cards in your ice.",3,?,Common,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilSpaceCadet.png
+Lotl,103,Lil Surprised,LilSurprised,Purple,Character,Lil Penguin,"Whenever a Location enters play,
+put 2 vibe counters on this Character.",3,1,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilSurprised.png
+Lotl,104,Becky Breaker,BeckyBreaker,Purple,Character,Lil Penguin,"[ACT] _F_: Choose a Relic you don't control.
+Swap it with a Relic card in its owner's ice.",4,1,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BeckyBreaker.png
+Lotl,105,Pebblington the Brave,PebblingtonTheBrave,Purple,Character,Lil Swordsman Penguin,"[ACT] _P__R_, _F_: Choose a flopped Lil
+and ice it.",4,1,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PebblingtonTheBrave.png
+Lotl,106,Lil Detective,LilDetective,Purple,Character,Lil Penguin,"Whenever you draw a card,
+put a vibe counter on this Character.",4,1,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilDetective.png
+Lotl,107,Lil Lookout,LilLookout,Purple,Character,Lil Penguin,"When this Character enters the huddle,
+search your deck for a Location card,
+reveal it, shuffle your deck,
+and put it second from the top.",4,3,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilLookout.png
+Lotl,108,The Warden of Wind,TheWardenOfWind,Purple,Character,Lil Penguin,"Whenever a Lil wins Vibe Check,
+its controller draws a card.",4,3,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TheWardenOfWind.png
+Lotl,109,Be Big and Goofy,BeBigAndGoofy,Purple,Action,,"Choose a Lil. That Character is no longer a Lil
+for the rest of this Cycle. Draw a card.",PP,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BeBigAndGoofy.png
+Lotl,110,Lil Who Slides,LilWhoSlides,Purple,Character,Lil Penguin,"Whenever this Character is chosen, ice it.",4,11,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilWhoSlides.png
+Lotl,111,Lil Who's Down Bad,LilWhosDownBad,Purple,Character,Lil Penguin,"When this Character enters the huddle,
+each player draws a card.",5,7,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilWhosDownBad.png
+Lotl,112,Lil Drippy,LilDrippy,Purple,Character,Lil Penguin,"This Character can only [ACT] if you control a Location.
+[ACT] _F_: Pick a Location card in your ice
+with a different name than the Location in play.
+Put it into play.",6,3,Mythic,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilDrippy.png
+Lotl,113,Petite Pourer,PetitePourer,Purple,Character,Lil Penguin,"Whenever you play a Relic,
+choose a Character and flop it.",8,9,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PetitePourer.png
+Lotl,114,Lil Who Scoops,LilWhoScoops,Purple,Character,Lil Penguin,"When this Character enters the huddle,
+each player may ice a Relic they control.
+If they do, they draw a card.",3,3,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilWhoScoops.png
+Lotl,115,Phone Home,PhoneHome,Purple,Action,EMPTY,"Choose a Character and a Location.
+Ice the one with the lower Fish cost.
+If there's a tie, ice them both.",PP,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PhoneHome.png
+Lotl,116,Throw Some Snow,ThrowSomeSnow,Purple,Action,EMPTY,"Choose a Character with an [ACT].
+Ice that Character.",PP,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ThrowSomeSnow.png
+Lotl,117,Distract,Distract,Purple,Action,EMPTY,"Pick a card in your ice.
+Return it to your hand.",PPP,EMPTY,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Distract.png
+Lotl,118,Cheeky Sidequest,CheekySidequest,Purple,Action,EMPTY,"Choose a Location. Search your deck
+for a Location card with Fish cost 1 greater
+than the chosen Location's Fish cost.
+Put it into play. Shuffle your deck.",PPP,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/CheekySidequest.png
+Lotl,119,Pudgticate,Pudgticate,Purple,Action,EMPTY,Ice all Relics.,PPPP,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Pudgticate.png
+Lotl,120,Not Today!,NotToday,Purple,Action,Saucy,"You can only play this Action if it's face-down
+as a Rod. Flip this card over to play it.
+Choose an Action and cancel it.
+Its controller draws two cards.",PP,EMPTY,Rare,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/NotToday.png
+Lotl,121,Wizard of Feathers,WizardOfFeathers,Red Blue,Character,Lil Wizard Penguin,,2,1,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/WizardOfFeathers.png
+Lotl,122,Wizard of Dreams,WizardOfDreams,Yellow Green,Character,Lil Wizard Penguin,,2,1,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/WizardOfDreams.png
+Lotl,123,Wizard of the Void,WizardOfTheVoid,Green Purple,Character,Lil Wizard Penguin,,2,1,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/WizardOfTheVoid.png
+Lotl,124,Wizard of the Deep,WizardOfTheDeep,Blue Yellow,Character,Lil Wizard Penguin,,2,1,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/WizardOfTheDeep.png
+Lotl,125,Wizard of Balloons,WizardOfBalloons,Purple Red,Character,Lil Wizard Penguin,,2,1,Common,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/WizardOfBalloons.png
+Lotl,126,Build a Burrito,BuildABurrito,Green Purple,Action,EMPTY,"Choose an Action and cancel it.
+Put it on top of its owner's deck.",GP,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BuildABurrito.png
+Lotl,127,Layer a Lasagna,LayerALasagna,Purple Red,Action,EMPTY,"Choose a Lil with vibe 5 or less or
+a non-Lil Character with vibe 5 or greater
+and ice it.",PR,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LayerALasagna.png
+Lotl,128,Flip a Flapjack,FlipAFlapjack,Red Blue,Action,EMPTY,"Choose a Lil with vibe 1. Return it
+to its owner's hand. Draw a card.",RB,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FlipAFlapjack.png
+Lotl,129,Melt a Marshmallow,MeltAMarshmallow,Blue Yellow,Action,EMPTY,"Reveal the top three cards of your deck.
+Pick one and draw it. Put the rest
+on the bottom of your deck.",YB,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/MeltAMarshmallow.png
+Lotl,130,Dunk a Donut,DunkADonut,Yellow Green,Action,EMPTY,"Pick an Action card in your ice.
+Until the end of this Cycle, you can play that Action.
+If that Action would be put into your ice this Cycle,
+put it on the bottom of your deck instead.",YG,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/DunkADonut.png
+Lotl,131,Lil With Balloon,LilWithBalloon,Colorless,Character,Lil Penguin,,2,5,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilWithBalloon.png
+Lotl,132,Lil Bellyacher,LilBellyacher,Colorless,Character,Lil Penguin,"[ACT] _F_, ice another Character in your huddle:
+Search your deck for a Lil card with Fish cost
+1 greater than the Fish cost of the Character you iced.
+Put it into your huddle. Shuffle your deck.",4,3,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilBellyacher.png
+Lotl,133,Penguin Whose Belly Aches,PenguinWhoseBellyAches,Colorless,Character,Penguin,"[ACT] _F_: Choose a Rod you control
+and return it to its owner's hand.",6,5,Mythic,2238,Bluugu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhoseBellyAches.png
+Lotl,134,Opera House,OperaHouse,Colorless,Relic,Location,"At the start of Action Time, each player
+with exactly six cards in their hand draws a card.
+Whenever another Location enters play,
+ice this Relic.",1,EMPTY,Common,2238,Bluugu & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/OperaHouse.png
+Lotl,135,Mount Fuji,MountFuji,Colorless,Relic,Location,"When this Relic enters play,
+each player names a Character card.
+Characters with those names lose all abilities.
+Whenever another Location enters play,
+ice this Relic.",2,EMPTY,Rare,2238,Yosuke Ando & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/MountFuji.png
+Lotl,136,Half Past Chill,HalfPastChill,Colorless,Relic,Wizard,"When this Relic enters play, choose a Character
+and put a vibe counter on it.",3,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HalfPastChill.png
+Lotl,137,Glow and Behold,GlowAndBehold,Colorless,Relic,Wizard,"When this Relic enters play, choose a Character
+and put a vibe counter on it.",3,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GlowAndBehold.png
+Lotl,138,Feather Forecast,FeatherForecast,Colorless,Relic,Wizard,"When this Relic enters play, choose a Character
+and put a vibe counter on it.",3,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FeatherForecast.png
+Lotl,139,Statue of Liberty,StatueOfLiberty,Colorless,Relic,Location,(Characters under this card are not in the huddle).,3,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/StatueOfLiberty.png
+Lotl,140,Potion Commotion,PotionCommotion,Colorless,Relic,Wizard,"When this Relic enters play, choose a Character
+and put a vibe counter on it.",3,EMPTY,Uncommon,2238,Lyle Wallis & Clare Altman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PotionCommotion.png
+Lotl,141,Glass Act,GlassAct,Colorless,Relic,Wizard,"When this Relic enters play, choose a Character
+and put a vibe counter on it.",3,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GlassAct.png
+Lotl,142,Easter Island,EasterIsland,Colorless,Relic,Location,"Whenever a player plays an Action,
+that player boosts the vibes of Characters
+in their huddle by 1 for the rest of this Cycle.
+Whenever another Location enters play,
+ice this Relic.",4,EMPTY,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/EasterIsland.png
+Lotl,143,Leaning Tower,LeaningTower,Colorless,Relic,Location,"Flopped Characters now participate
+in Vibe Check, and unflopped Characters
+do not participate in Vibe Check.
+Whenever another Location enters play,
+ice this Relic.",5,EMPTY,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LeaningTower.png
+Lotl,144,Eiffel Tower,EiffelTower,Colorless,Relic,Location,"Enter the Huddle abilities happen twice.
+Whenever another Location enters play,
+ice this Relic.",6,EMPTY,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/EiffelTower.png
+Lotl,145,Pongo,Pongo,Colorless,Character,Lil Penguin,"This Character enters the huddle with 8 vibe counters on it.
+Pongo doesn't participate in Vibe Check. 
+Whenever you play an Action, remove a vibe counter from Pongo. 
+If it was the last one, search your deck for a Character card,
+put it into your huddle, and shuffle your deck.",6,0,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Pongo.png
+Lotl,146,Sphinx,Sphinx,Colorless,Relic,Location,"Whenever a Character enters a huddle, its controller
+draws a card. Whenever another Location
+enters play, ice this Relic.",7,EMPTY,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Sphinx.png
+Lotl,147,Great Wall,GreatWall,Colorless,Relic,Location,"Whenever a player plays an Action, that player
+copies that Action and makes new choices for the copy.
+Whenever another Location enters play,
+ice this Relic.",8,EMPTY,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GreatWall.png
+Lotl,148,Colosseum,Colosseum,Colorless,Relic,Location,"Players may look at and play the top card
+of their decks. Players cannot play cards from
+anywhere else. Whenever another Location
+enters play, ice this Relic.",9,EMPTY,Mythic,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Colosseum.png
+Lotl,149,Arches,Arches,Colorless,Relic,Location,"Whenever a Character is flopped, its owner
+gets a Fishsicle. Whenever another Location
+enters play, ice this Relic.",10,EMPTY,Mythic,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Arches.png
+Lotl,150,Parasol Rod,ParasolRod,Rod,Rod,EMPTY,"When this Rod enters play,
+choose a Rod and unflop it.",EMPTY,EMPTY,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ParasolRod.png
+Lotl,151,Nyan Cat,NyanCat,Colorless,Character,Nyan Cat,"Nyan Cat enters the huddle with 2 vibe counters on it.
+Whenever Nyan Cat is flopped, remove a vibe counter from it.",2,0,Rare,2238,Chris Torres,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/NyanCat.png
+Bap,1,Toasting Birb,ToastingBirb,Red,Character,Birb,"Whenever you ice any number of cards from your hand, put that many vibe counters on this Character.",1,1,Common,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ToastingBirb.png
+Bap,2,Birb With a Mouse,BirbWithAMouse,Red,Character,Birb,,1,2,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BirbWithAMouse.png
+Bap,3,Birb,Birb,Red,Character,Birb,"When this Character enters the huddle, reveal the top two cards of your deck. Pick up to one Action card with Pudge cost 2 or less and draw it. Put the cards you didn't draw on the bottom of your deck.",2,1,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Birb.png
+Bap,4,Burglirb,Burglirb,Red,Character,Birb,"As long as you have two or more Action cards in your ice, this Character can produce _R__R_.",2,1,Common,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Burglirb.png
+Bap,5,Psychic Birb,PsychicBirb,Red,Character,Birb,"Whenever this Character is chosen by anything, draw a card, then ice a card from your hand.",2,1,Uncommon,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PsychicBirb.png
+Bap,6,Stealth Birb,StealthBirb,Red,Character,Birb,"This Character doesn't participate in Vibe Check unless it has 17 or more vibe counters on it. Whenever you draw any number of cards, put that many vibe counters on this Character.",2,1,Rare,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/StealthBirb.png
+Bap,7,Unidentified Flying Birb,UnidentifiedFlyingBirb,Red,Character,Birb,"Whenever you ice any number of cards from your hand, you get a Fishsicle.",2,2,Common,2238,blue boo,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/UnidentifiedFlyingBirb.png
+Bap,8,Chaos Birb,ChaosBirb,Red,Character,Birb,"[ACT] _F_: Each player draws a card, then ices a card from their hand.",2,3,Common,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ChaosBirb.png
+Bap,9,Drama Birb,DramaBirb,Red,Character,Birb,,2,4,Common,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/DramaBirb.png
+Bap,10,Relaxing Birb,RelaxingBirb,Red,Character,Birb,"When you ice the first card from your hand each Cycle, if this Character is flopped, draw a card. Whenever another Relaxing Birb enters a huddle, ice this Character.",3,3,Uncommon,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RelaxingBirb.png
+Bap,11,Bachelor Birb,BachelorBirb,Red,Character,Birb,"When this Character enters the huddle, draw a card, then ice a card from your hand.",3,4,Common,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BachelorBirb.png
+Bap,12,E=mc^birb,Emcbirb,Red,Character,Birb,"When this Character enters the huddle, if you have four or more Red Action cards in your ice, choose a Character and flop it.",3,4,Common,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Emcbirb.png
+Bap,13,Birbman,Birbman,Red,Character,Birb,"Whenever this Character wins Vibe Check, draw a card, then ice a card from your hand.",3,5,Common,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Birbman.png
+Bap,14,Perplexed Birb,PerplexedBirb,Red,Character,Birb,"[ACT] _R__R__R_, _F_: Choose a Character and flop it.",4,4,Uncommon,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PerplexedBirb.png
+Bap,15,Roasting Birb,RoastingBirb,Red,Character,Birb,"Whenever you ice any number of cards from your hand, boost this Character's vibe by 2 for the rest of this Cycle.",4,4,Common,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RoastingBirb.png
+Bap,16,The Rodromancer,TheRodromancer,Red,Character,Birb,You can play one Red non-Saucy Action from your Rods each Cycle as if it were Saucy (one per Rodromancer).,4,4,Rare,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TheRodromancer.png
+Bap,17,"Orrin, Forest Guardian",OrrinForestGuardian,Red,Character,Birb,"Whenever this Character produces Pudge, you may pick a Character card in your ice and put it under this Character. [ACT] _F_: Pick a card under this Character and put it into your hand.",5,2,Mythic,2238,Groowut,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/OrrinForestGuardian.png
+Bap,18,The Birb of Music,TheBirbOfMusic,Red,Character,Birb,_R__R__R_,6,4,Uncommon,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TheBirbOfMusic.png
+Bap,19,Leader of the Charge,LeaderOfTheCharge,Red,Character,Birb,"[ACT] _F_: You can play Red Actions from your ice this Cycle. If Red Action cards would be put in your ice this Cycle, put them on the bottom of your deck instead. Ice this Character.",8,3,Mythic,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LeaderOfTheCharge.png
+Bap,20,Window-Shopping Birb,WindowshoppingBirb,Red,Character,Birb,"Whenever you ice any number of cards from your hand, put that many vibe counters on each Character in your huddle.",9,6,Rare,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/WindowshoppingBirb.png
+Bap,21,"Heads I Win, Tails We Win",HeadsIWinTailsWeWin,Red,Action,,"Flip a coin. If heads, you draw two cards. If tails, each player draws a card.",R,0,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HeadsIWinTailsWeWin.png
+Bap,22,Healthy Push!,HealthyPush,Red,Action,Saucy,You can only play this Action if it's face-down as a Rod. Flip this card over to play it. Each player ices a card from their hand.,R,0,Rare,2238,Yosuke Ando,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HealthyPush.png
+Bap,23,Vibe Scan,VibeScan,Red,Action,,Choose a Character with vibe 2 or less and ice it.,R,0,Common,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/VibeScan.png
+Bap,24,Good Vibes Only,GoodVibesOnly,Red,Action,,"As an additional cost to play this Action, ice two cards from your hand. Draw three cards.",RR,0,Uncommon,2238,The Grimmus,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GoodVibesOnly.png
+Bap,25,Romantic Gesture,RomanticGesture,Red,Action,,Red Characters can produce an additional _R_ for the rest of this Cycle.,RR,0,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RomanticGesture.png
+Bap,26,Study All Day,StudyAllDay,Red,Action,,"Draw two cards, then ice a card from your hand.",RR,0,Common,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/StudyAllDay.png
+Bap,27,Hunt for the Holy Sauce,HuntForTheHolySauce,Red,Action,,Choose two Characters and put 2 vibe counters on each of them. Draw a card.,RRR,0,Common,2238,blue boo,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HuntForTheHolySauce.png
+Bap,28,On Thin Ice,OnThinIce,Red,Action,,"As an additional cost to play this Action, reveal another Red Action card from your hand. Choose a Character and ice it.",RRR,0,Common,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/OnThinIce.png
+Bap,29,Euphoric Leap,EuphoricLeap,Red,Action,,"Choose a Character. Boost its vibe by 5 for the rest of this Cycle. If it wins Vibe Check this Cycle, ice it.",RRRR,0,Uncommon,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/EuphoricLeap.png
+Bap,30,Lunch With a View,LunchWithAView,Red,Action,,"This Action costs one less _R_ to play for each Red Action you've played this Cycle. Choose a Rod, Relic, or Character and ice it.",RRRRRR,0,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LunchWithAView.png
+Bap,31,Utter Mayhem,UtterMayhem,Red,Action,,Choose a Character with the highest vibe in your huddle. Ice all Characters with vibe greater than it.,RRRRRR,0,Rare,2238,Aephai,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/UtterMayhem.png
+Bap,32,Y?,Y,Red,???,,"When this card is iced from your hand, you get a Fishsicle.",,0,Rare,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Y.png
+Bap,33,Elegant Birb,ElegantBirb,Yellow,Character,Birb,"When this Character enters the huddle, choose another Character and put a vibe counter on it.",1,1,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ElegantBirb.png
+Bap,34,Influencer Birb,InfluencerBirb,Yellow,Character,Birb,,1,2,Common,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/InfluencerBirb.png
+Bap,35,Farmer Birb,FarmerBirb,Yellow,Character,Birb,"When this Character enters the huddle, reveal a face-down Rod you control. If it's a Yellow Character card, put it into your hand.",2,2,Common,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FarmerBirb.png
+Bap,36,Jolly Birb,JollyBirb,Yellow,Character,Birb,[ACT] _F_: Pick two cards in your opponent's ice and put them on the bottom of their deck.,2,2,Common,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/JollyBirb.png
+Bap,37,Visionary Birb,VisionaryBirb,Yellow,Character,Birb,"When this Character enters the huddle, reveal the top card of your deck. If it's a Character card with Fish cost 2, put it into your huddle and ice this Character.",2,2,Uncommon,2238,blue boo,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/VisionaryBirb.png
+Bap,38,Noctua,Noctua,Yellow,Character,Birb,This Character can only [ACT] if another Character entered your huddle this Cycle. [ACT] _F_: Put a vibe counter on this Character.,2,3,Common,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Noctua.png
+Bap,39,Wall Birb,WallBirb,Yellow,Character,Birb,"When this Character enters the huddle, if your huddle has more Characters than your opponent's huddle, put 2 vibe counters on this Character.",2,3,Common,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/WallBirb.png
+Bap,40,Tailor Birb,TailorBirb,Yellow,Character,Birb,,2,4,Common,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TailorBirb.png
+Bap,41,Scholar Birb,ScholarBirb,Yellow,Character,Birb,"When this Character is iced, choose a Character and put 3 vibe counters on it.",3,2,Common,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ScholarBirb.png
+Bap,42,Avis,Avis,Yellow,Character,Birb,This Character can only [ACT] if three or more other Characters entered your huddle this Cycle. [ACT] _F_: Choose a Character and ice it.,3,3,Rare,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Avis.png
+Bap,43,Tony Birb,TonyBirb,Yellow,Character,Birb,"When this Character enters the huddle, choose a Character with vibe 4 or less and flop it.",3,4,Common,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TonyBirb.png
+Bap,44,Striker Birb,StrikerBirb,Yellow,Character,Silly Birb,"When this Character enters the huddle, choose a non-Silly Character in your huddle and ice it. At the start of the next Cycle, return it from ice to its owner's huddle.",4,1,Uncommon,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/StrikerBirb.png
+Bap,45,Pluma,Pluma,Yellow,Character,Birb,This Character can only [ACT] if two or more other Characters entered your huddle this Cycle. [ACT] _F_: Choose a Character and flop it.,4,3,Uncommon,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Pluma.png
+Bap,46,Giga Birb,GigaBirb,Yellow,Character,Birb,"When this Character enters the huddle, put a vibe counter on it for each other Character in your huddle.",4,4,Rare,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GigaBirb.png
+Bap,47,Uncertain Birb,UncertainBirb,Yellow,Character,Birb,"When this Character enters the huddle, if another Character entered your huddle this Cycle, this Character enters with 3 vibe counters.",4,6,Common,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/UncertainBirb.png
+Bap,48,Goalie Birb,GoalieBirb,Yellow,Character,Birb,"[ACT] _Y__Y__Y_, _F_: Choose a Character in your huddle and ice it. At the start of the next Cycle, return it from ice to its owner's huddle.",5,4,Rare,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GoalieBirb.png
+Bap,49,Sleepy Birb,SleepyBirb,Yellow,Character,Birb,"Whenever this Character produces Pudge, choose another Character in your huddle and return it to its owner's hand.",5,6,Rare,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SleepyBirb.png
+Bap,50,Birb Who Always Gets Lost,BirbWhoAlwaysGetsLost,Yellow,Character,Birb,[ACT] _F_: Choose a Character. Boost its vibe by the number of Characters in your huddle for the rest of this Cycle.,6,4,Common,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BirbWhoAlwaysGetsLost.png
+Bap,51,Sudsy Birb,SudsyBirb,Yellow,Character,Birb,"[ACT] _F_, pick two cards in your opponent's ice and put them on the bottom of their deck: Choose a Character and ice it. At the start of the next Cycle, return it from ice to its owner's huddle.",7,6,Rare,2238,The Grimmus,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SudsyBirb.png
+Bap,52,Lumin Who Sees All,LuminWhoSeesAll,Yellow,Character,Birb,This Character costs one less _T_ to play for each Character in your huddle.,10,12,Mythic,2238,ALIENQUEEN,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LuminWhoSeesAll.png
+Bap,53,Quiver the Flightful,QuiverTheFlightful,Yellow,Character,Birb,[ACT] _F_: Choose thirteen other Characters and flop them. (You must choose exactly thirteen Characters).,13,13,Mythic,2238,Grant Yun,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/QuiverTheFlightful.png
+Bap,54,Burn It All,BurnItAll,Yellow,Action,,Ice the top two cards of your deck. Draw a card.,Y,0,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BurnItAll.png
+Bap,55,Night of the Living Birb,NightOfTheLivingBirb,Yellow,Action,,Choose a Character that entered the huddle this Cycle. Return it to its owner's hand.,Y,0,Uncommon,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/NightOfTheLivingBirb.png
+Bap,56,Reminisce,Reminisce,Yellow,Action,,"Choose a Character. For the rest of this Cycle, boost its vibe by 2 and if it wins Vibe Check, draw a card.",Y,0,Common,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Reminisce.png
+Bap,57,"Lame Story, Sis!",LameStorySis,Yellow,Action,Saucy,You can only play this Action if it's face-down as a Rod. Flip this card over to play it. Choose a player. Pick two cards in their ice and put them on top of their deck in any order.,YY,0,Rare,2238,Yosuke Ando,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LameStorySis.png
+Bap,58,Lift Off,LiftOff,Yellow,Action,,"Choose a Character with vibe 2 or less. Flip a coin. If heads, put 6 vibe counters on it. If tails, return the Character to its owner's hand and draw a card.",YY,0,Common,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LiftOff.png
+Bap,59,True Form,TrueForm,Yellow,Action,,"Choose a Character and ice it. At the start of the next Cycle, return it from ice to its owner's huddle.",YY,0,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TrueForm.png
+Bap,60,Chill Out,ChillOut,Yellow,Action,,Draw a card for each Character iced this Cycle.,YYY,0,Common,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ChillOut.png
+Bap,61,Identity Crisis,IdentityCrisis,Yellow,Action,,"Choose a Character. If you have the Baron, ice that Character. Otherwise, boost its vibe by 2 for the rest of this Cycle.",YYY,0,Common,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/IdentityCrisis.png
+Bap,62,Step by Step,StepByStep,Yellow,Action,,"Choose a Character. If it has vibe counters on it, ice it. Otherwise, flop it.",YYY,0,Uncommon,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/StepByStep.png
+Bap,63,The Birb of Venus,TheBirbOfVenus,Yellow,Action,,Boost the vibe of Characters that entered your huddle this Cycle by 6 for the rest of this Cycle.,YYYY,0,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TheBirbOfVenus.png
+Bap,64,Birbs Night Out,BirbsNightOut,Yellow,Action,,Choose two Characters that share a color and ice them.,YYYYYY,0,Rare,2238,Aephai,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BirbsNightOut.png
+Bap,65,Lil Sweet Stack,LilSweetStack,Green,Character,Lil Penguin,[ACT] _F_: Choose a Green Character and put a vibe counter on it.,2,1,Common,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilSweetStack.png
+Bap,66,Reflective Penguin,ReflectivePenguin,Green,Character,Penguin,"As long as you have the Baron, this Character can produce _G__G_.",2,2,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ReflectivePenguin.png
+Bap,67,Business Birb,BusinessBirb,Green,Character,Birb,,2,4,Common,2238,blue boo,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BusinessBirb.png
+Bap,68,Penguin of the Fallen Cone,PenguinOfTheFallenCone,Green,Character,Penguin,"Whenever this Character produces Pudge, choose a Green Character and put a vibe counter on it.",3,2,Rare,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinOfTheFallenCone.png
+Bap,69,Cubist Penguin,CubistPenguin,Green,Character,Penguin,"[ACT] _F_, remove 3 vibe counters from this Character: Choose an unflopped Character and ice it.",3,2,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/CubistPenguin.png
+Bap,70,Impressionist Penguin,ImpressionistPenguin,Green,Character,Penguin,"[ACT] _F_, remove 2 vibe counters from this Character: Draw a card.",3,2,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ImpressionistPenguin.png
+Bap,71,Realist Penguin,RealistPenguin,Green,Character,Penguin,"[ACT] _F_, remove a vibe counter from this Character: Choose a Character and boost its vibe by 3 for the rest of this Cycle.",3,2,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RealistPenguin.png
+Bap,72,Steamboat Pengy,SteamboatPengy,Green,Character,Penguin,"Whenever another Green Character enters your huddle, put a vibe counter on it.",4,2,Uncommon,2238,The Grimmus,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SteamboatPengy.png
+Bap,73,Lil Helium,LilHelium,Green,Character,Lil Penguin,"When this Character enters the huddle, choose another Character and put 2 vibe counters on it.",3,3,Common,2238,blue boo,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilHelium.png
+Bap,74,Baker Birb,BakerBirb,Green,Character,Birb,,3,6,Common,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BakerBirb.png
+Bap,75,Lil Persuader,LilPersuader,Green,Character,Lil Penguin,"At the end of Action Time, if you don't have the Baron, ice this Character.",3,7,Common,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilPersuader.png
+Bap,76,Here Come Dat Peng,HereComeDatPeng,Green,Character,Penguin,"Whenever you win Vibe Check, put a vibe counter on this Character. This ability is the only way vibe counters can be put on this Character. At the start of your turn, if this Character has 9 vibe counters on it, you win the game.",4,2,Rare,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HereComeDatPeng.png
+Bap,77,Honorable Penguin,HonorablePenguin,Green,Character,Penguin,"Whenever another Character enters your huddle, you may pay _T__T__T_. If you do, put 4 vibe counters on it.",4,4,Uncommon,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HonorablePenguin.png
+Bap,78,Lumberjack Penguin,LumberjackPenguin,Green,Character,Penguin,"This Character enters the huddle with 4 vibe counters on it. Whenever another Character enters your huddle, move all vibe counters from this Character onto it.",5,2,Common,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LumberjackPenguin.png
+Bap,79,Victorious Penguin,VictoriousPenguin,Green,Character,Penguin,"At the end of Action Time, if you have the Baron, put a vibe counter on each Character in your huddle.",4,4,Common,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/VictoriousPenguin.png
+Bap,80,Hypnotized Penguin,HypnotizedPenguin,Green,Character,Penguin,"Whenever this Character wins Vibe Check, choose a Character. It joins your huddle. Ice this Character.",4,6,Rare,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HypnotizedPenguin.png
+Bap,81,Whistler's Penguin,WhistlersPenguin,Green,Character,Penguin,"Whenever a Character is chosen by anything, put a vibe counter on that Character.",5,4,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/WhistlersPenguin.png
+Bap,82,Penguin Who Is What He Eats,PenguinWhoIsWhatHeEats,Green,Character,Penguin,[ACT] _F_: Boost the vibe of each Character in your huddle by this Character's vibe for the rest of this Cycle.,8,4,Rare,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhoIsWhatHeEats.png
+Bap,83,Lil Who Learns,LilWhoLearns,Green,Character,Lil Penguin,[ACT] _F_: Choose a Character in your huddle. Put vibe counters on this Character equal to that Character's vibe. Return it to its owner's hand.,8,5,Rare,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilWhoLearns.png
+Bap,84,"Jaskel, Imaginator",JaskelImaginator,Green,Character,Penguin,This Character can only [ACT] if you have 8 or more vibe counters on Characters in your huddle. [ACT] _F_: Choose a Character and put 8 vibe counters on it.,8,8,Mythic,2238,Zaid,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/JaskelImaginator.png
+Bap,85,Umbra on Dream's Edge,UmbraOnDreamsEdge,Green,Character,Penguin,"[ACT] _F_: The next time this Character would be iced this Cycle, it isn't.",10,10,Mythic,2238,MUMBOT,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/UmbraOnDreamsEdge.png
+Bap,86,Freeze Frame,FreezeFrame,Green,Action,,"Choose up to two Green Characters in your huddle and put a vibe counter on each of them. Whenever any number of vibe counters are removed from a Green Character in your huddle, if this card is in your ice, return it to your hand.",G,0,Uncommon,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FreezeFrame.png
+Bap,87,Pump,Pump,Green,Action,,Choose a Character with the lowest vibe in your huddle. Boost its vibe by 6 for the rest of this Cycle.,G,0,Common,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Pump.png
+Bap,88,Brofessional Agreement,BrofessionalAgreement,Green,Action,,You get the Baron.,GG,0,Uncommon,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BrofessionalAgreement.png
+Bap,89,Control the Board,ControlTheBoard,Green,Action,,"Draw a card. If you used two Characters each with vibe 8 or greater to pay this card's Pudge cost, return this from ice to your hand at the start of the next Cycle.",GG,0,Common,2238,Aephai,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ControlTheBoard.png
+Bap,90,Side Eye,SideEye,Green,Action,,Choose a Character. Its controller draws a card. Ice that Character.,GG,0,Common,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SideEye.png
+Bap,91,Twist-A-What!,Twistawhat,Green,Action,Saucy,You can only play this Action if it's face-down as a Rod. Flip this card over to play it. Choose a Character and flop it.,GG,0,Rare,2238,Yosuke Ando,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Twistawhat.png
+Bap,92,But You Didn't Even Win,ButYouDidntEvenWin,Green,Action,,Choose any number of Green Characters in your huddle. Return them to their owners' hands. Draw that many cards.,GGG,0,Uncommon,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ButYouDidntEvenWin.png
+Bap,93,The Great Chowdown,TheGreatChowdown,Green,Action,,Choose any number of Characters and put 2 vibe counters on each of them.,GGG,0,Uncommon,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TheGreatChowdown.png
+Bap,94,Rampant Vibeflation,RampantVibeflation,Green,Action,,Choose a Character in your huddle. Put vibe counters on it equal to its vibe.,GGGG,0,Common,2238,Aephai,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RampantVibeflation.png
+Bap,95,Squad Strike,SquadStrike,Green,Action,,"Choose a Character. If it's Green, put 6 vibe counters on it. Otherwise, ice it.",GGGG,0,Common,2238,Aephai,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SquadStrike.png
+Bap,96,Final Verdict,FinalVerdict,Green,Action,,This Action costs one less _G_ to play for each Green Character in your huddle with any number of vibe counters on it. Draw two cards.,GGGGG,0,Common,2238,Aephai,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FinalVerdict.png
+Bap,97,Lil Gamer,LilGamer,Blue,Character,Lil Penguin,"Whenever this Character is outfitted, put 2 vibe counters on it.",2,1,Common,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilGamer.png
+Bap,98,Hoodie Penguin,HoodiePenguin,Blue,Character,Penguin,"Whenever this Character wins Vibe Check, look at the top card of your deck. If it's a Fit card, you may reveal it and draw it. Otherwise, put it on the bottom of your deck.",2,2,Common,2238,blue boo,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HoodiePenguin.png
+Bap,99,Junkyard Penguin,JunkyardPenguin,Blue,Character,Penguin,[ACT] _F_: Choose a Fit you control and ice it. Draw a card.,2,2,Common,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/JunkyardPenguin.png
+Bap,100,Wonder Weaver,WonderWeaver,Blue,Character,Birb,,2,4,Common,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/WonderWeaver.png
+Bap,101,Penguin in Blue,PenguinInBlue,Blue,Character,Penguin,"Whenever a Fit you control is iced from play, put it on top of your deck.",5,2,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinInBlue.png
+Bap,102,Alchemist Penguin,AlchemistPenguin,Blue,Character,Penguin,"When this Character enters the huddle, you may ice a card from your hand. If you do, search your deck for a Fit card and reveal it. Put it into your hand and shuffle your deck.",3,2,Rare,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/AlchemistPenguin.png
+Bap,103,Archaeologist Penguin,ArchaeologistPenguin,Blue,Character,Penguin,"[ACT] _F_: Reveal a face-down Rod you control. If it's a Fit card, put it into your hand.",3,2,Common,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ArchaeologistPenguin.png
+Bap,104,Pengu,Pengu,Blue,Character,Penguin,Playable during Action Time as if it were an Action.,3,2,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Pengu.png
+Bap,105,Lil Cool Guy,LilCoolGuy,Blue,Character,Lil Penguin,"When this Character enters the huddle, choose a Character. You may reveal a Fit card in your hand with Fish cost 3 or less. If you do, put it into play outfitting that Character.",3,3,Uncommon,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilCoolGuy.png
+Bap,106,Gaming Penguin,GamingPenguin,Blue,Character,Penguin,"Whenever a Character in your huddle is outfitted, put a vibe counter on that Character.",3,4,Common,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GamingPenguin.png
+Bap,107,Birb Who's 100 Feet Tall,BirbWhos100FeetTall,Blue,Character,Birb,,3,6,Common,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BirbWhos100FeetTall.png
+Bap,108,Merchant Penguin,MerchantPenguin,Blue,Character,Penguin,[ACT] _F_: Choose a Fit and choose a Character not wearing it. Outfit that Character.,4,2,Uncommon,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/MerchantPenguin.png
+Bap,109,The Great Pengsby,TheGreatPengsby,Blue,Character,Penguin,"Whenever this Character is outfitted, if it isn't wearing any other Fits, choose a Character and flop it.",4,2,Uncommon,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TheGreatPengsby.png
+Bap,110,The Pengorcist,ThePengorcist,Blue,Character,Lil Penguin,This Character can only [ACT] if it's wearing three or more Fits. [ACT] _F_: Choose a Character and turn it face-down as a Rod.,4,3,Rare,2238,The Grimmus,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ThePengorcist.png
+Bap,111,Locked-In Penguin,LockedinPenguin,Blue,Character,Penguin,"When this Character enters the huddle, you may ice a Fit you control. If you do, put 4 vibe counters on this Character.",4,6,Common,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LockedinPenguin.png
+Bap,112,Pizza Penguin,PizzaPenguin,Blue,Character,Penguin,[ACT] _F_: Choose a Fit you control and return it to its owner's hand.,4,6,Uncommon,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PizzaPenguin.png
+Bap,113,Lil Messy,LilMessy,Blue,Character,Lil Penguin,"As an additional cost to play this Character, return a Fit you control to its owner's hand.",5,7,Common,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilMessy.png
+Bap,114,Penguin Who Explores the Jungle,PenguinWhoExploresTheJungle,Blue,Character,Penguin,"Whenever a Character in your opponent's huddle is iced, if it's wearing a Fit you own, return that Fit to your hand.",6,2,Rare,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhoExploresTheJungle.png
+Bap,115,Lavish Penguin,LavishPenguin,Blue,Character,Penguin,"When this Character enters the huddle, outfit it with all the Fits you control.",6,6,Uncommon,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LavishPenguin.png
+Bap,116,Showtime Penguin,ShowtimePenguin,Blue,Character,Penguin,"When this Character enters the huddle, choose a Fit card in your ice and return it to your hand.",6,6,Common,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ShowtimePenguin.png
+Bap,117,Detective Penguin,DetectivePenguin,Blue,Character,Penguin,"Whenever this Character is outfitted, draw a card.",7,2,Rare,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/DetectivePenguin.png
+Bap,118,This Is Not a Pudgy,ThisIsNotAPudgy,Blue,Character,Penguin,This Character costs one less _T_ to play for each Fit you control.,8,10,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ThisIsNotAPudgy.png
+Bap,119,Nimbus the Quick,NimbusTheQuick,Blue,Character,Silly Penguin,"If an Action or a non-Silly Character's ability would cause you to draw any number of cards, draw a card.",9,4,Mythic,2238,DirtyRobot,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/NimbusTheQuick.png
+Bap,120,Lunaris the Infinite,LunarisTheInfinite,Blue,Character,Lil Penguin,You can play one Fit from your ice each Cycle.,10,5,Mythic,2238,POST WOOK,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LunarisTheInfinite.png
+Bap,121,Finders Keepers,FindersKeepers,Blue,Action,,Choose a Fit and choose a Character not wearing it. Outfit that Character. Draw a card.,B,0,Uncommon,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FindersKeepers.png
+Bap,122,Turn It Up,TurnItUp,Blue,Action,,Choose a Fit you don't control. Return it to its owner's hand. Draw a card.,B,0,Common,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TurnItUp.png
+Bap,123,Bullish Sentiment,BullishSentiment,Blue,Action,,"Choose a Character. Reveal a face-down Rod you control. If it's a Fit card with Fish cost 5 or less, put it into play outfitting the chosen Character.",BB,0,Uncommon,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BullishSentiment.png
+Bap,124,Now a Rod Evermore!,NowARodEvermore,Blue,Action,Saucy,"You can only play this Action if it's face-down as a Rod. Flip this card over to play it. Choose a Character. If it has vibe 2 or less, turn it face-down as a Rod. Otherwise, reduce its vibe by 2 for the rest of this Cycle.",BB,0,Rare,2238,Yosuke Ando,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/NowARodEvermore.png
+Bap,125,Time Warp Toss,TimeWarpToss,Blue,Action,,"As an additional cost to play this Action, ice a Fit you control. Choose a Character and ice it.",BB,0,Common,2238,Aephai,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TimeWarpToss.png
+Bap,126,Downhill Disaster,DownhillDisaster,Blue,Action,,Pick any number of Fit cards in your ice. Put them on top of your deck in any order.,BBB,0,Uncommon,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/DownhillDisaster.png
+Bap,127,FOMO,Fomo,Blue,Action,,Reveal the top five cards of your deck. Put all the Fit cards into your hand. Put the rest on the bottom of your deck in any order.,BBB,0,Common,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/Fomo.png
+Bap,128,Sunday Afternoon,SundayAfternoon,Blue,Action,,"Choose a Character. If its vibe is less than its Fish cost, ice it.",BBB,0,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SundayAfternoon.png
+Bap,129,Fisherman Birb,FishermanBirb,Purple,Character,Birb,"Whenever any number of Characters in your huddle are iced, put a vibe counter on this Character.",1,1,Common,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FishermanBirb.png
+Bap,130,Lil Stuck,LilStuck,Purple,Character,Lil Penguin,[ACT] _F_: Choose a Character in your huddle and choose another Character. Ice the first and put a vibe counter on the second.,1,1,Common,2238,blue boo,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilStuck.png
+Bap,131,Lil Balanced,LilBalanced,Purple,Character,Lil Penguin,"When this Character is iced, each player draws a card.",2,1,Common,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilBalanced.png
+Bap,132,Lil Forgotten,LilForgotten,Purple,Character,Lil Penguin,"When this Character is iced, each player puts the top card of their deck face-down as a Rod.",2,3,Common,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LilForgotten.png
+Bap,133,Penguin Who Loves Goodbyes,PenguinWhoLovesGoodbyes,Purple,Character,Penguin,"When this Character is iced, if it didn't have any vibe counters on it, put it into your huddle with a vibe counter on it.",2,2,Uncommon,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PenguinWhoLovesGoodbyes.png
+Bap,134,Birb With a Flag,BirbWithAFlag,Purple,Character,Birb,,2,4,Common,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BirbWithAFlag.png
+Bap,135,Vesper Who Is the Night,VesperWhoIsTheNight,Purple,Character,Birb,"Whenever any number of Characters in your huddle are iced, put a vibe counter on this Character. At the start of Action Time, choose a Character. Boost its vibe by this Character's vibe for the rest of this Cycle.",3,1,Mythic,2238,Bryan Brinkman,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/VesperWhoIsTheNight.png
+Bap,136,Cinematic Birb,CinematicBirb,Purple,Character,Birb,"Characters in your huddle gain the ability ""When this Character is iced, if it has exactly 1 vibe counter on it, draw a card"".",3,2,Rare,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/CinematicBirb.png
+Bap,137,Pointing Birb,PointingBirb,Purple,Character,Birb,"When this Character is iced, pick an Action card in your ice and return it to your hand.",3,2,Common,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PointingBirb.png
+Bap,138,Prized Birb,PrizedBirb,Purple,Character,Birb,"When this Character is iced, the player that iced it draws a card.",3,2,Uncommon,2238,blue boo,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PrizedBirb.png
+Bap,139,Protector Penguin,ProtectorPenguin,Purple,Character,Penguin,Playable from ice by icing a Character in your huddle in addition to paying this card's Fish cost.,3,2,Uncommon,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ProtectorPenguin.png
+Bap,140,Quantum Birb,QuantumBirb,Purple,Character,Birb,,3,6,Common,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/QuantumBirb.png
+Bap,141,Buffering Birb,BufferingBirb,Purple,Character,Birb,"Whenever you lose Vibe Check, put a vibe counter on this Character. This ability is the only way vibe counters can be put on this Character. At the start of your turn, if this Character has 9 vibe counters on it, you win the game.",4,2,Rare,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BufferingBirb.png
+Bap,142,Birb Who Finds the Way,BirbWhoFindsTheWay,Purple,Character,Birb,"At the start of Action Time, you may choose another Character in your huddle. If you do, boost this Character's vibe by that Character's vibe for the rest of this Cycle, then ice that Character.",4,3,Uncommon,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BirbWhoFindsTheWay.png
+Bap,143,Poised Penguin,PoisedPenguin,Purple,Character,Penguin,"Whenever any number of Characters in your huddle are iced, choose a Character and put a vibe counter on it.",4,4,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PoisedPenguin.png
+Bap,144,Iron Penguin,IronPenguin,Purple,Character,Penguin,"When this Character is iced, choose a player. That player ices a Character in their huddle.",4,6,Uncommon,2238,Lyle Wallis,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/IronPenguin.png
+Bap,145,Patient Birb,PatientBirb,Purple,Character,Birb,[ACT] _F_: Choose a Character in your huddle and ice it. You get two Fishsicles.,5,6,Common,2238,blue boo,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PatientBirb.png
+Bap,146,Luckmaking Birb,LuckmakingBirb,Purple,Character,Birb,"[ACT] _F_: Choose a Character in your huddle and ice it. Pick a Character card in your ice with the same Fish cost as, but different name than, the iced Character. Put it into your huddle.",6,4,Rare,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/LuckmakingBirb.png
+Bap,147,Fisherman Penguin,FishermanPenguin,Purple,Character,Penguin,"Whenever any number of Characters in your huddle are iced, boost this Character's vibe by 2 for the rest of this Cycle.",6,6,Common,2238,Stoopid Penguin,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FishermanPenguin.png
+Bap,148,Myra of the Mist,MyraOfTheMist,Purple,Character,Birb,"When this Character enters the huddle, each player returns all Character cards with vibe 2 or less not named Myra of the Mist from their ice to their huddle.",10,0,Mythic,2238,Jisu,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/MyraOfTheMist.png
+Bap,149,Get Rekt,GetRekt,Purple,Action,,Each player ices a Rod they control and draws a card. Each player may pick a card in their hand and put it face-down as a Rod.,P,0,Uncommon,2238,OSF,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GetRekt.png
+Bap,150,Head on Out,HeadOnOut,Purple,Action,,"As an additional cost to play this Action, ice any number of Characters in your huddle. If you iced two or more Characters this way, draw two cards.",P,0,Rare,2238,blue boo,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HeadOnOut.png
+Bap,151,Afternoon Breeze,AfternoonBreeze,Purple,Action,,You can only play this Action if a Character was iced from your huddle this Cycle. Choose a Character and ice it.,PP,0,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/AfternoonBreeze.png
+Bap,152,Double the Luck,DoubleTheLuck,Purple,Action,,"Whenever any number of Characters are iced this Cycle, their controller gets that many Fishsicles.",PP,0,Common,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/DoubleTheLuck.png
+Bap,153,Double Trouble,DoubleTrouble,Purple,Action,,"Pick a Character card in your ice with Fish cost 2 or less. At the start of the next Cycle, return it from ice to its owner's huddle.",PP,0,Uncommon,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/DoubleTrouble.png
+Bap,154,Give 'Em!,GiveEm,Purple,Action,Saucy,"You can only play this Action if it's face-down as a Rod. Flip this card over to play it. Choose a Character with vibe 2 or less. The next time it would be iced this Cycle, it isn't.",PP,0,Rare,2238,Yosuke Ando,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GiveEm.png
+Bap,155,Next Floor Please,NextFloorPlease,Purple,Action,,"The next time a Character would be put into ice from play this Cycle, return it from ice to its owner’s huddle. If multiple are put into ice at the same time, you pick.",PPP,0,Common,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/NextFloorPlease.png
+Bap,156,The Prophecy Unfolds,TheProphecyUnfolds,Purple,Action,,Choose a Character. Ice it at the end of this Cycle.,PPP,0,Common,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TheProphecyUnfolds.png
+Bap,157,Free Fall,FreeFall,Purple,Action,,This Action costs one less _P_ to play for each Purple Character iced this Cycle. Draw two cards.,PPPPP,0,Common,2238,Aephai,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FreeFall.png
+Bap,158,If Only They Knew,IfOnlyTheyKnew,Purple,Action,,Choose a Character. Ice all Characters with vibe equal to that Character's vibe.,PPPPP,0,Uncommon,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/IfOnlyTheyKnew.png
+Bap,159,Hold on Tight,HoldOnTight,Purple,Action,,Ice all Characters with vibe 2 or less.,PPPPPP,0,Rare,2238,Aephai,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HoldOnTight.png
+Bap,160,Set Sail,SetSail,Purple,Action,,Each player gives their huddle to the player on their right.,PPPPPPP,0,Rare,2238,Aephai,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/SetSail.png
+Bap,161,Stonebreaker Wizbirb,StonebreakerWizbirb,Colorless,Character,Wizard Birb,_G_ or _R_.,2,1,Common,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/StonebreakerWizbirb.png
+Bap,162,Inferno Wizbirb,InfernoWizbirb,Colorless,Character,Wizard Birb,_R_ or _Y_.,2,1,Common,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/InfernoWizbirb.png
+Bap,163,Frostbitten Wizbirb,FrostbittenWizbirb,Colorless,Character,Wizard Birb,_Y_ or _P_.,2,1,Common,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/FrostbittenWizbirb.png
+Bap,164,Stormreaper Wizbirb,StormreaperWizbirb,Colorless,Character,Wizard Birb,_P_ or _B_.,2,1,Common,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/StormreaperWizbirb.png
+Bap,165,Nightveil Wizbirb,NightveilWizbirb,Colorless,Character,Wizard Birb,_B_ or _G_.,2,1,Common,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/NightveilWizbirb.png
+Bap,166,Breakaway Balloon,BreakawayBalloon,Colorless,Fit,,"Choose a Character to wear this Fit. The Character wearing this gains the ability ""[ACT] _F_: Put a vibe counter on this Character"".",1,0,Common,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BreakawayBalloon.png
+Bap,167,Chewy Pendant,ChewyPendant,Colorless,Fit,,Choose a Character to wear this Fit. The Character wearing this can produce _T_.,1,0,Common,2238,blue boo,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ChewyPendant.png
+Bap,168,Handmade Slingshot,HandmadeSlingshot,Colorless,Fit,,"Choose a Character to wear this Fit. The Character wearing this gains the ability ""[ACT] _F_: Choose a Character. Move all vibe counters from this Character onto the chosen Character"".",1,0,Rare,2238,The Grimmus,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HandmadeSlingshot.png
+Bap,169,Mug Life,MugLife,Colorless,Fit,,"Choose a Character to wear this Fit. Whenever a Character is outfitted with this, boost its vibe by 3 for the rest of this Cycle.",1,0,Common,2238,blue boo,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/MugLife.png
+Bap,170,Mystic Paintbrush,MysticPaintbrush,Colorless,Fit,,Choose a Character to wear this Fit. The Character wearing this can produce _P_.,1,0,Common,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/MysticPaintbrush.png
+Bap,171,Cozy Mittens,CozyMittens,Colorless,Fit,,Choose a Character to wear this Fit. The Character wearing this gets +1 vibe.,1,0,Common,2238,blue boo,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/CozyMittens.png
+Bap,172,Arctic Ring,ArcticRing,Colorless,Fit,,"Choose a Character to wear this Fit. Whenever the Character wearing this produces Pudge, they produce another Pudge of that same color.",2,0,Common,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ArcticRing.png
+Bap,173,Glimmering Coins,GlimmeringCoins,Colorless,Fit,,Choose a Character to wear this Fit. The Character wearing this loses all abilities and can't gain abilities.,2,0,Common,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/GlimmeringCoins.png
+Bap,174,Puffy Snowsuit,PuffySnowsuit,Colorless,Fit,,"Choose a Character to wear this Fit. The Character wearing this gains the ability ""[ACT] _F_: Choose a flopped Character and outfit it with this Character's Fits"".",2,0,Uncommon,2238,blue boo,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/PuffySnowsuit.png
+Bap,175,Traveler's Lantern,TravelersLantern,Colorless,Fit,,"Choose a Character to wear this Fit and if it's a Blue Character, draw a card.",2,0,Uncommon,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TravelersLantern.png
+Bap,176,Champion's Belt,ChampionsBelt,Colorless,Fit,,"Choose a Character to wear this Fit. The Character wearing this gains the ability ""[ACT] _F_: The next time this Character is iced this Cycle, choose a Character and ice it"".",3,0,Common,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ChampionsBelt.png
+Bap,177,Cloak of Illusions,CloakOfIllusions,Colorless,Fit,,"Choose a Character to wear this Fit. The Character wearing this gains the ability ""Whenever an Action is played that chooses this Character, copy that Action. (You make new choices for the copy)"".",3,0,Mythic,2238,Vinnie Hager,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/CloakOfIllusions.png
+Bap,178,Coastal Surfboard,CoastalSurfboard,Colorless,Fit,,"Choose a Character to wear this Fit. The Character wearing this gains the ability ""[ACT] _F_, remove all vibe counters from this Character: Choose a Character and reduce its vibe by the number of vibe counters removed this way for the rest of this Cycle"".",3,0,Rare,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/CoastalSurfboard.png
+Bap,179,Enchanted Boots,EnchantedBoots,Colorless,Fit,,Choose a Character to wear this Fit. The Character wearing this gets +3 vibe.,3,0,Common,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/EnchantedBoots.png
+Bap,180,Compass to Nowhere,CompassToNowhere,Colorless,Fit,,"Choose a Character to wear this Fit. The Character wearing this gains the ability ""At the start of Action Time, if you control more Characters than your opponent, ice a Character in your huddle"".",3,0,Uncommon,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/CompassToNowhere.png
+Bap,181,Distracting Handheld,DistractingHandheld,Colorless,Fit,,Choose a Character to wear this Fit. The Character wearing this can't produce Pudge.,0,0,Uncommon,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/DistractingHandheld.png
+Bap,182,Hero's Sword,HerosSword,Colorless,Fit,,"Choose a Character to wear this Fit. The Character wearing this gets +4 vibe. When that Character leaves the huddle, return this to its owner's hand.",4,0,Rare,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HerosSword.png
+Bap,183,Trusty Boxing Gloves,TrustyBoxingGloves,Colorless,Fit,,"Choose a Character to wear this Fit, then you may reveal a card named Trusty Boxing Gloves from your Rods and put it into play outfitting the chosen Character. The Character wearing this gets +4 vibe.",4,0,Uncommon,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TrustyBoxingGloves.png
+Bap,184,Book of Wonders,BookOfWonders,Colorless,Fit,,"Choose a Character to wear this Fit. The Character wearing this gains the ability ""[ACT] _F_: Double the number of vibe counters on this Character"".",4,0,Rare,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BookOfWonders.png
+Bap,185,Hero's Shield,HerosShield,Colorless,Fit,,"Choose a Character to wear this Fit. As long as the Stack is empty, the Character wearing this can't be chosen by anything.",4,0,Rare,2238,chlorophilly,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HerosShield.png
+Bap,186,Classy Bow Tie,ClassyBowTie,Colorless,Fit,,Choose a Character to wear this Fit. The Character wearing this gets +2 vibe.,2,0,Common,2238,blue boo,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ClassyBowTie.png
+Bap,187,Whimsical Backpack,WhimsicalBackpack,Colorless,Fit,,"Choose a Character to wear this Fit. The Character wearing this gains the ability ""Whenever you play an Action, flop all Characters in your huddle with vibe 10 or greater"".",6,0,Rare,2238,aokiss,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/WhimsicalBackpack.png
+Bap,188,The Comeback Staff,TheComebackStaff,Colorless,Fit,,"Choose a Character to wear this Fit. The Character wearing this gains the ability ""[ACT] _F_: Choose another Character in your huddle. The next time that Character would be iced this Cycle, turn it face-down as a Rod instead"".",6,0,Rare,2238,Jungle,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TheComebackStaff.png
+Bap,189,The Crown of House Vibesalot,TheCrownOfHouseVibesalot,Colorless,Fit,,Choose a Character to wear this Fit. The Character wearing this gets +20 vibe.,8,0,Mythic,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TheCrownOfHouseVibesalot.png
+Bap,190,Big Ben,BigBen,Colorless,Relic,Location,"The player with the greatest total vibe in their huddle wins Vibe Check. Whenever another Location enters play, ice this Relic.",3,0,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BigBen.png
+Bap,191,Art Museum,ArtMuseum,Colorless,Relic,Location,"Whenever any number Characters are iced, their controller gets that many Fishsicles. Whenever another Location enters play, ice this Relic.",4,0,Uncommon,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ArtMuseum.png
+Bap,192,Taj Mahal,TajMahal,Colorless,Relic,Location,"Prizes are doubled for the Vibe Check. Whenever another Location enters play, ice this Relic.",5,0,Rare,2238,The Grimmus,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/TajMahal.png
+Bap,193,The Peng,ThePeng,Colorless,Relic,Location,"Whenever a Character has any number of vibe counters put on it during Action Time, flop it. Whenever another Location enters play, ice this Relic.",6,0,Rare,2238,Clare Altman & CAH,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ThePeng.png
+Bap,194,Birb Bay,BirbBay,Colorless,Relic,Location,"Whenever a player plays an Action, its controller gets a Fishsicle. Whenever another Location enters play, ice this Relic.",7,0,Uncommon,2238,The Grimmus,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/BirbBay.png
+Bap,195,Hammer Rod,HammerRod,Colorless,Rod,,[ACT] _F_: Choose a Relic and ice it. Ice this Rod. (This Rod doesn't produce Fish).,,0,Uncommon,2238,bluugu - Lucius,https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/HammerRod.png
