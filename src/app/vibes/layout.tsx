@@ -22,8 +22,10 @@ export default function VibesLayout({ children }: { children: React.ReactNode })
         style={{
           backgroundImage: "url(/backgrounds/vibes-art-preview.webp)",
           filter: "saturate(1.6) brightness(1.1)",
-          maskImage: "radial-gradient(ellipse 70% 60% at 50% 0%, black 0%, transparent 85%)",
-          WebkitMaskImage: "radial-gradient(ellipse 70% 60% at 50% 0%, black 0%, transparent 85%)",
+          maskImage:
+            "radial-gradient(ellipse 80% 100% at 50% 0%, black 0%, rgba(0,0,0,0.6) 50%, transparent 100%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse 80% 100% at 50% 0%, black 0%, rgba(0,0,0,0.6) 50%, transparent 100%)",
         }}
       />
 
