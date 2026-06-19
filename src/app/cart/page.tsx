@@ -1,10 +1,35 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useStore } from "@/context/StoreContext";
 
 export default function CartPage() {
   const { cart, setCartQty, removeFromCart, cartTotal, clearCart, getCardById } = useStore();
+  const [checkingOut, setCheckingOut] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleCheckout() {
+    setError(null);
+    setCheckingOut(true);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lines: cart }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Couldn't start checkout.");
+        setCheckingOut(false);
+        return;
+      }
+      window.location.href = data.url;
+    } catch {
+      setError("Couldn't reach checkout. Try again.");
+      setCheckingOut(false);
+    }
+  }
 
   if (cart.length === 0) {
     return (
@@ -56,8 +81,14 @@ export default function CartPage() {
         <p className="text-lg font-semibold text-zinc-100">Total: ${cartTotal.toFixed(2)}</p>
       </div>
 
-      <button className="mt-6 w-full rounded-lg bg-purple-600 py-3 font-medium text-white hover:bg-purple-500">
-        Checkout (coming soon)
+      {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
+
+      <button
+        onClick={handleCheckout}
+        disabled={checkingOut}
+        className="mt-6 w-full rounded-lg bg-purple-600 py-3 font-medium text-white hover:bg-purple-500 disabled:bg-zinc-700"
+      >
+        {checkingOut ? "Redirecting to checkout..." : "Checkout"}
       </button>
     </div>
   );

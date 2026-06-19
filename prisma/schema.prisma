@@ -78,16 +78,19 @@ model WishlistItem {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// Purchase history. Populated once checkout/payments are wired up;
-// the schema is ready ahead of that so profile pages have somewhere to read from.
+// Purchase history, created by the Stripe webhook once a checkout session
+// completes. userId is null for guest checkouts — guestEmail is what we
+// have to go on for those instead.
 model Order {
-  id         String      @id @default(cuid())
-  userId     String
-  status     String      @default("pending") // pending | paid | fulfilled | cancelled
-  totalCents Int
-  createdAt  DateTime    @default(now())
+  id              String      @id @default(cuid())
+  userId          String?
+  guestEmail      String?
+  stripeSessionId String      @unique
+  status          String      @default("pending") // pending | paid | fulfilled | cancelled
+  totalCents      Int
+  createdAt       DateTime    @default(now())
 
-  user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user  User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
   items OrderItem[]
 }
 
