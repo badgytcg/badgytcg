@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build:cards": "node scripts/build-cards.mjs",
-    "build": "npm run build:cards && next build",
+    "build": "npm run build:cards && prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "lint": "eslint"
   },
