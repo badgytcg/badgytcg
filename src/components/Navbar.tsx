@@ -5,8 +5,12 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useStore } from "@/context/StoreContext";
 
-// Add new games here as you expand beyond Vibes.
-const GAMES = [{ name: "Vibes", href: "/vibes" }];
+// Add new games here as you expand beyond Vibes. `comingSoon: true` renders
+// the tab as a disabled badge instead of a link.
+const GAMES = [
+  { name: "Vibes", href: "/vibes", comingSoon: false },
+  { name: "Riftbound", href: "/riftbound", comingSoon: true },
+];
 
 export default function Navbar() {
   const { cartCount, wishlist } = useStore();
@@ -16,9 +20,11 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-10 border-b border-purple-900/40 bg-zinc-950/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="flex items-baseline gap-2">
-          <span className="text-xl font-bold text-purple-400">Badgy</span>
-          <span className="text-sm font-medium text-zinc-400">TCG</span>
+        <Link href="/" className="flex items-baseline gap-1">
+          <span className="bg-gradient-to-r from-yellow-300 via-pink-500 to-purple-500 bg-clip-text text-xl font-extrabold uppercase tracking-wide text-transparent">
+            Badgy
+          </span>
+          <span className="text-sm font-bold uppercase tracking-wide text-zinc-300">TCG</span>
         </Link>
         <div className="flex items-center gap-6 text-sm font-medium text-zinc-300">
           <Link href="/wishlist" className="hover:text-purple-300">
@@ -40,9 +46,24 @@ export default function Navbar() {
           </Link>
         </div>
       </div>
-      <nav className="mx-auto flex max-w-6xl gap-1 px-6">
+      <nav className="mx-auto flex max-w-6xl items-center gap-1 px-6">
         {GAMES.map((game) => {
           const active = pathname?.startsWith(game.href);
+
+          if (game.comingSoon) {
+            return (
+              <span
+                key={game.href}
+                className="flex items-center gap-2 rounded-t-lg px-4 py-2 text-sm font-medium text-zinc-600"
+              >
+                {game.name}
+                <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
+                  Coming Soon
+                </span>
+              </span>
+            );
+          }
+
           return (
             <Link
               key={game.href}
@@ -53,7 +74,18 @@ export default function Navbar() {
                   : "text-zinc-500 hover:text-zinc-300"
               }`}
             >
-              {game.name}
+              {game.name === "Vibes" ? (
+                <span
+                  style={{ fontFamily: "var(--font-baloo)" }}
+                  className={`bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text font-extrabold text-transparent ${
+                    active ? "" : "opacity-80"
+                  }`}
+                >
+                  {game.name}
+                </span>
+              ) : (
+                game.name
+              )}
             </Link>
           );
         })}
