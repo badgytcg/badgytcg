@@ -51,13 +51,21 @@ export default function CardTile({ card }: { card: Card }) {
         </span>
       </div>
       <div className="mt-3 flex gap-2">
-        <button
-          onClick={() => addToCart(card.id, 1)}
-          disabled={!inStock}
-          className="flex-1 rounded-lg bg-purple-600 py-1.5 text-sm font-medium text-white hover:bg-purple-500 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400"
-        >
-          Add to cart
-        </button>
+        {inStock ? (
+          <button
+            onClick={() => addToCart(card.id, 1)}
+            className="flex-1 rounded-lg bg-purple-600 py-1.5 text-sm font-medium text-white hover:bg-purple-500"
+          >
+            Add to cart
+          </button>
+        ) : (
+          <button
+            onClick={() => addToWishlist([{ cardName: card.name, cardId: card.id, qty: 1 }])}
+            className="flex-1 rounded-lg bg-zinc-700 py-1.5 text-sm font-medium text-zinc-100 hover:bg-zinc-600"
+          >
+            Request card
+          </button>
+        )}
         <button
           onClick={() => addToWishlist([{ cardName: card.name, cardId: card.id, qty: 1 }])}
           title="Add to wishlist"

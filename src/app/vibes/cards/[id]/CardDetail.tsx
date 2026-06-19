@@ -41,17 +41,29 @@ export default function CardDetail({ card }: { card: Card }) {
               onChange={(e) => setQty(Math.max(1, Number(e.target.value)))}
               className="w-20 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100"
             />
-            <button
-              onClick={() => {
-                addToCart(card.id, qty);
-                setAdded(true);
-                setTimeout(() => setAdded(false), 1500);
-              }}
-              disabled={!inStock}
-              className="rounded-lg bg-purple-600 px-5 py-2 text-sm font-medium text-white hover:bg-purple-500 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400"
-            >
-              Add to cart
-            </button>
+            {inStock ? (
+              <button
+                onClick={() => {
+                  addToCart(card.id, qty);
+                  setAdded(true);
+                  setTimeout(() => setAdded(false), 1500);
+                }}
+                className="rounded-lg bg-purple-600 px-5 py-2 text-sm font-medium text-white hover:bg-purple-500"
+              >
+                Add to cart
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  addToWishlist([{ cardName: card.name, cardId: card.id, qty }]);
+                  setAdded(true);
+                  setTimeout(() => setAdded(false), 1500);
+                }}
+                className="rounded-lg bg-zinc-700 px-5 py-2 text-sm font-medium text-zinc-100 hover:bg-zinc-600"
+              >
+                Request card
+              </button>
+            )}
             <button
               onClick={() => {
                 addToWishlist([{ cardName: card.name, cardId: card.id, qty }]);
