@@ -101,3 +101,13 @@ model OrderItem {
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
+
+// Live admin-editable price/stock per card, keyed by the catalog's card id
+// (e.g. "eth-getrekt"). Takes priority over the seed defaults in
+// src/data/overrides.json so admins can update inventory without a deploy.
+model CardOverride {
+  cardId    String   @id
+  price     Float
+  stock     Int
+  updatedAt DateTime @updatedAt
+}

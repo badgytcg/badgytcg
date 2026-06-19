@@ -10,12 +10,14 @@ import {
   useState,
 } from "react";
 import { useSession } from "next-auth/react";
-import { getCardById } from "@/data/cards";
-import { CartLine, WishlistLine } from "@/lib/types";
+import { cards as staticCards, getCardById as getStaticCardById } from "@/data/cards";
+import { Card, CartLine, WishlistLine } from "@/lib/types";
 
 interface StoreState {
   cart: CartLine[];
   wishlist: WishlistLine[];
+  catalog: Card[]; // live (admin-editable) price/stock, falls back to the static bundle while loading
+  getCardById: (id: string) => Card | undefined;
   addToCart: (cardId: string, qty: number) => void;
   removeFromCart: (cardId: string) => void;
   setCartQty: (cardId: string, qty: number) => void;
@@ -66,6 +68,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const [cart, setCart] = useState<CartLine[]>([]);
   const [wishlist, setWishlist] = useState<WishlistLine[]>([]);
+  const [catalog, setCatalog] = useState<Card[]>(staticCards);
   const [hydrated, setHydrated] = useState(false);
 
   // Cart stays local-only for now (no checkout yet to attach it to an account).
@@ -73,6 +76,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setCart(load(CART_KEY, []));
     setHydrated(true);
   }, []);
+
+  // Live (admin-editable) price/stock, so cart totals and stock limits
+  // reflect what's actually in the database, not just the build-time bundle.
+  useEffect(() => {
+    fetch("/api/cards")
+      .then((res) => res.json())
+      .then((data) => setCatalog(data.cards ?? staticCards));
+  }, []);
+
+  const getCardById = useCallback(
+    (id: string) => catalog.find((c) => c.id === id) ?? getStaticCardById(id),
+    [catalog]
+  );
 
   useEffect(() => {
     if (hydrated) window.localStorage.setItem(CART_KEY, JSON.stringify(cart));
@@ -188,7 +204,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         const card = getCardById(l.cardId);
         return sum + (card ? card.price * l.qty : 0);
       }, 0),
-    [cart]
+    [cart, getCardById]
   );
 
   return (
@@ -196,6 +212,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       value={{
         cart,
         wishlist,
+        catalog,
+        getCardById,
         addToCart,
         removeFromCart,
         setCartQty,

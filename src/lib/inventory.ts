@@ -1,23 +1,32 @@
-import { cards } from "@/data/cards";
+import { cards as staticCards } from "@/data/cards";
 import { normalizeCardKey } from "@/lib/normalize";
 import { Card, DeckImportResult, ParsedDeck, WishlistLine } from "@/lib/types";
 
-const byKey = new Map<string, Card>(cards.map((c) => [normalizeCardKey(c.name), c]));
+function buildIndex(catalog: Card[]): Map<string, Card> {
+  return new Map(catalog.map((c) => [normalizeCardKey(c.name), c]));
+}
 
-export function findCardByAnyName(name: string): Card | undefined {
-  return byKey.get(normalizeCardKey(name));
+const staticIndex = buildIndex(staticCards);
+
+/** Looks up a card by name (case/punctuation-insensitive). Pass `catalog`
+ * to match against live (admin-edited) stock instead of the static bundle —
+ * e.g. the deck importer fetches `/api/cards` first so it sees current
+ * inventory rather than whatever was true at build time. */
+export function findCardByAnyName(name: string, catalog?: Card[]): Card | undefined {
+  const index = catalog ? buildIndex(catalog) : staticIndex;
+  return index.get(normalizeCardKey(name));
 }
 
 /** Splits a parsed deck into "we have these in stock" (available, ready for
  * cart) vs "you'll need to hunt these down" (missing, goes to wishlist).
  * `deckPrice` is what you charge for the deck as a bundle; the wishlist
  * lines don't get priced since you haven't sourced them yet. */
-export function matchDeckToInventory(deck: ParsedDeck, deckPrice = 0): DeckImportResult {
+export function matchDeckToInventory(deck: ParsedDeck, deckPrice = 0, catalog?: Card[]): DeckImportResult {
   const available: DeckImportResult["available"] = [];
   const missing: WishlistLine[] = [];
 
   for (const entry of deck.entries) {
-    const card = findCardByAnyName(entry.name);
+    const card = findCardByAnyName(entry.name, catalog);
     if (!card) {
       missing.push({
         cardName: entry.name,

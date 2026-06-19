@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useStore } from "@/context/StoreContext";
 import { parseDeckCode } from "@/lib/deckParser";
 import { findCardByAnyName, matchDeckToInventory } from "@/lib/inventory";
-import { DeckImportResult, ParsedDeck } from "@/lib/types";
+import { Card, DeckImportResult, ParsedDeck } from "@/lib/types";
 
 const PLACEHOLDER = `// Purple at the Disco
 4 Get Rekt
@@ -25,6 +25,15 @@ export default function DeckImportPage() {
   const [error, setError] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState(false);
   const [requested, setRequested] = useState(false);
+  const [catalog, setCatalog] = useState<Card[] | undefined>(undefined);
+
+  // Fetch the live (admin-editable) catalog once so deck matching reflects
+  // current stock rather than whatever was true at build time.
+  useEffect(() => {
+    fetch("/api/cards")
+      .then((res) => res.json())
+      .then((data) => setCatalog(data.cards));
+  }, []);
 
   function handleParse() {
     setError(null);
@@ -34,7 +43,7 @@ export default function DeckImportPage() {
     setRequested(false);
     try {
       const deck = parseDeckCode(code);
-      const matched = matchDeckToInventory(deck, DECK_BUNDLE_PRICE);
+      const matched = matchDeckToInventory(deck, DECK_BUNDLE_PRICE, catalog);
       setRawDeck(deck);
       setResult(matched);
     } catch (e) {
@@ -60,7 +69,7 @@ export default function DeckImportPage() {
     addToWishlist(
       rawDeck.entries.map((entry) => ({
         cardName: entry.name,
-        cardId: findCardByAnyName(entry.name)?.id ?? null,
+        cardId: findCardByAnyName(entry.name, catalog)?.id ?? null,
         qty: entry.qty,
         note: `Deck request: ${rawDeck.deckName}`,
       }))

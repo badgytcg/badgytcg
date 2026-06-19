@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { cards } from "@/data/cards";
+import { Card } from "@/lib/types";
 import CardTile from "@/components/CardTile";
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100, 250];
@@ -75,6 +76,15 @@ function FilterGroup({
 }
 
 export default function VibesBrowsePage() {
+  // Seed with the static bundle so the page isn't blank while the live
+  // (admin-editable) price/stock data loads from the database.
+  const [liveCards, setLiveCards] = useState<Card[]>(cards);
+  useEffect(() => {
+    fetch("/api/cards")
+      .then((res) => res.json())
+      .then((data) => setLiveCards(data.cards ?? cards));
+  }, []);
+
   const [query, setQuery] = useState("");
   const [sets, setSets] = useState<string[]>([]);
   const [colors, setColors] = useState<string[]>([]);
@@ -91,7 +101,7 @@ export default function VibesBrowsePage() {
   const [page, setPage] = useState(1);
 
   const filtered = useMemo(() => {
-    const result = cards.filter((c) => {
+    const result = liveCards.filter((c) => {
       const matchesQuery = c.name.toLowerCase().includes(query.toLowerCase());
       const matchesSet = sets.length === 0 || sets.includes(c.set);
       const cardColors = c.color.split(" ");
@@ -142,7 +152,7 @@ export default function VibesBrowsePage() {
         sorted.sort((a, b) => a.name.localeCompare(b.name));
     }
     return sorted;
-  }, [query, sets, colors, types, rarities, attributeGroups, costMin, costMax, vibeMin, vibeMax, inStockOnly, sort]);
+  }, [liveCards, query, sets, colors, types, rarities, attributeGroups, costMin, costMax, vibeMin, vibeMax, inStockOnly, sort]);
 
   // Jump back to page 1 whenever the result set changes underneath the user.
   useEffect(() => {

@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { useStore } from "@/context/StoreContext";
-import { getCardById } from "@/data/cards";
 
 export default function CartPage() {
-  const { cart, setCartQty, removeFromCart, cartTotal, clearCart } = useStore();
+  const { cart, setCartQty, removeFromCart, cartTotal, clearCart, getCardById } = useStore();
 
   if (cart.length === 0) {
     return (
