@@ -50,20 +50,22 @@ export default function CardTile({ card }: { card: Card }) {
           {inStock ? `${card.stock} in stock` : "Out of stock"}
         </span>
       </div>
-      <button
-        onClick={() =>
-          inStock
-            ? addToCart(card.id, 1)
-            : addToWishlist([{ cardName: card.name, cardId: card.id, qty: 1 }])
-        }
-        className={`mt-3 w-full rounded-lg py-1.5 text-sm font-medium ${
-          inStock
-            ? "bg-purple-600 text-white hover:bg-purple-500"
-            : "bg-zinc-700 text-zinc-200 hover:bg-zinc-600"
-        }`}
-      >
-        {inStock ? "Add to cart" : "Add to wishlist"}
-      </button>
+      <div className="mt-3 flex gap-2">
+        <button
+          onClick={() => addToCart(card.id, 1)}
+          disabled={!inStock}
+          className="flex-1 rounded-lg bg-purple-600 py-1.5 text-sm font-medium text-white hover:bg-purple-500 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400"
+        >
+          Add to cart
+        </button>
+        <button
+          onClick={() => addToWishlist([{ cardName: card.name, cardId: card.id, qty: 1 }])}
+          title="Add to wishlist"
+          className="rounded-lg border border-zinc-700 px-3 text-sm text-zinc-300 hover:border-purple-500 hover:text-purple-300"
+        >
+          ♡
+        </button>
+      </div>
     </div>
   );
 }

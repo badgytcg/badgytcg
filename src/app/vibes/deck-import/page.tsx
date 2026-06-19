@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useStore } from "@/context/StoreContext";
 import { parseDeckCode } from "@/lib/deckParser";
-import { matchDeckToInventory } from "@/lib/inventory";
-import { DeckImportResult } from "@/lib/types";
+import { findCardByAnyName, matchDeckToInventory } from "@/lib/inventory";
+import { DeckImportResult, ParsedDeck } from "@/lib/types";
 
 const PLACEHOLDER = `// Purple at the Disco
 4 Get Rekt
@@ -20,17 +20,22 @@ const DECK_BUNDLE_PRICE = 35;
 export default function DeckImportPage() {
   const { addManyToCart, addToWishlist } = useStore();
   const [code, setCode] = useState("");
+  const [rawDeck, setRawDeck] = useState<ParsedDeck | null>(null);
   const [result, setResult] = useState<DeckImportResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [confirmed, setConfirmed] = useState(false);
+  const [requested, setRequested] = useState(false);
 
   function handleParse() {
     setError(null);
     setResult(null);
+    setRawDeck(null);
     setConfirmed(false);
+    setRequested(false);
     try {
       const deck = parseDeckCode(code);
       const matched = matchDeckToInventory(deck, DECK_BUNDLE_PRICE);
+      setRawDeck(deck);
       setResult(matched);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Couldn't parse that deck code.");
@@ -48,6 +53,21 @@ export default function DeckImportPage() {
     setConfirmed(true);
   }
 
+  // Alternative to buying what's in stock now: queue the entire deck as a
+  // single sourcing request, regardless of what's already available.
+  function handleRequestWholeDeck() {
+    if (!rawDeck) return;
+    addToWishlist(
+      rawDeck.entries.map((entry) => ({
+        cardName: entry.name,
+        cardId: findCardByAnyName(entry.name)?.id ?? null,
+        qty: entry.qty,
+        note: `Deck request: ${rawDeck.deckName}`,
+      }))
+    );
+    setRequested(true);
+  }
+
   const totalRequested = result
     ? result.available.reduce((s, a) => s + a.qty, 0) + result.missing.reduce((s, m) => s + m.qty, 0)
     : 0;
@@ -60,8 +80,10 @@ export default function DeckImportPage() {
       <p className="mt-2 text-sm text-zinc-400">
         Paste a deck list in either format — the plain text export or the JSON{" "}
         <code className="rounded bg-zinc-800 px-1">{"{ deckName, counts }"}</code> format.
-        I&apos;ll add what I have in stock to your cart for ${DECK_BUNDLE_PRICE} flat for the deck,
-        and put anything missing on a wishlist for me to track down.
+        Then either buy what&apos;s in stock now (missing cards go to your
+        wishlist automatically), or skip straight to requesting the whole
+        deck as a Deck Request if you&apos;d rather wait until it&apos;s
+        fully sourced.
       </p>
 
       <textarea
@@ -119,13 +141,28 @@ export default function DeckImportPage() {
             for everything in stock{result.missing.length > 0 ? " (missing cards billed separately once sourced)." : "."}
           </p>
 
-          <button
-            onClick={handleConfirm}
-            disabled={confirmed}
-            className="mt-4 rounded-lg bg-purple-600 px-5 py-2 text-sm font-medium text-white hover:bg-purple-500 disabled:bg-zinc-700"
-          >
-            {confirmed ? "Added!" : "Add deck to cart + wishlist"}
-          </button>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <button
+              onClick={handleConfirm}
+              disabled={confirmed}
+              className="rounded-lg bg-purple-600 px-5 py-2 text-sm font-medium text-white hover:bg-purple-500 disabled:bg-zinc-700"
+            >
+              {confirmed ? "Added!" : "Buy what's in stock"}
+            </button>
+            <button
+              onClick={handleRequestWholeDeck}
+              disabled={requested}
+              className="rounded-lg border border-zinc-700 px-5 py-2 text-sm font-medium text-zinc-300 hover:border-purple-500 hover:text-purple-300 disabled:opacity-40"
+            >
+              {requested ? "Requested!" : "♡ Request entire deck instead"}
+            </button>
+          </div>
+          <p className="mt-2 text-xs text-zinc-500">
+            &quot;Buy what&apos;s in stock&quot; splits the deck between your cart and wishlist.
+            &quot;Request entire deck&quot; skips the cart and puts every card — including
+            what&apos;s already in stock — on your wishlist as one Deck Request, for when you&apos;d
+            rather wait and buy it all at once.
+          </p>
         </div>
       )}
     </div>

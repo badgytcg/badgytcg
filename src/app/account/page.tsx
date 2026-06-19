@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useStore } from "@/context/StoreContext";
+
+const DECK_REQUEST_PREFIX = "Deck request:";
 
 interface OrderItem {
   id: string;
@@ -72,21 +75,16 @@ export default function AccountPage() {
       </div>
 
       <section className="mt-10">
-        <h2 className="mb-3 text-lg font-semibold text-zinc-100">
-          Wishlist ({wishlist.length})
-        </h2>
-        {wishlist.length === 0 ? (
-          <p className="text-sm text-zinc-500">Nothing on your wishlist yet.</p>
-        ) : (
-          <ul className="divide-y divide-zinc-800 rounded-xl border border-zinc-800">
-            {wishlist.map((line, i) => (
-              <li key={line.dbId ?? i} className="flex justify-between px-4 py-3 text-sm">
-                <span className="text-zinc-200">{line.qty}x {line.cardName}</span>
-                {line.note && <span className="text-zinc-500">{line.note}</span>}
-              </li>
-            ))}
-          </ul>
-        )}
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-zinc-100">Wishlist</h2>
+          <Link href="/wishlist" className="text-sm text-purple-400 hover:underline">
+            View all →
+          </Link>
+        </div>
+        <p className="mt-1 text-sm text-zinc-400">
+          {wishlist.filter((l) => !l.note?.startsWith(DECK_REQUEST_PREFIX)).length} individual card(s),{" "}
+          {wishlist.filter((l) => l.note?.startsWith(DECK_REQUEST_PREFIX)).length} deck request item(s)
+        </p>
       </section>
 
       <section className="mt-10">

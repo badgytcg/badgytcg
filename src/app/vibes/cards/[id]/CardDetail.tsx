@@ -30,7 +30,7 @@ export default function CardDetail({ card }: { card: Card }) {
           )}
           <p className="mt-4 text-2xl font-semibold text-purple-300">${card.price.toFixed(2)}</p>
           <p className={`mt-1 text-sm ${inStock ? "text-green-400" : "text-zinc-500"}`}>
-            {inStock ? `${card.stock} in stock` : "Out of stock — add to wishlist"}
+            {inStock ? `${card.stock} in stock` : "Out of stock"}
           </p>
 
           <div className="mt-6 flex items-center gap-3">
@@ -43,16 +43,24 @@ export default function CardDetail({ card }: { card: Card }) {
             />
             <button
               onClick={() => {
-                if (inStock) addToCart(card.id, qty);
-                else addToWishlist([{ cardName: card.name, cardId: card.id, qty }]);
+                addToCart(card.id, qty);
                 setAdded(true);
                 setTimeout(() => setAdded(false), 1500);
               }}
-              className={`rounded-lg px-5 py-2 text-sm font-medium ${
-                inStock ? "bg-purple-600 text-white hover:bg-purple-500" : "bg-zinc-700 text-zinc-200 hover:bg-zinc-600"
-              }`}
+              disabled={!inStock}
+              className="rounded-lg bg-purple-600 px-5 py-2 text-sm font-medium text-white hover:bg-purple-500 disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400"
             >
-              {inStock ? "Add to cart" : "Add to wishlist"}
+              Add to cart
+            </button>
+            <button
+              onClick={() => {
+                addToWishlist([{ cardName: card.name, cardId: card.id, qty }]);
+                setAdded(true);
+                setTimeout(() => setAdded(false), 1500);
+              }}
+              className="rounded-lg border border-zinc-700 px-5 py-2 text-sm font-medium text-zinc-300 hover:border-purple-500 hover:text-purple-300"
+            >
+              ♡ Wishlist
             </button>
             {added && <span className="text-sm text-green-400">Added!</span>}
           </div>
