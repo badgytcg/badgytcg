@@ -172,7 +172,7 @@ export default function VibesBrowsePage() {
       <h1 className="mb-6 text-2xl font-bold text-zinc-100">Browse Vibes Singles</h1>
 
       <div className="grid gap-8 lg:grid-cols-[260px_1fr]">
-        <aside className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
+        <aside className="self-start rounded-xl border border-zinc-800 bg-zinc-900 p-5 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto">
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
