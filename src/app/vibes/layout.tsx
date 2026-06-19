@@ -18,11 +18,12 @@ export default function VibesLayout({ children }: { children: React.ReactNode })
           with the card grid. */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center opacity-[0.12] blur-sm"
+        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center opacity-60"
         style={{
           backgroundImage: "url(/backgrounds/vibes-art-preview.webp)",
-          maskImage: "radial-gradient(ellipse 60% 50% at 50% 0%, black 0%, transparent 70%)",
-          WebkitMaskImage: "radial-gradient(ellipse 60% 50% at 50% 0%, black 0%, transparent 70%)",
+          filter: "saturate(1.6) brightness(1.1)",
+          maskImage: "radial-gradient(ellipse 70% 60% at 50% 0%, black 0%, transparent 85%)",
+          WebkitMaskImage: "radial-gradient(ellipse 70% 60% at 50% 0%, black 0%, transparent 85%)",
         }}
       />
 
