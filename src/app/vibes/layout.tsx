@@ -12,8 +12,21 @@ export default function VibesLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
 
   return (
-    <div>
-      <div className="border-b border-zinc-800 bg-zinc-900/50">
+    <div className="relative">
+      {/* Faint card-art ambiance behind the page — masked to a soft radial
+          fade so it blends into the dark background instead of competing
+          with the card grid. */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center opacity-[0.12] blur-sm"
+        style={{
+          backgroundImage: "url(/backgrounds/vibes-art-preview.webp)",
+          maskImage: "radial-gradient(ellipse 60% 50% at 50% 0%, black 0%, transparent 70%)",
+          WebkitMaskImage: "radial-gradient(ellipse 60% 50% at 50% 0%, black 0%, transparent 70%)",
+        }}
+      />
+
+      <div className="relative border-b border-zinc-800 bg-zinc-900/50">
         <nav className="mx-auto flex max-w-6xl gap-4 px-6">
           {TABS.map((tab) => {
             const active = pathname === tab.href;
@@ -33,7 +46,7 @@ export default function VibesLayout({ children }: { children: React.ReactNode })
           })}
         </nav>
       </div>
-      {children}
+      <div className="relative">{children}</div>
     </div>
   );
 }
