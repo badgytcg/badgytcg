@@ -3,9 +3,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/lib/types";
 
+const SET_ORDER = ["Enter the Huddle", "Legend of the Lils", "Birb & Pengu"];
+
+type SortKey = "name-asc" | "name-desc" | "price-asc" | "price-desc" | "stock-asc" | "stock-desc";
+
 export default function AdminInventoryPage() {
   const [cards, setCards] = useState<Card[]>([]);
   const [query, setQuery] = useState("");
+  const [set, setSet] = useState("All");
+  const [sort, setSort] = useState<SortKey>("name-asc");
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [edits, setEdits] = useState<Record<string, { price: string; stock: string }>>({});
@@ -19,10 +25,40 @@ export default function AdminInventoryPage() {
       });
   }, []);
 
-  const filtered = useMemo(
-    () => cards.filter((c) => c.name.toLowerCase().includes(query.toLowerCase())),
-    [cards, query]
+  const sets = useMemo(
+    () => SET_ORDER.filter((s) => cards.some((c) => c.set === s)),
+    [cards]
   );
+
+  const filtered = useMemo(() => {
+    const result = cards.filter(
+      (c) =>
+        c.name.toLowerCase().includes(query.toLowerCase()) &&
+        (set === "All" || c.set === set)
+    );
+
+    const sorted = [...result];
+    switch (sort) {
+      case "name-desc":
+        sorted.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case "price-asc":
+        sorted.sort((a, b) => a.price - b.price);
+        break;
+      case "price-desc":
+        sorted.sort((a, b) => b.price - a.price);
+        break;
+      case "stock-asc":
+        sorted.sort((a, b) => a.stock - b.stock);
+        break;
+      case "stock-desc":
+        sorted.sort((a, b) => b.stock - a.stock);
+        break;
+      default:
+        sorted.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    return sorted;
+  }, [cards, query, set, sort]);
 
   function getEdit(card: Card) {
     return edits[card.id] ?? { price: String(card.price), stock: String(card.stock) };
@@ -58,12 +94,38 @@ export default function AdminInventoryPage() {
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
       <h1 className="mb-4 text-2xl font-bold text-zinc-100">Inventory</h1>
-      <input
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search card name..."
-        className="mb-4 w-full max-w-sm rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500"
-      />
+
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search card name..."
+          className="flex-1 min-w-[200px] max-w-sm rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500"
+        />
+        <select
+          value={set}
+          onChange={(e) => setSet(e.target.value)}
+          className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100"
+        >
+          <option value="All">All sets</option>
+          {sets.map((s) => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value as SortKey)}
+          className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100"
+        >
+          <option value="name-asc">Name A–Z</option>
+          <option value="name-desc">Name Z–A</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="stock-asc">Stock: Low to High</option>
+          <option value="stock-desc">Stock: High to Low</option>
+        </select>
+      </div>
+
       <p className="mb-4 text-sm text-zinc-500">{filtered.length} card(s)</p>
 
       <div className="overflow-x-auto rounded-xl border border-zinc-800">
