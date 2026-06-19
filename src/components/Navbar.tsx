@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -68,23 +69,20 @@ export default function Navbar() {
             <Link
               key={game.href}
               href={game.href}
-              className={`rounded-t-lg px-4 py-2 text-sm font-medium ${
-                active
-                  ? "bg-zinc-900 text-purple-300"
-                  : "text-zinc-500 hover:text-zinc-300"
+              className={`rounded-t-lg px-4 py-2 ${
+                active ? "bg-zinc-900" : "hover:bg-zinc-900/50"
               }`}
             >
               {game.name === "Vibes" ? (
-                <span
-                  style={{ fontFamily: "var(--font-baloo)" }}
-                  className={`bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text font-extrabold text-transparent ${
-                    active ? "" : "opacity-80"
-                  }`}
-                >
-                  {game.name}
-                </span>
+                <Image
+                  src="/logos/vibes-logo.png"
+                  alt="Vibes"
+                  width={70}
+                  height={31}
+                  className={active ? "" : "opacity-70"}
+                />
               ) : (
-                game.name
+                <span className="text-sm font-medium text-zinc-500">{game.name}</span>
               )}
             </Link>
           );
