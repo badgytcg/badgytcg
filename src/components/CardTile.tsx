@@ -37,9 +37,16 @@ export default function CardTile({ card }: { card: Card }) {
             alt={card.name}
             fill
             sizes="200px"
-            className="object-contain"
+            className={`object-contain ${!inStock ? "grayscale opacity-40" : ""}`}
             unoptimized
           />
+          {!inStock && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="rotate-[-8deg] rounded border-2 border-red-500 px-2 py-0.5 text-sm font-bold uppercase tracking-wide text-red-500">
+                Out of Stock
+              </span>
+            </div>
+          )}
         </div>
         <h3 className="font-semibold text-zinc-100">{card.name}</h3>
         <p className="text-xs text-zinc-500">{card.set} · {card.rarity}</p>
