@@ -28,6 +28,11 @@ export default function Navbar() {
           <span className="text-sm font-bold uppercase tracking-wide text-zinc-300">TCG</span>
         </Link>
         <div className="flex items-center gap-6 text-sm font-medium text-zinc-300">
+          {session?.user?.isAdmin && (
+            <Link href="/admin" className="text-amber-400 hover:text-amber-300">
+              Admin
+            </Link>
+          )}
           <Link href="/wishlist" className="hover:text-purple-300">
             Wishlist{wishlist.length > 0 && <span className="ml-1 text-purple-400">({wishlist.length})</span>}
           </Link>
