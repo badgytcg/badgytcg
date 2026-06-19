@@ -67,7 +67,7 @@ export default function CardTile({ card }: { card: Card }) {
           </button>
         ) : (
           <button
-            onClick={() => addToWishlist([{ cardName: card.name, cardId: card.id, qty: 1 }])}
+            onClick={() => addToWishlist([{ cardName: card.name, cardId: card.id, qty: 1, note: "Card request" }])}
             className="flex-1 rounded-lg bg-zinc-700 py-1.5 text-sm font-medium text-zinc-100 hover:bg-zinc-600"
           >
             Request card

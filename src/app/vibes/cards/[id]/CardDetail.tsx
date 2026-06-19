@@ -69,7 +69,7 @@ export default function CardDetail({ card }: { card: Card }) {
             ) : (
               <button
                 onClick={() => {
-                  addToWishlist([{ cardName: card.name, cardId: card.id, qty }]);
+                  addToWishlist([{ cardName: card.name, cardId: card.id, qty, note: "Card request" }]);
                   setAdded(true);
                   setTimeout(() => setAdded(false), 1500);
                 }}

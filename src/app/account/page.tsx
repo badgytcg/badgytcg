@@ -6,6 +6,8 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import { useStore } from "@/context/StoreContext";
 
 const DECK_REQUEST_PREFIX = "Deck request:";
+const DECK_IMPORT_PREFIX = "from deck import:";
+const CARD_REQUEST_NOTE = "Card request";
 
 interface OrderItem {
   id: string;
@@ -82,8 +84,9 @@ export default function AccountPage() {
           </Link>
         </div>
         <p className="mt-1 text-sm text-zinc-400">
-          {wishlist.filter((l) => !l.note?.startsWith(DECK_REQUEST_PREFIX)).length} individual card(s),{" "}
-          {wishlist.filter((l) => l.note?.startsWith(DECK_REQUEST_PREFIX)).length} deck request item(s)
+          {wishlist.filter((l) => l.note !== CARD_REQUEST_NOTE && !l.note?.startsWith(DECK_REQUEST_PREFIX) && !l.note?.startsWith(DECK_IMPORT_PREFIX)).length} wishlist,{" "}
+          {wishlist.filter((l) => l.note === CARD_REQUEST_NOTE).length} card request(s),{" "}
+          {wishlist.filter((l) => l.note?.startsWith(DECK_REQUEST_PREFIX) || l.note?.startsWith(DECK_IMPORT_PREFIX)).length} deck request item(s)
         </p>
       </section>
 
