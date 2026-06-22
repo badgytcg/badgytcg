@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/lib/types";
-import { useStore } from "@/context/StoreContext";
 
 const COLOR_RING: Record<string, string> = {
   Purple: "ring-purple-500/50",
@@ -22,8 +21,15 @@ function ringFor(color: string): string {
   return COLOR_RING[first] ?? "ring-zinc-500/50";
 }
 
-export default function CardTile({ card }: { card: Card }) {
-  const { addToCart, addToWishlist } = useStore();
+export default function CardTile({
+  card,
+  qtyInDeck = 0,
+  onAdd,
+}: {
+  card: Card;
+  qtyInDeck?: number;
+  onAdd: (cardId: string) => void;
+}) {
   const inStock = card.stock > 0;
 
   return (
@@ -57,30 +63,15 @@ export default function CardTile({ card }: { card: Card }) {
           {inStock ? `${card.stock} in stock` : "Out of stock"}
         </span>
       </div>
-      <div className="mt-3 flex gap-2">
-        {inStock ? (
-          <button
-            onClick={() => addToCart(card.id, 1)}
-            className="flex-1 rounded-lg bg-purple-600 py-1.5 text-sm font-medium text-white hover:bg-purple-500"
-          >
-            Add to cart
-          </button>
-        ) : (
-          <button
-            onClick={() => addToWishlist([{ cardName: card.name, cardId: card.id, qty: 1, note: "Card request" }])}
-            className="flex-1 rounded-lg bg-zinc-700 py-1.5 text-sm font-medium text-zinc-100 hover:bg-zinc-600"
-          >
-            Request card
-          </button>
+      <button
+        onClick={() => onAdd(card.id)}
+        className="mt-3 flex items-center justify-center gap-2 rounded-lg bg-purple-600 py-1.5 text-sm font-medium text-white hover:bg-purple-500"
+      >
+        Add to deck
+        {qtyInDeck > 0 && (
+          <span className="rounded-full bg-white/20 px-1.5 text-xs font-bold">{qtyInDeck}</span>
         )}
-        <button
-          onClick={() => addToWishlist([{ cardName: card.name, cardId: card.id, qty: 1 }])}
-          title="Add to wishlist"
-          className="rounded-lg border border-zinc-700 px-3 text-sm text-zinc-300 hover:border-purple-500 hover:text-purple-300"
-        >
-          ♡
-        </button>
-      </div>
+      </button>
     </div>
   );
 }
