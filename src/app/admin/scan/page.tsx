@@ -1,171 +1,165 @@
 "use client";
 
-import { useRef, useState } from "react";
-import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Card } from "@/lib/types";
 
-type ScanState =
-  | { status: "idle" }
-  | { status: "scanning" }
-  | { status: "matched"; card: Card; rawText: string }
-  | { status: "unmatched"; rawText: string }
-  | { status: "error"; message: string };
+const SCAN_INTERVAL_MS = 1200;
+const COOLDOWN_MS = 2500; // pause after a hit so the same card isn't double-counted
 
-function fileToBase64(file: File): Promise<{ data: string; mediaType: string }> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      const [header, data] = result.split(",");
-      const mediaType = header.match(/data:(.*);base64/)?.[1] ?? file.type;
-      resolve({ data, mediaType });
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+type Flash = "none" | "success" | "miss";
+
+function playDing() {
+  try {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.value = 880;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.25);
+  } catch {
+    // Audio isn't critical to the flow — ignore if the browser blocks it.
+  }
 }
 
 export default function AdminScanPage() {
-  const [state, setState] = useState<ScanState>({ status: "idle" });
-  const [qty, setQty] = useState(1);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const processingRef = useRef(false);
+  const cooldownRef = useRef(false);
 
-  async function handleFile(file: File) {
-    setState({ status: "scanning" });
-    setQty(1);
-    setSaved(false);
+  const [cameraOn, setCameraOn] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [flash, setFlash] = useState<Flash>("none");
+  const [lastResult, setLastResult] = useState<{ card: Card; newStock: number } | null>(null);
+  const [scanCount, setScanCount] = useState(0);
+
+  const startCamera = useCallback(async () => {
+    setCameraError(null);
     try {
-      const { data, mediaType } = await fileToBase64(file);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" },
+      });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+      }
+      setCameraOn(true);
+    } catch {
+      setCameraError("Couldn't access the camera. Check your browser's camera permission for this site.");
+    }
+  }, []);
+
+  const stopCamera = useCallback(() => {
+    const stream = videoRef.current?.srcObject as MediaStream | null;
+    stream?.getTracks().forEach((t) => t.stop());
+    setCameraOn(false);
+  }, []);
+
+  useEffect(() => () => stopCamera(), [stopCamera]);
+
+  const captureAndScan = useCallback(async () => {
+    if (processingRef.current || cooldownRef.current) return;
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas || video.videoWidth === 0) return;
+
+    processingRef.current = true;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext("2d");
+    ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+    const base64 = dataUrl.split(",")[1];
+
+    try {
       const res = await fetch("/api/admin/scan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: data, mediaType }),
+        body: JSON.stringify({ image: base64, mediaType: "image/jpeg" }),
       });
       const result = await res.json();
-      if (!res.ok) {
-        setState({ status: "error", message: result.error ?? "Scan failed." });
-        return;
-      }
-      if (result.card) {
-        setState({ status: "matched", card: result.card, rawText: result.rawText });
-      } else {
-        setState({ status: "unmatched", rawText: result.rawText });
+      setScanCount((n) => n + 1);
+
+      if (res.ok && result.card) {
+        const card: Card = result.card;
+        const newStock = card.stock + 1;
+        await fetch("/api/admin/inventory", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cardId: card.id, price: card.price, stock: newStock }),
+        });
+        playDing();
+        setFlash("success");
+        setLastResult({ card, newStock });
+        cooldownRef.current = true;
+        setTimeout(() => {
+          setFlash("none");
+          cooldownRef.current = false;
+        }, COOLDOWN_MS);
       }
     } catch {
-      setState({ status: "error", message: "Couldn't read that photo. Try again." });
+      // Silently retry on the next tick — a single failed frame isn't worth surfacing.
+    } finally {
+      processingRef.current = false;
     }
-  }
+  }, []);
 
-  async function addToStock() {
-    if (state.status !== "matched") return;
-    setSaving(true);
-    await fetch("/api/admin/inventory", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        cardId: state.card.id,
-        price: state.card.price,
-        stock: state.card.stock + qty,
-      }),
-    });
-    setSaving(false);
-    setSaved(true);
-  }
-
-  function scanNext() {
-    setState({ status: "idle" });
-    setSaved(false);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  }
+  useEffect(() => {
+    if (!cameraOn) return;
+    const id = setInterval(captureAndScan, SCAN_INTERVAL_MS);
+    return () => clearInterval(id);
+  }, [cameraOn, captureAndScan]);
 
   return (
     <div className="mx-auto max-w-md px-6 py-10">
-      <h1 className="mb-2 text-2xl font-bold text-zinc-100">Scan a Card</h1>
+      <h1 className="mb-2 text-2xl font-bold text-zinc-100">Scan Cards</h1>
       <p className="mb-6 text-sm text-zinc-400">
-        Photograph one card at a time, name-side up. I&apos;ll read the printed name and match it
-        against your catalog so you can add it to stock without typing.
+        Point the camera at a card. It auto-scans every second or so — when it gets a hit, you&apos;ll
+        hear a ding and see a green flash, and stock bumps up by 1. Swap to the next card and keep going.
       </p>
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        className="hidden"
-        id="scan-input"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) handleFile(file);
-        }}
-      />
-      <label
-        htmlFor="scan-input"
-        className="mb-6 block w-full cursor-pointer rounded-lg bg-purple-600 py-3 text-center text-sm font-medium text-white hover:bg-purple-500"
+      <div
+        className={`relative mb-4 aspect-square overflow-hidden rounded-xl border-4 bg-zinc-900 transition-colors ${
+          flash === "success" ? "border-green-500" : "border-zinc-800"
+        }`}
       >
-        {state.status === "idle" ? "Take a Photo" : "Take Another Photo"}
-      </label>
-
-      {state.status === "scanning" && (
-        <p className="text-center text-sm text-zinc-400">Reading card...</p>
-      )}
-
-      {state.status === "error" && (
-        <p className="text-center text-sm text-red-400">{state.message}</p>
-      )}
-
-      {state.status === "unmatched" && (
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4 text-center">
-          <p className="text-sm text-zinc-400">
-            Read &quot;<span className="text-zinc-200">{state.rawText}</span>&quot; but couldn&apos;t
-            match it to a card in the catalog.
-          </p>
-          <p className="mt-2 text-xs text-zinc-500">Try a clearer photo, or add it manually in Inventory.</p>
-        </div>
-      )}
-
-      {state.status === "matched" && (
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
-          <div className="flex gap-4">
-            <div className="relative h-28 w-20 flex-shrink-0 overflow-hidden rounded bg-zinc-800">
-              <Image src={state.card.image} alt={state.card.name} fill sizes="80px" className="object-contain" unoptimized />
-            </div>
-            <div>
-              <p className="font-semibold text-zinc-100">{state.card.name}</p>
-              <p className="text-xs text-zinc-500">{state.card.set} · {state.card.rarity}</p>
-              <p className="mt-1 text-sm text-zinc-400">Current stock: {state.card.stock}</p>
-            </div>
-          </div>
-
-          <div className="mt-4 flex items-center gap-3">
-            <label className="text-sm text-zinc-400">Add</label>
-            <input
-              type="number"
-              min={1}
-              value={qty}
-              onChange={(e) => setQty(Math.max(1, Number(e.target.value)))}
-              className="w-16 rounded border border-zinc-700 bg-zinc-950 px-2 py-1 text-sm text-zinc-100"
-            />
-            <span className="text-sm text-zinc-400">to stock (→ {state.card.stock + qty} total)</span>
-          </div>
-
-          <button
-            onClick={addToStock}
-            disabled={saving || saved}
-            className="mt-4 w-full rounded-lg bg-purple-600 py-2 text-sm font-medium text-white hover:bg-purple-500 disabled:bg-zinc-700"
-          >
-            {saved ? "Added!" : saving ? "Saving..." : `Add ${qty} to stock`}
-          </button>
-
-          {saved && (
+        <video ref={videoRef} className="h-full w-full object-cover" muted playsInline />
+        <canvas ref={canvasRef} className="hidden" />
+        {!cameraOn && (
+          <div className="absolute inset-0 flex items-center justify-center bg-zinc-900">
             <button
-              onClick={scanNext}
-              className="mt-2 w-full rounded-lg border border-zinc-700 py-2 text-sm text-zinc-300 hover:border-purple-500"
+              onClick={startCamera}
+              className="rounded-lg bg-purple-600 px-5 py-2 text-sm font-medium text-white hover:bg-purple-500"
             >
-              Scan next card
+              Start Camera
             </button>
-          )}
+          </div>
+        )}
+      </div>
+
+      {cameraError && <p className="mb-4 text-sm text-red-400">{cameraError}</p>}
+
+      {cameraOn && (
+        <button
+          onClick={stopCamera}
+          className="mb-4 w-full rounded-lg border border-zinc-700 py-2 text-sm text-zinc-300 hover:border-red-500 hover:text-red-400"
+        >
+          Stop Camera
+        </button>
+      )}
+
+      <p className="mb-4 text-center text-xs text-zinc-500">{scanCount} frame(s) checked this session</p>
+
+      {lastResult && (
+        <div className="rounded-xl border border-green-700/50 bg-zinc-900 p-4">
+          <p className="text-sm font-semibold text-green-400">✓ Matched</p>
+          <p className="mt-1 text-zinc-100">{lastResult.card.name}</p>
+          <p className="text-xs text-zinc-500">{lastResult.card.set} · {lastResult.card.rarity}</p>
+          <p className="mt-1 text-sm text-zinc-400">New stock: {lastResult.newStock}</p>
         </div>
       )}
     </div>
