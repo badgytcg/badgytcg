@@ -7,6 +7,7 @@ import { useSession, signIn } from "next-auth/react";
 const TABS = [
   { name: "Requests", href: "/admin/requests" },
   { name: "Inventory", href: "/admin/inventory" },
+  { name: "Scan", href: "/admin/scan" },
   { name: "Orders", href: "/admin/orders" },
 ];
 
