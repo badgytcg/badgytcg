@@ -28,10 +28,10 @@ function ringFor(color: string): string {
   return COLOR_RING[first] ?? "ring-zinc-500/50";
 }
 
-const SHORT_LABEL: Record<string, string> = {
-  dyli_primary: "Dyli",
-  dyli_secondary: "Dyli (2nd)",
-  minmax: "MinMax",
+const SOURCE_LOGO: Record<string, { src: string; width: number; height: number; suffix?: string }> = {
+  dyli_primary: { src: "/logos/dyli-logo.png", width: 32, height: 12 },
+  dyli_secondary: { src: "/logos/dyli-logo.png", width: 32, height: 12, suffix: "2nd" },
+  minmax: { src: "/logos/minmax-logo.png", width: 30, height: 12 },
 };
 
 export default function CardTile({
@@ -79,13 +79,23 @@ export default function CardTile({
         </span>
       </div>
       {marketPrices.length > 0 && (
-        <div className="mt-1 space-y-0.5">
-          {marketPrices.map((mp) => (
-            <div key={mp.source} className="flex items-center justify-between text-[11px] text-zinc-500">
-              <span>{SHORT_LABEL[mp.source] ?? mp.label}</span>
-              <span>${mp.price.toFixed(2)}</span>
-            </div>
-          ))}
+        <div className="mt-1 space-y-1">
+          {marketPrices.map((mp) => {
+            const logo = SOURCE_LOGO[mp.source];
+            return (
+              <div key={mp.source} className="flex items-center justify-between text-[11px] text-zinc-400">
+                {logo ? (
+                  <span className="flex items-center gap-1">
+                    <Image src={logo.src} alt={mp.label} width={logo.width} height={logo.height} className="opacity-80" />
+                    {logo.suffix && <span className="text-zinc-500">({logo.suffix})</span>}
+                  </span>
+                ) : (
+                  <span>{mp.label}</span>
+                )}
+                <span>${mp.price.toFixed(2)}</span>
+              </div>
+            );
+          })}
         </div>
       )}
       <button

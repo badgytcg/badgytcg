@@ -14,6 +14,12 @@ interface MarketPrice {
   updatedAt: string;
 }
 
+const SOURCE_LOGO: Record<string, { src: string; width: number; height: number; suffix?: string }> = {
+  dyli_primary: { src: "/logos/dyli-logo.png", width: 48, height: 18 },
+  dyli_secondary: { src: "/logos/dyli-logo.png", width: 48, height: 18, suffix: "2nd" },
+  minmax: { src: "/logos/minmax-logo.png", width: 44, height: 18 },
+};
+
 export default function CardDetail({ card }: { card: Card }) {
   const { addToCart, addToWishlist } = useStore();
   const [qty, setQty] = useState(1);
@@ -112,19 +118,29 @@ export default function CardDetail({ card }: { card: Card }) {
               <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">
                 Market Prices Elsewhere
               </h3>
-              <ul className="space-y-1 text-sm">
-                {marketPrices.map((mp) => (
-                  <li key={mp.source} className="flex items-center justify-between">
-                    <span className="text-zinc-400">{mp.label}</span>
-                    {mp.url ? (
-                      <a href={mp.url} target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:underline">
-                        {mp.price.toFixed(2)} {mp.currency}
-                      </a>
-                    ) : (
-                      <span className="text-zinc-200">{mp.price.toFixed(2)} {mp.currency}</span>
-                    )}
-                  </li>
-                ))}
+              <ul className="space-y-2 text-sm">
+                {marketPrices.map((mp) => {
+                  const logo = SOURCE_LOGO[mp.source];
+                  return (
+                    <li key={mp.source} className="flex items-center justify-between">
+                      {logo ? (
+                        <span className="flex items-center gap-1.5">
+                          <Image src={logo.src} alt={mp.label} width={logo.width} height={logo.height} />
+                          {logo.suffix && <span className="text-xs text-zinc-500">({logo.suffix})</span>}
+                        </span>
+                      ) : (
+                        <span className="text-zinc-400">{mp.label}</span>
+                      )}
+                      {mp.url ? (
+                        <a href={mp.url} target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:underline">
+                          {mp.price.toFixed(2)} {mp.currency}
+                        </a>
+                      ) : (
+                        <span className="text-zinc-200">{mp.price.toFixed(2)} {mp.currency}</span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}
