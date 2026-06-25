@@ -79,9 +79,14 @@ export default function CardTile({
         </span>
       </div>
       {marketPrices.length > 0 && (
-        <p className="mt-1 truncate text-[11px] text-zinc-500">
-          {marketPrices.map((mp) => `${SHORT_LABEL[mp.source] ?? mp.label} $${mp.price.toFixed(2)}`).join(" · ")}
-        </p>
+        <div className="mt-1 space-y-0.5">
+          {marketPrices.map((mp) => (
+            <div key={mp.source} className="flex items-center justify-between text-[11px] text-zinc-500">
+              <span>{SHORT_LABEL[mp.source] ?? mp.label}</span>
+              <span>${mp.price.toFixed(2)}</span>
+            </div>
+          ))}
+        </div>
       )}
       <button
         onClick={() => onAdd(card.id)}
