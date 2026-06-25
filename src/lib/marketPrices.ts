@@ -137,7 +137,16 @@ export async function refreshMarketPrices(): Promise<{ dyli: number; minmax: num
   const [dyliRows, minmaxRows] = await Promise.all([fetchDyliPrices(), fetchMinMaxPrices()]);
   const allRows = [...dyliRows, ...minmaxRows];
 
+  // A card can match more than one listing on a given source (e.g. two
+  // separate Dyli drops for the same printing) — keep only the cheapest.
+  const lowestByKey = new Map<string, PriceRow>();
   for (const row of allRows) {
+    const key = `${row.cardId}::${row.source}`;
+    const existing = lowestByKey.get(key);
+    if (!existing || row.price < existing.price) lowestByKey.set(key, row);
+  }
+
+  for (const row of lowestByKey.values()) {
     await prisma.marketPrice.upsert({
       where: { cardId_source: { cardId: row.cardId, source: row.source } },
       create: row,
