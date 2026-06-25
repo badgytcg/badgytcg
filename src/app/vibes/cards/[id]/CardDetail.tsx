@@ -14,9 +14,8 @@ interface MarketPrice {
   updatedAt: string;
 }
 
-const SOURCE_LOGO: Record<string, { src: string; width: number; height: number; suffix?: string }> = {
-  dyli_primary: { src: "/logos/dyli-logo.png", width: 48, height: 18 },
-  dyli_secondary: { src: "/logos/dyli-logo.png", width: 48, height: 18, suffix: "2nd" },
+const SOURCE_LOGO: Record<string, { src: string; width: number; height: number }> = {
+  dyli: { src: "/logos/dyli-logo.png", width: 48, height: 18 },
   minmax: { src: "/logos/minmax-logo.png", width: 44, height: 18 },
 };
 
@@ -124,10 +123,7 @@ export default function CardDetail({ card }: { card: Card }) {
                   return (
                     <li key={mp.source} className="flex items-center justify-between">
                       {logo ? (
-                        <span className="flex items-center gap-1.5">
-                          <Image src={logo.src} alt={mp.label} width={logo.width} height={logo.height} />
-                          {logo.suffix && <span className="text-xs text-zinc-500">({logo.suffix})</span>}
-                        </span>
+                        <Image src={logo.src} alt={mp.label} width={logo.width} height={logo.height} />
                       ) : (
                         <span className="text-zinc-400">{mp.label}</span>
                       )}

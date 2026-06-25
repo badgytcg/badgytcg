@@ -28,9 +28,8 @@ function ringFor(color: string): string {
   return COLOR_RING[first] ?? "ring-zinc-500/50";
 }
 
-const SOURCE_LOGO: Record<string, { src: string; width: number; height: number; suffix?: string }> = {
-  dyli_primary: { src: "/logos/dyli-logo.png", width: 32, height: 12 },
-  dyli_secondary: { src: "/logos/dyli-logo.png", width: 32, height: 12, suffix: "2nd" },
+const SOURCE_LOGO: Record<string, { src: string; width: number; height: number }> = {
+  dyli: { src: "/logos/dyli-logo.png", width: 32, height: 12 },
   minmax: { src: "/logos/minmax-logo.png", width: 30, height: 12 },
 };
 
@@ -85,10 +84,7 @@ export default function CardTile({
             return (
               <div key={mp.source} className="flex items-center justify-between text-[11px] text-zinc-400">
                 {logo ? (
-                  <span className="flex items-center gap-1">
-                    <Image src={logo.src} alt={mp.label} width={logo.width} height={logo.height} className="opacity-80" />
-                    {logo.suffix && <span className="text-zinc-500">({logo.suffix})</span>}
-                  </span>
+                  <Image src={logo.src} alt={mp.label} width={logo.width} height={logo.height} className="opacity-80" />
                 ) : (
                   <span>{mp.label}</span>
                 )}

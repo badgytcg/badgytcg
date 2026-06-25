@@ -58,21 +58,13 @@ async function fetchDyliPrices(): Promise<PriceRow[]> {
       const card = byNameAndSet.get(`${normalizeCardKey(namePart)}::${normalizeSet(setPart)}`);
       if (!card) continue;
 
-      if (item.pricing?.primary?.price) {
-        rows.push({
-          cardId: card.id,
-          source: "dyli_primary",
-          label: "Dyli (Primary)",
-          price: item.pricing.primary.price,
-          currency: item.pricing.primary.currency ?? "USD",
-          url: item.marketplace_url ?? null,
-        });
-      }
+      // Only the resale floor price — that's the actual "what would I pay a
+      // collector for this" market price, vs. Dyli's own primary listing.
       if (item.pricing?.secondary?.floor_price) {
         rows.push({
           cardId: card.id,
-          source: "dyli_secondary",
-          label: "Dyli (Secondary)",
+          source: "dyli",
+          label: "Dyli",
           price: item.pricing.secondary.floor_price,
           currency: item.pricing.secondary.currency ?? "USDC.e",
           url: item.marketplace_url ?? null,
@@ -138,6 +130,10 @@ async function fetchMinMaxPrices(): Promise<PriceRow[]> {
 }
 
 export async function refreshMarketPrices(): Promise<{ dyli: number; minmax: number }> {
+  // Drop the old two-row-per-card scheme (primary + secondary) now that we
+  // only track the resale floor price under a single "dyli" source.
+  await prisma.marketPrice.deleteMany({ where: { source: { in: ["dyli_primary", "dyli_secondary"] } } });
+
   const [dyliRows, minmaxRows] = await Promise.all([fetchDyliPrices(), fetchMinMaxPrices()]);
   const allRows = [...dyliRows, ...minmaxRows];
 
