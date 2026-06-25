@@ -15,6 +15,21 @@ export default function AdminInventoryPage() {
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [edits, setEdits] = useState<Record<string, { price: string; stock: string }>>({});
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshResult, setRefreshResult] = useState<string | null>(null);
+
+  async function refreshMarketPrices() {
+    setRefreshing(true);
+    setRefreshResult(null);
+    try {
+      const res = await fetch("/api/admin/market-prices/refresh", { method: "POST" });
+      const data = await res.json();
+      setRefreshResult(`Matched ${data.dyli} Dyli price(s) and ${data.minmax} MinMax price(s).`);
+    } catch {
+      setRefreshResult("Refresh failed — try again in a moment.");
+    }
+    setRefreshing(false);
+  }
 
   useEffect(() => {
     fetch("/api/cards")
@@ -93,7 +108,19 @@ export default function AdminInventoryPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
-      <h1 className="mb-4 text-2xl font-bold text-zinc-100">Inventory</h1>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold text-zinc-100">Inventory</h1>
+        <div className="flex items-center gap-3">
+          {refreshResult && <span className="text-xs text-zinc-500">{refreshResult}</span>}
+          <button
+            onClick={refreshMarketPrices}
+            disabled={refreshing}
+            className="rounded-lg border border-zinc-700 px-3 py-1.5 text-sm text-zinc-300 hover:border-purple-500 disabled:opacity-50"
+          >
+            {refreshing ? "Refreshing..." : "Refresh Market Prices"}
+          </button>
+        </div>
+      </div>
 
       <div className="mb-4 flex flex-wrap items-center gap-3">
         <input

@@ -1,15 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Card } from "@/lib/types";
 import { useStore } from "@/context/StoreContext";
+
+interface MarketPrice {
+  source: string;
+  label: string;
+  price: number;
+  currency: string;
+  url: string | null;
+  updatedAt: string;
+}
 
 export default function CardDetail({ card }: { card: Card }) {
   const { addToCart, addToWishlist } = useStore();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const [marketPrices, setMarketPrices] = useState<MarketPrice[]>([]);
   const inStock = card.stock > 0;
+
+  useEffect(() => {
+    fetch(`/api/cards/${card.id}/market-prices`)
+      .then((res) => res.json())
+      .then((data) => setMarketPrices(data.prices ?? []));
+  }, [card.id]);
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
@@ -90,6 +106,28 @@ export default function CardDetail({ card }: { card: Card }) {
             </button>
             {added && <span className="text-sm text-green-400">Added!</span>}
           </div>
+
+          {marketPrices.length > 0 && (
+            <div className="mt-6 rounded-lg border border-zinc-800 p-3">
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                Market Prices Elsewhere
+              </h3>
+              <ul className="space-y-1 text-sm">
+                {marketPrices.map((mp) => (
+                  <li key={mp.source} className="flex items-center justify-between">
+                    <span className="text-zinc-400">{mp.label}</span>
+                    {mp.url ? (
+                      <a href={mp.url} target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:underline">
+                        {mp.price.toFixed(2)} {mp.currency}
+                      </a>
+                    ) : (
+                      <span className="text-zinc-200">{mp.price.toFixed(2)} {mp.currency}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -114,3 +114,18 @@ model CardOverride {
   stock     Int
   updatedAt DateTime @updatedAt
 }
+
+// Cached prices scraped/pulled from other marketplaces, refreshed via the
+// "Refresh Market Prices" admin action rather than on every page view.
+model MarketPrice {
+  id        String   @id @default(cuid())
+  cardId    String
+  source    String // "dyli_primary" | "dyli_secondary" | "minmax"
+  label     String // human-readable, e.g. "Dyli (Primary)"
+  price     Float
+  currency  String
+  url       String?
+  updatedAt DateTime @updatedAt
+
+  @@unique([cardId, source])
+}
