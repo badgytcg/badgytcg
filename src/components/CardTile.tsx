@@ -4,6 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/lib/types";
 
+interface MarketPrice {
+  source: string;
+  label: string;
+  price: number;
+  currency: string;
+}
+
 const COLOR_RING: Record<string, string> = {
   Purple: "ring-purple-500/50",
   Blue: "ring-blue-500/50",
@@ -21,14 +28,22 @@ function ringFor(color: string): string {
   return COLOR_RING[first] ?? "ring-zinc-500/50";
 }
 
+const SHORT_LABEL: Record<string, string> = {
+  dyli_primary: "Dyli",
+  dyli_secondary: "Dyli (2nd)",
+  minmax: "MinMax",
+};
+
 export default function CardTile({
   card,
   qtyInDeck = 0,
   onAdd,
+  marketPrices = [],
 }: {
   card: Card;
   qtyInDeck?: number;
   onAdd: (cardId: string) => void;
+  marketPrices?: MarketPrice[];
 }) {
   const inStock = card.stock > 0;
 
@@ -63,6 +78,11 @@ export default function CardTile({
           {inStock ? `${card.stock} in stock` : "Out of stock"}
         </span>
       </div>
+      {marketPrices.length > 0 && (
+        <p className="mt-1 truncate text-[11px] text-zinc-500">
+          {marketPrices.map((mp) => `${SHORT_LABEL[mp.source] ?? mp.label} $${mp.price.toFixed(2)}`).join(" · ")}
+        </p>
+      )}
       <button
         onClick={() => onAdd(card.id)}
         className="mt-3 flex items-center justify-center gap-2 rounded-lg bg-purple-600 py-1.5 text-sm font-medium text-white hover:bg-purple-500"

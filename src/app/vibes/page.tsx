@@ -8,6 +8,14 @@ import { useStore } from "@/context/StoreContext";
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100, 250];
 
+interface MarketPrice {
+  cardId: string;
+  source: string;
+  label: string;
+  price: number;
+  currency: string;
+}
+
 // "Relic"/"Rod" show up in the Color column for non-colored cards, but
 // they're really Types, not colors — exclude them from the color filter.
 const NON_COLORS = new Set(["Relic", "Rod"]);
@@ -86,6 +94,19 @@ export default function VibesBrowsePage() {
     fetch("/api/cards")
       .then((res) => res.json())
       .then((data) => setLiveCards(data.cards ?? cards));
+  }, []);
+
+  const [marketPricesByCard, setMarketPricesByCard] = useState<Record<string, MarketPrice[]>>({});
+  useEffect(() => {
+    fetch("/api/market-prices")
+      .then((res) => res.json())
+      .then((data) => {
+        const grouped: Record<string, MarketPrice[]> = {};
+        for (const mp of data.prices ?? []) {
+          (grouped[mp.cardId] ??= []).push(mp);
+        }
+        setMarketPricesByCard(grouped);
+      });
   }, []);
 
   const [query, setQuery] = useState("");
@@ -334,6 +355,7 @@ export default function VibesBrowsePage() {
                     card={card}
                     qtyInDeck={deckLines[card.id] ?? 0}
                     onAdd={addOneToDeck}
+                    marketPrices={marketPricesByCard[card.id]}
                   />
                 ))}
               </div>
