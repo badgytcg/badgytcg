@@ -109,6 +109,21 @@ export default function VibesBrowsePage() {
       });
   }, []);
 
+  const [foilsByCardId, setFoilsByCardId] = useState<Record<string, { price: number; stock: number }>>({});
+  useEffect(() => {
+    fetch("/api/foils")
+      .then((res) => res.json())
+      .then((data) => {
+        const grouped: Record<string, { price: number; stock: number }> = {};
+        for (const f of data.foils ?? []) grouped[f.cardId] = { price: f.price, stock: f.stock };
+        setFoilsByCardId(grouped);
+      });
+  }, []);
+
+  // Foil ("{id}::foil") deck lines aren't in liveCards — fetch and cache
+  // them individually as they're added so the deck panel can display them.
+  const [extraDeckCards, setExtraDeckCards] = useState<Record<string, Card>>({});
+
   const [query, setQuery] = useState("");
   const [sets, setSets] = useState<string[]>([]);
   const [colors, setColors] = useState<string[]>([]);
@@ -208,7 +223,11 @@ export default function VibesBrowsePage() {
     setSort("name");
   }
 
-  const byId = useMemo(() => new Map(liveCards.map((c) => [c.id, c])), [liveCards]);
+  const byId = useMemo(() => {
+    const map = new Map(liveCards.map((c) => [c.id, c]));
+    for (const [id, c] of Object.entries(extraDeckCards)) map.set(id, c);
+    return map;
+  }, [liveCards, extraDeckCards]);
 
   const deckEntries = useMemo(
     () =>
@@ -233,6 +252,13 @@ export default function VibesBrowsePage() {
 
   function addOneToDeck(cardId: string) {
     setDeckQty(cardId, (deckLines[cardId] ?? 0) + 1);
+    if (!byId.has(cardId)) {
+      fetch(`/api/cards/${encodeURIComponent(cardId)}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data?.card) setExtraDeckCards((prev) => ({ ...prev, [cardId]: data.card }));
+        });
+    }
   }
 
   function handleAddToCart() {
@@ -353,9 +379,10 @@ export default function VibesBrowsePage() {
                   <CardTile
                     key={card.id}
                     card={card}
-                    qtyInDeck={deckLines[card.id] ?? 0}
+                    getQtyInDeck={(id) => deckLines[id] ?? 0}
                     onAdd={addOneToDeck}
                     marketPrices={marketPricesByCard[card.id]}
+                    foil={foilsByCardId[card.id]}
                   />
                 ))}
               </div>
