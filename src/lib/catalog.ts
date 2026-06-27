@@ -2,6 +2,9 @@ import { cards as seedCards } from "@/data/cards";
 import { Card } from "@/lib/types";
 import { prisma } from "@/lib/prisma";
 
+const FOIL_SUFFIX = "::foil";
+const SPECIAL_PREFIX = "special::";
+
 // Live admin-edited price/stock (CardOverride table) takes priority over
 // the static seed data in src/data/cards.ts. This is the source of truth
 // the storefront should read from — it reflects whatever the admin most
@@ -17,10 +20,115 @@ export async function getEffectiveCards(): Promise<Card[]> {
   });
 }
 
+/** Resolves a base card id, a foil variant id ("{baseId}::foil"), or a
+ * special/graded card id ("special::{cuid}") to its effective Card shape.
+ * Foil/special ids are a separate namespace from the regular catalog so
+ * they never show up in the main browse grid or bulk /api/cards response. */
 export async function getEffectiveCardById(id: string): Promise<Card | undefined> {
+  if (id.startsWith(SPECIAL_PREFIX)) {
+    const special = await prisma.specialCard.findUnique({
+      where: { id: id.slice(SPECIAL_PREFIX.length) },
+    });
+    if (!special) return undefined;
+    return specialToCard(special);
+  }
+
+  if (id.endsWith(FOIL_SUFFIX)) {
+    const baseId = id.slice(0, -FOIL_SUFFIX.length);
+    const base = seedCards.find((c) => c.id === baseId);
+    if (!base) return undefined;
+    const foil = await prisma.foilOverride.findUnique({ where: { cardId: baseId } });
+    if (!foil) return undefined; // no foil stocked for this card — toggle shouldn't even show
+    return {
+      ...base,
+      id,
+      name: `${base.name} (Foil)`,
+      price: foil.price,
+      stock: foil.stock,
+      isFoil: true,
+    };
+  }
+
   const override = await prisma.cardOverride.findUnique({ where: { cardId: id } });
   const base = seedCards.find((c) => c.id === id);
   if (!base) return undefined;
   if (!override) return base;
   return { ...base, price: override.price, stock: override.stock };
+}
+
+interface SpecialCardRow {
+  id: string;
+  name: string;
+  description: string | null;
+  imageUrl: string;
+  price: number;
+  grade: string | null;
+  set: string | null;
+}
+
+function specialToCard(special: SpecialCardRow): Card {
+  return {
+    id: `${SPECIAL_PREFIX}${special.id}`,
+    identifier: special.id,
+    name: special.name,
+    set: special.set ?? "Special",
+    setCode: "Special",
+    cardNumber: "",
+    rarity: special.grade ?? "Graded",
+    color: "Colorless",
+    type: "Special",
+    attribute: null,
+    ability: null,
+    cost: null,
+    vibe: null,
+    price: special.price,
+    stock: 1, // existence = available; admin deletes the row once it sells
+    image: special.imageUrl,
+    isSpecial: true,
+    description: special.description,
+    grade: special.grade,
+  };
+}
+
+export async function listSpecialCards(): Promise<Card[]> {
+  const rows = await prisma.specialCard.findMany({ orderBy: { createdAt: "desc" } });
+  return rows.map(specialToCard);
+}
+
+export function foilCardId(baseId: string): string {
+  return `${baseId}${FOIL_SUFFIX}`;
+}
+
+export function specialCardId(id: string): string {
+  return `${SPECIAL_PREFIX}${id}`;
+}
+
+/** Called once per purchased line after a successful checkout. Branches by
+ * id namespace: a one-off special card is removed entirely (it's sold, no
+ * such thing as restocking it), a foil decrements its own FoilOverride, and
+ * a regular card decrements CardOverride as before. */
+export async function decrementStockAfterPurchase(cardId: string, qty: number): Promise<void> {
+  if (cardId.startsWith(SPECIAL_PREFIX)) {
+    await prisma.specialCard.deleteMany({ where: { id: cardId.slice(SPECIAL_PREFIX.length) } });
+    return;
+  }
+
+  if (cardId.endsWith(FOIL_SUFFIX)) {
+    const baseId = cardId.slice(0, -FOIL_SUFFIX.length);
+    const foil = await prisma.foilOverride.findUnique({ where: { cardId: baseId } });
+    if (!foil) return;
+    await prisma.foilOverride.update({
+      where: { cardId: baseId },
+      data: { stock: Math.max(0, foil.stock - qty) },
+    });
+    return;
+  }
+
+  const current = await getEffectiveCardById(cardId);
+  if (!current) return;
+  await prisma.cardOverride.upsert({
+    where: { cardId },
+    create: { cardId, price: current.price, stock: Math.max(0, current.stock - qty) },
+    update: { stock: Math.max(0, current.stock - qty) },
+  });
 }

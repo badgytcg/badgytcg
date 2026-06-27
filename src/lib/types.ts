@@ -15,6 +15,10 @@ export interface Card {
   price: number; // single-card price in USD, from overrides
   stock: number; // singles available, from overrides
   image: string;
+  isFoil?: boolean; // true for the synthetic "{baseId}::foil" variant of a card
+  isSpecial?: boolean; // true for a one-off SpecialCard (graded slab, rare foil, etc.)
+  description?: string | null; // SpecialCard only
+  grade?: string | null; // SpecialCard only
 }
 
 export interface CartLine {

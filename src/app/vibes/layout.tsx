@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 const TABS = [
   { name: "Browse Singles", href: "/vibes" },
+  { name: "Graded & Foils", href: "/vibes/special" },
   { name: "Import a Deck", href: "/vibes/deck-import" },
 ];
 

@@ -69,6 +69,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartLine[]>([]);
   const [wishlist, setWishlist] = useState<WishlistLine[]>([]);
   const [catalog, setCatalog] = useState<Card[]>(staticCards);
+  // Foil ("{id}::foil") and special ("special::{id}") cart lines aren't in
+  // the base catalog, so fetch+cache them individually as they show up.
+  const [extraCards, setExtraCards] = useState<Record<string, Card>>({});
   const [hydrated, setHydrated] = useState(false);
 
   // Cart stays local-only for now (no checkout yet to attach it to an account).
@@ -86,9 +89,32 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const getCardById = useCallback(
-    (id: string) => catalog.find((c) => c.id === id) ?? getStaticCardById(id),
-    [catalog]
+    (id: string) => catalog.find((c) => c.id === id) ?? getStaticCardById(id) ?? extraCards[id],
+    [catalog, extraCards]
   );
+
+  // Backfill foil/special cards referenced by the cart but not present in
+  // the base catalog or static bundle.
+  useEffect(() => {
+    const missing = cart
+      .map((l) => l.cardId)
+      .filter((id) => !catalog.some((c) => c.id === id) && !getStaticCardById(id) && !extraCards[id]);
+    if (missing.length === 0) return;
+
+    Promise.all(
+      missing.map((id) =>
+        fetch(`/api/cards/${encodeURIComponent(id)}`).then((res) => (res.ok ? res.json() : null))
+      )
+    ).then((results) => {
+      setExtraCards((prev) => {
+        const next = { ...prev };
+        results.forEach((r, i) => {
+          if (r?.card) next[missing[i]] = r.card;
+        });
+        return next;
+      });
+    });
+  }, [cart, catalog, extraCards]);
 
   useEffect(() => {
     if (hydrated) window.localStorage.setItem(CART_KEY, JSON.stringify(cart));

@@ -1,0 +1,38 @@
+import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { isAdminEmail } from "@/lib/admin";
+import { prisma } from "@/lib/prisma";
+
+export async function GET() {
+  const session = await auth();
+  if (!isAdminEmail(session?.user?.email)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  const cards = await prisma.specialCard.findMany({ orderBy: { createdAt: "desc" } });
+  return NextResponse.json({ cards });
+}
+
+export async function POST(request: Request) {
+  const session = await auth();
+  if (!isAdminEmail(session?.user?.email)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const body = await request.json();
+  const { name, description, imageUrl, price, grade, set } = body;
+  if (typeof name !== "string" || typeof imageUrl !== "string" || typeof price !== "number") {
+    return NextResponse.json({ error: "Expected { name, imageUrl, price }" }, { status: 400 });
+  }
+
+  const card = await prisma.specialCard.create({
+    data: {
+      name,
+      imageUrl,
+      price,
+      description: description ?? null,
+      grade: grade ?? null,
+      set: set ?? null,
+    },
+  });
+  return NextResponse.json({ card }, { status: 201 });
+}

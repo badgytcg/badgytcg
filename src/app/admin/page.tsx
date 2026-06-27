@@ -13,6 +13,14 @@ export default function AdminHome() {
           <h2 className="font-semibold text-zinc-100">Inventory</h2>
           <p className="mt-1 text-sm text-zinc-400">Edit price &amp; stock for any card, live.</p>
         </Link>
+        <Link href="/admin/foils" className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 hover:border-purple-500">
+          <h2 className="font-semibold text-zinc-100">Foils</h2>
+          <p className="mt-1 text-sm text-zinc-400">Separate price &amp; stock for foil copies of catalog cards.</p>
+        </Link>
+        <Link href="/admin/special" className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 hover:border-purple-500">
+          <h2 className="font-semibold text-zinc-100">Graded &amp; Special</h2>
+          <p className="mt-1 text-sm text-zinc-400">Manually add one-off graded slabs &amp; rare foils.</p>
+        </Link>
         <Link href="/admin/scan" className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 hover:border-purple-500">
           <h2 className="font-semibold text-zinc-100">Scan</h2>
           <p className="mt-1 text-sm text-zinc-400">Photograph a card to auto-match it and add to stock.</p>

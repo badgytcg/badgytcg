@@ -24,7 +24,8 @@ export default function CardDetail({ card }: { card: Card }) {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [marketPrices, setMarketPrices] = useState<MarketPrice[]>([]);
-  const inStock = card.stock > 0;
+  const [foilCard, setFoilCard] = useState<Card | null>(null);
+  const [showFoil, setShowFoil] = useState(false);
 
   useEffect(() => {
     fetch(`/api/cards/${card.id}/market-prices`)
@@ -32,16 +33,25 @@ export default function CardDetail({ card }: { card: Card }) {
       .then((data) => setMarketPrices(data.prices ?? []));
   }, [card.id]);
 
+  useEffect(() => {
+    fetch(`/api/cards/${encodeURIComponent(`${card.id}::foil`)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => setFoilCard(data?.card ?? null));
+  }, [card.id]);
+
+  const selected = showFoil && foilCard ? foilCard : card;
+  const inStock = selected.stock > 0;
+
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
       <div className="grid gap-8 sm:grid-cols-2">
         <div className="relative h-96 overflow-hidden rounded-xl bg-zinc-800">
           <Image
-            src={card.image}
-            alt={card.name}
+            src={selected.image}
+            alt={selected.name}
             fill
             sizes="400px"
-            className={`object-contain ${!inStock ? "grayscale opacity-40" : ""}`}
+            className={`object-contain ${!inStock ? "grayscale opacity-40" : ""} ${showFoil ? "drop-shadow-[0_0_20px_rgba(168,85,247,0.5)]" : ""}`}
             unoptimized
           />
           {!inStock && (
@@ -63,9 +73,27 @@ export default function CardDetail({ card }: { card: Card }) {
               {card.ability}
             </p>
           )}
-          <p className="mt-4 text-2xl font-semibold text-purple-300">${card.price.toFixed(2)}</p>
+
+          {foilCard && (
+            <div className="mt-4 inline-flex rounded-full border border-zinc-700 p-1 text-sm">
+              <button
+                onClick={() => setShowFoil(false)}
+                className={`rounded-full px-3 py-1 ${!showFoil ? "bg-purple-600 text-white" : "text-zinc-400"}`}
+              >
+                Normal
+              </button>
+              <button
+                onClick={() => setShowFoil(true)}
+                className={`rounded-full px-3 py-1 ${showFoil ? "bg-purple-600 text-white" : "text-zinc-400"}`}
+              >
+                Foil
+              </button>
+            </div>
+          )}
+
+          <p className="mt-4 text-2xl font-semibold text-purple-300">${selected.price.toFixed(2)}</p>
           <p className={`mt-1 text-sm ${inStock ? "text-green-400" : "text-zinc-500"}`}>
-            {inStock ? `${card.stock} in stock` : "Out of stock"}
+            {inStock ? `${selected.stock} in stock` : "Out of stock"}
           </p>
 
           <div className="mt-6 flex items-center gap-3">
@@ -79,7 +107,7 @@ export default function CardDetail({ card }: { card: Card }) {
             {inStock ? (
               <button
                 onClick={() => {
-                  addToCart(card.id, qty);
+                  addToCart(selected.id, qty);
                   setAdded(true);
                   setTimeout(() => setAdded(false), 1500);
                 }}
@@ -90,18 +118,18 @@ export default function CardDetail({ card }: { card: Card }) {
             ) : (
               <button
                 onClick={() => {
-                  addToWishlist([{ cardName: card.name, cardId: card.id, qty, note: "Card request" }]);
+                  addToWishlist([{ cardName: selected.name, cardId: selected.id, qty, note: "Card request" }]);
                   setAdded(true);
                   setTimeout(() => setAdded(false), 1500);
                 }}
                 className="rounded-lg bg-zinc-700 px-5 py-2 text-sm font-medium text-zinc-100 hover:bg-zinc-600"
               >
-                Request card
+                Request {showFoil ? "foil" : "card"}
               </button>
             )}
             <button
               onClick={() => {
-                addToWishlist([{ cardName: card.name, cardId: card.id, qty }]);
+                addToWishlist([{ cardName: selected.name, cardId: selected.id, qty }]);
                 setAdded(true);
                 setTimeout(() => setAdded(false), 1500);
               }}

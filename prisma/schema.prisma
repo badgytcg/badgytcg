@@ -120,12 +120,37 @@ model CardOverride {
 model MarketPrice {
   id        String   @id @default(cuid())
   cardId    String
-  source    String // "dyli_primary" | "dyli_secondary" | "minmax"
-  label     String // human-readable, e.g. "Dyli (Primary)"
+  source    String // "dyli" | "minmax"
+  label     String // human-readable, e.g. "Dyli"
   price     Float
   currency  String
   url       String?
   updatedAt DateTime @updatedAt
 
   @@unique([cardId, source])
+}
+
+// Foil copy of a catalog card, keyed by the base card's id. Only exists once
+// an admin has actually stocked a foil of that card — the toggle on a card's
+// detail page only shows up when a row is present here.
+model FoilOverride {
+  cardId    String   @id
+  price     Float
+  stock     Int
+  updatedAt DateTime @updatedAt
+}
+
+// Manually-curated one-off inventory: graded slabs, special/rare foils, etc.
+// that aren't part of the regular 548-card catalog. No stock field on
+// purpose — if it's listed here, it's available; admin deletes the row once
+// it sells rather than zeroing out a quantity.
+model SpecialCard {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  imageUrl    String
+  price       Float
+  grade       String? // e.g. "PSA 9", "Beckett 9.5"
+  set         String?
+  createdAt   DateTime @default(now())
 }

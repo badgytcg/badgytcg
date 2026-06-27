@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
-import { getEffectiveCardById } from "@/lib/catalog";
+import { decrementStockAfterPurchase } from "@/lib/catalog";
 import type Stripe from "stripe";
 
 // Stripe needs the raw, unparsed request body to verify the signature.
@@ -55,16 +55,9 @@ export async function POST(request: Request) {
     },
   });
 
-  // Decrement stock for each purchased card.
+  // Decrement stock for each purchased card (or remove it, for one-off specials).
   for (const item of orderItems) {
-    const current = await getEffectiveCardById(item.cardId);
-    if (!current) continue;
-    const newStock = Math.max(0, current.stock - item.qty);
-    await prisma.cardOverride.upsert({
-      where: { cardId: item.cardId },
-      create: { cardId: item.cardId, price: current.price, stock: newStock },
-      update: { stock: newStock },
-    });
+    await decrementStockAfterPurchase(item.cardId, item.qty);
   }
 
   return NextResponse.json({ received: true });
