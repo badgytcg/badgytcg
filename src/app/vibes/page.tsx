@@ -22,6 +22,7 @@ const NON_COLORS = new Set(["Relic", "Rod"]);
 // "???" is a handful of joke cards (Wut?, Wen?, Y?) with no real category.
 const NON_TYPES = new Set(["???"]);
 const ATTRIBUTE_GROUPS = ["Birb", "Lil", "Penguin"];
+const VARIANT_OPTIONS = ["Basic", "Foil", "Alt Foil"];
 
 const SET_ORDER = ["Enter the Huddle", "Legend of the Lils", "Birb & Pengu"];
 const SETS = SET_ORDER.filter((s) => cards.some((c) => c.set === s));
@@ -134,6 +135,7 @@ export default function VibesBrowsePage() {
   const [types, setTypes] = useState<string[]>([]);
   const [rarities, setRarities] = useState<string[]>([]);
   const [attributeGroups, setAttributeGroups] = useState<string[]>([]);
+  const [variantFilter, setVariantFilter] = useState<string[]>([]);
   const [costMin, setCostMin] = useState("");
   const [costMax, setCostMax] = useState("");
   const [vibeMin, setVibeMin] = useState("");
@@ -161,6 +163,15 @@ export default function VibesBrowsePage() {
       const matchesAttribute =
         attributeGroups.length === 0 ||
         attributeGroups.some((g) => attributeGroupsFor(c).includes(g));
+      const cardVariants = variantsByCardId[c.id];
+      const matchesVariant =
+        variantFilter.length === 0 ||
+        variantFilter.some(
+          (v) =>
+            v === "Basic" ||
+            (v === "Foil" && !!cardVariants?.foil) ||
+            (v === "Alt Foil" && !!cardVariants?.altfoil)
+        );
       const matchesStock = !inStockOnly || c.stock > 0;
       const matchesCostMin = costMin === "" || (c.cost ?? -Infinity) >= Number(costMin);
       const matchesCostMax = costMax === "" || (c.cost ?? Infinity) <= Number(costMax);
@@ -173,6 +184,7 @@ export default function VibesBrowsePage() {
         matchesType &&
         matchesRarity &&
         matchesAttribute &&
+        matchesVariant &&
         matchesStock &&
         matchesCostMin &&
         matchesCostMax &&
@@ -202,7 +214,7 @@ export default function VibesBrowsePage() {
         sorted.sort((a, b) => a.name.localeCompare(b.name));
     }
     return sorted;
-  }, [liveCards, query, sets, colors, types, rarities, attributeGroups, costMin, costMax, vibeMin, vibeMax, inStockOnly, sort]);
+  }, [liveCards, query, sets, colors, types, rarities, attributeGroups, variantFilter, variantsByCardId, costMin, costMax, vibeMin, vibeMax, inStockOnly, sort]);
 
   // Jump back to page 1 whenever the result set changes underneath the user.
   useEffect(() => {
@@ -219,6 +231,7 @@ export default function VibesBrowsePage() {
     setTypes([]);
     setRarities([]);
     setAttributeGroups([]);
+    setVariantFilter([]);
     setCostMin("");
     setCostMax("");
     setVibeMin("");
@@ -313,6 +326,7 @@ export default function VibesBrowsePage() {
           <FilterGroup title="Type" options={TYPES} selected={types} onToggle={(v) => setTypes(toggle(types, v))} />
           <FilterGroup title="Rarity" options={RARITIES} selected={rarities} onToggle={(v) => setRarities(toggle(rarities, v))} />
           <FilterGroup title="Attribute" options={ATTRIBUTE_GROUPS} selected={attributeGroups} onToggle={(v) => setAttributeGroups(toggle(attributeGroups, v))} />
+          <FilterGroup title="Variant" options={VARIANT_OPTIONS} selected={variantFilter} onToggle={(v) => setVariantFilter(toggle(variantFilter, v))} />
 
           <div className="mb-5">
             <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">Cost</h3>
