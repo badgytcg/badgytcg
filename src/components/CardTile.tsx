@@ -12,10 +12,12 @@ interface MarketPrice {
   currency: string;
 }
 
-interface FoilInfo {
+interface VariantInfo {
   price: number;
   stock: number;
 }
+
+type VariantKind = "foil" | "altfoil";
 
 const COLOR_RING: Record<string, string> = {
   Purple: "ring-purple-500/50",
@@ -39,35 +41,31 @@ const SOURCE_LOGO: Record<string, { src: string; width: number; height: number }
   minmax: { src: "/logos/minmax-logo.png", width: 30, height: 12 },
 };
 
-// Each set calls its foil variant something different.
-const FOIL_LABEL_BY_SET: Record<string, string> = {
-  "Legend of the Lils": "Arctic Foil",
-  "Birb & Pengu": "Birb & Pengu Foil",
-};
-
-function foilLabelFor(set: string): string {
-  return FOIL_LABEL_BY_SET[set] ?? "Foil";
-}
+const VARIANT_LABEL: Record<VariantKind, string> = { foil: "Foil", altfoil: "Alt Foil" };
 
 export default function CardTile({
   card,
   getQtyInDeck,
   onAdd,
-  marketPrices = [],
-  foil,
+  getMarketPrices,
+  variants = {},
 }: {
   card: Card;
   getQtyInDeck: (id: string) => number;
   onAdd: (cardId: string) => void;
-  marketPrices?: MarketPrice[];
-  foil?: FoilInfo;
+  getMarketPrices: (id: string) => MarketPrice[];
+  variants?: Partial<Record<VariantKind, VariantInfo>>;
 }) {
-  const [variant, setVariant] = useState<"base" | "foil">("base");
-  const showingFoil = variant === "foil" && !!foil;
-  const selectedId = showingFoil ? `${card.id}::foil` : card.id;
-  const price = showingFoil ? foil!.price : card.price;
-  const stock = showingFoil ? foil!.stock : card.stock;
+  const [selected, setSelected] = useState<"base" | VariantKind>("base");
+  const available = (Object.keys(variants) as VariantKind[]).filter((k) => variants[k]);
+
+  const activeVariant = selected !== "base" ? variants[selected] : undefined;
+  const showingVariant = selected !== "base" && !!activeVariant;
+  const selectedId = showingVariant ? `${card.id}::${selected}` : card.id;
+  const price = showingVariant ? activeVariant!.price : card.price;
+  const stock = showingVariant ? activeVariant!.stock : card.stock;
   const inStock = stock > 0;
+  const marketPrices = getMarketPrices(selectedId);
 
   return (
     <div
@@ -80,7 +78,7 @@ export default function CardTile({
             alt={card.name}
             fill
             sizes="200px"
-            className={`object-contain ${!inStock ? "grayscale opacity-40" : ""} ${showingFoil ? "drop-shadow-[0_0_12px_rgba(168,85,247,0.6)]" : ""}`}
+            className={`object-contain ${!inStock ? "grayscale opacity-40" : ""} ${showingVariant ? "drop-shadow-[0_0_12px_rgba(168,85,247,0.6)]" : ""}`}
             unoptimized
           />
           {!inStock && (
@@ -95,20 +93,23 @@ export default function CardTile({
         <p className="text-xs text-zinc-500">{card.set} · {card.rarity}</p>
       </Link>
 
-      {foil && (
+      {available.length > 0 && (
         <div className="mt-2 flex rounded-full border border-zinc-700 p-0.5 text-xs">
           <button
-            onClick={() => setVariant("base")}
-            className={`flex-1 rounded-full py-1 ${variant === "base" ? "bg-purple-600 text-white" : "text-zinc-400"}`}
+            onClick={() => setSelected("base")}
+            className={`flex-1 rounded-full py-1 ${selected === "base" ? "bg-purple-600 text-white" : "text-zinc-400"}`}
           >
             Base
           </button>
-          <button
-            onClick={() => setVariant("foil")}
-            className={`flex-1 rounded-full py-1 ${variant === "foil" ? "bg-purple-600 text-white" : "text-zinc-400"}`}
-          >
-            {foilLabelFor(card.set)}
-          </button>
+          {available.map((kind) => (
+            <button
+              key={kind}
+              onClick={() => setSelected(kind)}
+              className={`flex-1 rounded-full py-1 ${selected === kind ? "bg-purple-600 text-white" : "text-zinc-400"}`}
+            >
+              {VARIANT_LABEL[kind]}
+            </button>
+          ))}
         </div>
       )}
 

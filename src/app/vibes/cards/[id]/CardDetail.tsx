@@ -14,6 +14,10 @@ interface MarketPrice {
   updatedAt: string;
 }
 
+type VariantKind = "foil" | "altfoil";
+const VARIANT_LABEL: Record<VariantKind, string> = { foil: "Foil", altfoil: "Alt Foil" };
+const VARIANT_KINDS: VariantKind[] = ["foil", "altfoil"];
+
 const SOURCE_LOGO: Record<string, { src: string; width: number; height: number }> = {
   dyli: { src: "/logos/dyli-logo.png", width: 48, height: 18 },
   minmax: { src: "/logos/minmax-logo.png", width: 44, height: 18 },
@@ -23,24 +27,34 @@ export default function CardDetail({ card }: { card: Card }) {
   const { addToCart, addToWishlist } = useStore();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
-  const [marketPrices, setMarketPrices] = useState<MarketPrice[]>([]);
-  const [foilCard, setFoilCard] = useState<Card | null>(null);
-  const [showFoil, setShowFoil] = useState(false);
+  const [marketPricesById, setMarketPricesById] = useState<Record<string, MarketPrice[]>>({});
+  const [variantCards, setVariantCards] = useState<Partial<Record<VariantKind, Card>>>({});
+  const [selectedVariant, setSelectedVariant] = useState<"base" | VariantKind>("base");
 
   useEffect(() => {
-    fetch(`/api/cards/${card.id}/market-prices`)
-      .then((res) => res.json())
-      .then((data) => setMarketPrices(data.prices ?? []));
+    setSelectedVariant("base");
+    setVariantCards({});
+
+    for (const kind of VARIANT_KINDS) {
+      fetch(`/api/cards/${encodeURIComponent(`${card.id}::${kind}`)}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data?.card) setVariantCards((prev) => ({ ...prev, [kind]: data.card }));
+        });
+    }
   }, [card.id]);
 
-  useEffect(() => {
-    fetch(`/api/cards/${encodeURIComponent(`${card.id}::foil`)}`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => setFoilCard(data?.card ?? null));
-  }, [card.id]);
-
-  const selected = showFoil && foilCard ? foilCard : card;
+  const selected = selectedVariant !== "base" ? variantCards[selectedVariant] ?? card : card;
   const inStock = selected.stock > 0;
+  const availableVariants = VARIANT_KINDS.filter((k) => variantCards[k]);
+
+  useEffect(() => {
+    fetch(`/api/cards/${encodeURIComponent(selected.id)}/market-prices`)
+      .then((res) => res.json())
+      .then((data) => setMarketPricesById((prev) => ({ ...prev, [selected.id]: data.prices ?? [] })));
+  }, [selected.id]);
+
+  const marketPrices = marketPricesById[selected.id] ?? [];
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
@@ -51,7 +65,7 @@ export default function CardDetail({ card }: { card: Card }) {
             alt={selected.name}
             fill
             sizes="400px"
-            className={`object-contain ${!inStock ? "grayscale opacity-40" : ""} ${showFoil ? "drop-shadow-[0_0_20px_rgba(168,85,247,0.5)]" : ""}`}
+            className={`object-contain ${!inStock ? "grayscale opacity-40" : ""} ${selectedVariant !== "base" ? "drop-shadow-[0_0_20px_rgba(168,85,247,0.5)]" : ""}`}
             unoptimized
           />
           {!inStock && (
@@ -74,20 +88,23 @@ export default function CardDetail({ card }: { card: Card }) {
             </p>
           )}
 
-          {foilCard && (
+          {availableVariants.length > 0 && (
             <div className="mt-4 inline-flex rounded-full border border-zinc-700 p-1 text-sm">
               <button
-                onClick={() => setShowFoil(false)}
-                className={`rounded-full px-3 py-1 ${!showFoil ? "bg-purple-600 text-white" : "text-zinc-400"}`}
+                onClick={() => setSelectedVariant("base")}
+                className={`rounded-full px-3 py-1 ${selectedVariant === "base" ? "bg-purple-600 text-white" : "text-zinc-400"}`}
               >
-                Normal
+                Base
               </button>
-              <button
-                onClick={() => setShowFoil(true)}
-                className={`rounded-full px-3 py-1 ${showFoil ? "bg-purple-600 text-white" : "text-zinc-400"}`}
-              >
-                Foil
-              </button>
+              {availableVariants.map((kind) => (
+                <button
+                  key={kind}
+                  onClick={() => setSelectedVariant(kind)}
+                  className={`rounded-full px-3 py-1 ${selectedVariant === kind ? "bg-purple-600 text-white" : "text-zinc-400"}`}
+                >
+                  {VARIANT_LABEL[kind]}
+                </button>
+              ))}
             </div>
           )}
 
@@ -124,7 +141,7 @@ export default function CardDetail({ card }: { card: Card }) {
                 }}
                 className="rounded-lg bg-zinc-700 px-5 py-2 text-sm font-medium text-zinc-100 hover:bg-zinc-600"
               >
-                Request {showFoil ? "foil" : "card"}
+                Request {selectedVariant === "base" ? "card" : VARIANT_LABEL[selectedVariant].toLowerCase()}
               </button>
             )}
             <button

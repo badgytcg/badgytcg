@@ -2,8 +2,23 @@ import { cards as seedCards } from "@/data/cards";
 import { Card } from "@/lib/types";
 import { prisma } from "@/lib/prisma";
 
-const FOIL_SUFFIX = "::foil";
 const SPECIAL_PREFIX = "special::";
+
+export const VARIANT_KINDS = ["foil", "altfoil"] as const;
+export type VariantKind = (typeof VARIANT_KINDS)[number];
+
+export const VARIANT_LABEL: Record<VariantKind, string> = {
+  foil: "Foil",
+  altfoil: "Alt Foil",
+};
+
+function parseVariantId(id: string): { baseId: string; kind: VariantKind } | null {
+  for (const kind of VARIANT_KINDS) {
+    const suffix = `::${kind}`;
+    if (id.endsWith(suffix)) return { baseId: id.slice(0, -suffix.length), kind };
+  }
+  return null;
+}
 
 // Live admin-edited price/stock (CardOverride table) takes priority over
 // the static seed data in src/data/cards.ts. This is the source of truth
@@ -20,9 +35,9 @@ export async function getEffectiveCards(): Promise<Card[]> {
   });
 }
 
-/** Resolves a base card id, a foil variant id ("{baseId}::foil"), or a
- * special/graded card id ("special::{cuid}") to its effective Card shape.
- * Foil/special ids are a separate namespace from the regular catalog so
+/** Resolves a base card id, a variant id ("{baseId}::foil" / "{baseId}::altfoil"),
+ * or a special/graded card id ("special::{cuid}") to its effective Card shape.
+ * Variant/special ids are a separate namespace from the regular catalog so
  * they never show up in the main browse grid or bulk /api/cards response. */
 export async function getEffectiveCardById(id: string): Promise<Card | undefined> {
   if (id.startsWith(SPECIAL_PREFIX)) {
@@ -33,18 +48,20 @@ export async function getEffectiveCardById(id: string): Promise<Card | undefined
     return specialToCard(special);
   }
 
-  if (id.endsWith(FOIL_SUFFIX)) {
-    const baseId = id.slice(0, -FOIL_SUFFIX.length);
-    const base = seedCards.find((c) => c.id === baseId);
+  const parsed = parseVariantId(id);
+  if (parsed) {
+    const base = seedCards.find((c) => c.id === parsed.baseId);
     if (!base) return undefined;
-    const foil = await prisma.foilOverride.findUnique({ where: { cardId: baseId } });
-    if (!foil) return undefined; // no foil stocked for this card — toggle shouldn't even show
+    const variant = await prisma.cardVariantOverride.findUnique({
+      where: { cardId_kind: { cardId: parsed.baseId, kind: parsed.kind } },
+    });
+    if (!variant) return undefined; // no stock for this variant — toggle shouldn't even show
     return {
       ...base,
       id,
-      name: `${base.name} (Foil)`,
-      price: foil.price,
-      stock: foil.stock,
+      name: `${base.name} (${VARIANT_LABEL[parsed.kind]})`,
+      price: variant.price,
+      stock: variant.stock,
       isFoil: true,
     };
   }
@@ -95,8 +112,8 @@ export async function listSpecialCards(): Promise<Card[]> {
   return rows.map(specialToCard);
 }
 
-export function foilCardId(baseId: string): string {
-  return `${baseId}${FOIL_SUFFIX}`;
+export function variantCardId(baseId: string, kind: VariantKind): string {
+  return `${baseId}::${kind}`;
 }
 
 export function specialCardId(id: string): string {
@@ -105,21 +122,23 @@ export function specialCardId(id: string): string {
 
 /** Called once per purchased line after a successful checkout. Branches by
  * id namespace: a one-off special card is removed entirely (it's sold, no
- * such thing as restocking it), a foil decrements its own FoilOverride, and
- * a regular card decrements CardOverride as before. */
+ * such thing as restocking it), a foil/alt-foil decrements its own
+ * CardVariantOverride row, and a regular card decrements CardOverride as before. */
 export async function decrementStockAfterPurchase(cardId: string, qty: number): Promise<void> {
   if (cardId.startsWith(SPECIAL_PREFIX)) {
     await prisma.specialCard.deleteMany({ where: { id: cardId.slice(SPECIAL_PREFIX.length) } });
     return;
   }
 
-  if (cardId.endsWith(FOIL_SUFFIX)) {
-    const baseId = cardId.slice(0, -FOIL_SUFFIX.length);
-    const foil = await prisma.foilOverride.findUnique({ where: { cardId: baseId } });
-    if (!foil) return;
-    await prisma.foilOverride.update({
-      where: { cardId: baseId },
-      data: { stock: Math.max(0, foil.stock - qty) },
+  const parsed = parseVariantId(cardId);
+  if (parsed) {
+    const variant = await prisma.cardVariantOverride.findUnique({
+      where: { cardId_kind: { cardId: parsed.baseId, kind: parsed.kind } },
+    });
+    if (!variant) return;
+    await prisma.cardVariantOverride.update({
+      where: { cardId_kind: { cardId: parsed.baseId, kind: parsed.kind } },
+      data: { stock: Math.max(0, variant.stock - qty) },
     });
     return;
   }

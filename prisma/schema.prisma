@@ -130,14 +130,17 @@ model MarketPrice {
   @@unique([cardId, source])
 }
 
-// Foil copy of a catalog card, keyed by the base card's id. Only exists once
-// an admin has actually stocked a foil of that card — the toggle on a card's
-// detail page only shows up when a row is present here.
-model FoilOverride {
-  cardId    String   @id
+// A foil/alt-foil copy of a catalog card. `kind` is "foil" or "altfoil" —
+// only exists once an admin has actually stocked that variant; the toggle
+// on a card's tile/detail page only shows the tiers that have a row here.
+model CardVariantOverride {
+  cardId    String
+  kind      String // "foil" | "altfoil"
   price     Float
   stock     Int
   updatedAt DateTime @updatedAt
+
+  @@id([cardId, kind])
 }
 
 // Manually-curated one-off inventory: graded slabs, special/rare foils, etc.

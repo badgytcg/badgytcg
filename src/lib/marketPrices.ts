@@ -1,6 +1,7 @@
 import { cards } from "@/data/cards";
 import { normalizeCardKey } from "@/lib/normalize";
 import { prisma } from "@/lib/prisma";
+import { variantCardId, VariantKind } from "@/lib/catalog";
 
 interface PriceRow {
   cardId: string;
@@ -15,9 +16,23 @@ function normalizeSet(value: string): string {
   return value.toLowerCase().replace(/[^a-z]/g, "");
 }
 
-// Variant/promo wording that means "not the base printing" — skipped so a
-// foil/sketch/promo listing doesn't get attributed as the card's base price.
-const VARIANT_PATTERN = /\b(holo|arctic foil|foil|promo|qr|sketch|ttm)\b/i;
+// Listings we don't track pricing for at all — promos, one-off sketches,
+// QR/code cards. These get skipped entirely, not attributed to any variant.
+const SKIP_PATTERN = /\b(promo|qr|sketch|ttm)\b/i;
+// "Arctic Foil" is checked before plain "foil" since it also contains the word.
+const ALT_FOIL_PATTERN = /\barctic foil\b/i;
+const FOIL_PATTERN = /\b(holo|foil)\b/i;
+
+/** Pulls a variant tier (if any) out of a listing's name and returns the
+ * name with that wording stripped, so the remainder can still be matched
+ * against the base card name. Returns null kind for a plain base listing,
+ * and `skip: true` for promos/sketches/etc. we don't track at all. */
+function detectVariant(text: string): { kind: VariantKind | null; cleaned: string; skip: boolean } {
+  if (SKIP_PATTERN.test(text)) return { kind: null, cleaned: text, skip: true };
+  if (ALT_FOIL_PATTERN.test(text)) return { kind: "altfoil", cleaned: text.replace(ALT_FOIL_PATTERN, "").trim(), skip: false };
+  if (FOIL_PATTERN.test(text)) return { kind: "foil", cleaned: text.replace(FOIL_PATTERN, "").trim(), skip: false };
+  return { kind: null, cleaned: text, skip: false };
+}
 
 const byNameAndSet = new Map(
   cards.map((c) => [`${normalizeCardKey(c.name)}::${normalizeSet(c.set)}`, c])
@@ -53,16 +68,19 @@ async function fetchDyliPrices(): Promise<PriceRow[]> {
       if (lastDash === -1) continue;
       const namePart = item.name.slice(0, lastDash).trim();
       const setPart = item.name.slice(lastDash + 3).trim();
-      if (VARIANT_PATTERN.test(namePart)) continue;
 
-      const card = byNameAndSet.get(`${normalizeCardKey(namePart)}::${normalizeSet(setPart)}`);
+      const { kind, cleaned, skip } = detectVariant(namePart);
+      if (skip) continue;
+
+      const card = byNameAndSet.get(`${normalizeCardKey(cleaned)}::${normalizeSet(setPart)}`);
       if (!card) continue;
+      const cardId = kind ? variantCardId(card.id, kind) : card.id;
 
       // Only the resale floor price — that's the actual "what would I pay a
       // collector for this" market price, vs. Dyli's own primary listing.
       if (item.pricing?.secondary?.floor_price) {
         rows.push({
-          cardId: card.id,
+          cardId,
           source: "dyli",
           label: "Dyli",
           price: item.pricing.secondary.floor_price,
@@ -102,19 +120,21 @@ async function fetchMinMaxPrices(): Promise<PriceRow[]> {
       const tagMatch = title.match(/\(([A-Za-z]+)(\d+)\)/);
       const remaining = tagMatch ? title.replace(tagMatch[0], "").trim() : title;
 
-      if (VARIANT_PATTERN.test(remaining)) continue; // foil/sketch/promo — not the base price
+      const { kind, cleaned, skip } = detectVariant(remaining);
+      if (skip) continue;
 
       let card = tagMatch
         ? bySetCodeAndNumber.get(`${MINMAX_SET_TAG_MAP[tagMatch[1].toLowerCase()] ?? ""}::${tagMatch[2]}`)
         : undefined;
-      if (!card) card = byNameOnly.get(normalizeCardKey(remaining));
+      if (!card) card = byNameOnly.get(normalizeCardKey(cleaned));
       if (!card) continue;
+      const cardId = kind ? variantCardId(card.id, kind) : card.id;
 
       const price = Number(product.variants?.[0]?.price);
       if (!Number.isFinite(price)) continue;
 
       rows.push({
-        cardId: card.id,
+        cardId,
         source: "minmax",
         label: "MinMax Games",
         price,

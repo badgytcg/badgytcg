@@ -109,14 +109,18 @@ export default function VibesBrowsePage() {
       });
   }, []);
 
-  const [foilsByCardId, setFoilsByCardId] = useState<Record<string, { price: number; stock: number }>>({});
+  const [variantsByCardId, setVariantsByCardId] = useState<
+    Record<string, Partial<Record<"foil" | "altfoil", { price: number; stock: number }>>>
+  >({});
   useEffect(() => {
     fetch("/api/foils")
       .then((res) => res.json())
       .then((data) => {
-        const grouped: Record<string, { price: number; stock: number }> = {};
-        for (const f of data.foils ?? []) grouped[f.cardId] = { price: f.price, stock: f.stock };
-        setFoilsByCardId(grouped);
+        const grouped: Record<string, Partial<Record<"foil" | "altfoil", { price: number; stock: number }>>> = {};
+        for (const f of data.foils ?? []) {
+          (grouped[f.cardId] ??= {})[f.kind as "foil" | "altfoil"] = { price: f.price, stock: f.stock };
+        }
+        setVariantsByCardId(grouped);
       });
   }, []);
 
@@ -381,8 +385,8 @@ export default function VibesBrowsePage() {
                     card={card}
                     getQtyInDeck={(id) => deckLines[id] ?? 0}
                     onAdd={addOneToDeck}
-                    marketPrices={marketPricesByCard[card.id]}
-                    foil={foilsByCardId[card.id]}
+                    getMarketPrices={(id) => marketPricesByCard[id] ?? []}
+                    variants={variantsByCardId[card.id]}
                   />
                 ))}
               </div>
