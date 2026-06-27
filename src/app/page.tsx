@@ -27,29 +27,31 @@ export default async function Home() {
     .slice(0, 10);
 
   return (
-    <div>
-      <section className="relative overflow-hidden bg-[#5B6EF5]">
+    <div className="bg-zinc-950">
+      <section className="relative overflow-hidden bg-gradient-to-b from-purple-950 via-zinc-950 to-zinc-950">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-6 py-20 sm:py-28 lg:grid-cols-2">
           <div className="text-center lg:text-left">
-            <h1 className="font-[var(--font-baloo)] text-4xl font-extrabold uppercase leading-tight text-white sm:text-5xl">
-              Browse. Buy.
+            <h1 className="font-[var(--font-baloo)] text-4xl font-extrabold uppercase leading-tight sm:text-5xl">
+              <span className="bg-gradient-to-r from-yellow-300 via-pink-500 to-purple-500 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(236,72,153,0.35)]">
+                Browse. Buy.
+              </span>
               <br />
-              Build the Vibe.
+              <span className="text-white">Build the Vibe.</span>
             </h1>
-            <p className="mx-auto mt-4 max-w-md text-indigo-100 lg:mx-0">
+            <p className="mx-auto mt-4 max-w-md text-zinc-300 lg:mx-0">
               Singles, decks, foils, and graded cards for Pudgy Penguins&apos;
               Vibes TCG — starting with Vibes, more games on the way.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
               <Link
                 href="/vibes"
-                className="rounded-full bg-white px-6 py-3 font-bold text-[#5B6EF5] shadow-lg hover:bg-indigo-50"
+                className="rounded-full bg-purple-600 px-6 py-3 font-bold text-white shadow-lg shadow-purple-900/40 hover:bg-purple-500"
               >
                 Shop Vibes TCG
               </Link>
               <Link
                 href="/vibes/deck-import"
-                className="rounded-full border-2 border-white px-6 py-3 font-bold text-white hover:bg-white/10"
+                className="rounded-full border-2 border-zinc-700 px-6 py-3 font-bold text-zinc-200 hover:border-purple-500 hover:text-purple-300"
               >
                 Import a Deck
               </Link>
@@ -60,7 +62,7 @@ export default async function Home() {
             {FAN_CARDS.map((src, i) => (
               <div
                 key={src}
-                className={`absolute h-56 w-40 overflow-hidden rounded-xl border-4 border-white shadow-2xl transition-transform sm:h-72 sm:w-52 ${FAN_ROTATIONS[i]} ${FAN_OFFSETS[i]}`}
+                className={`absolute h-56 w-40 overflow-hidden rounded-xl border-4 border-zinc-800 shadow-2xl shadow-purple-950/50 transition-transform sm:h-72 sm:w-52 ${FAN_ROTATIONS[i]} ${FAN_OFFSETS[i]}`}
                 style={{ left: `${i * 13}%` }}
               >
                 <Image src={src} alt="" fill sizes="200px" className="object-cover" unoptimized />
@@ -70,31 +72,31 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="bg-[#4A5CE0] px-6 py-16 text-center">
-        <p className="text-xs font-bold uppercase tracking-widest text-indigo-200">Why BadgyTCG</p>
+      <section className="bg-zinc-900/60 px-6 py-16 text-center">
+        <p className="text-xs font-bold uppercase tracking-widest text-purple-400">Why BadgyTCG</p>
         <h2 className="mt-2 font-[var(--font-baloo)] text-2xl font-extrabold uppercase text-white sm:text-3xl">
           Everything You Need to Build a Deck
         </h2>
 
         <div className="mx-auto mt-10 grid max-w-5xl gap-4 sm:grid-cols-3">
-          <div className="rounded-2xl bg-white/10 p-6">
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
             <div className="text-3xl">🔍</div>
             <h3 className="mt-3 font-bold uppercase text-white">Browse or Build</h3>
-            <p className="mt-2 text-sm text-indigo-100">
+            <p className="mt-2 text-sm text-zinc-400">
               Filter the full singles catalog, or pick cards one by one and watch your deck&apos;s total cost add up live.
             </p>
           </div>
-          <div className="rounded-2xl bg-white/10 p-6">
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
             <div className="text-3xl">⚡</div>
             <h3 className="mt-3 font-bold uppercase text-white">We Fill What&apos;s in Stock</h3>
-            <p className="mt-2 text-sm text-indigo-100">
+            <p className="mt-2 text-sm text-zinc-400">
               Import a deck code and we&apos;ll add everything available straight to your cart — no guessing.
             </p>
           </div>
-          <div className="rounded-2xl bg-white/10 p-6">
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
             <div className="text-3xl">🎯</div>
             <h3 className="mt-3 font-bold uppercase text-white">We Hunt Down the Rest</h3>
-            <p className="mt-2 text-sm text-indigo-100">
+            <p className="mt-2 text-sm text-zinc-400">
               Missing cards land on your wishlist automatically. We track them down and follow up once they&apos;re ready.
             </p>
           </div>
@@ -102,13 +104,13 @@ export default async function Home() {
       </section>
 
       {trending.length > 0 && (
-        <section className="bg-[#5B6EF5] px-6 py-16">
+        <section className="bg-zinc-950 px-6 py-16">
           <div className="mx-auto max-w-6xl">
             <div className="flex items-center justify-between">
               <h2 className="font-[var(--font-baloo)] text-2xl font-extrabold uppercase text-white sm:text-3xl">
                 In Stock Now
               </h2>
-              <Link href="/vibes" className="text-sm font-bold text-white hover:underline">
+              <Link href="/vibes" className="text-sm font-bold text-purple-400 hover:underline">
                 View all →
               </Link>
             </div>
@@ -118,14 +120,14 @@ export default async function Home() {
                 <Link
                   key={card.id}
                   href={`/vibes/cards/${card.id}`}
-                  className="overflow-hidden rounded-xl bg-zinc-900 ring-1 ring-white/10 transition-transform hover:-translate-y-1"
+                  className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 ring-1 ring-purple-500/20 transition-transform hover:-translate-y-1"
                 >
                   <div className="relative h-36 w-full bg-zinc-800">
                     <Image src={card.image} alt={card.name} fill sizes="160px" className="object-contain" unoptimized />
                   </div>
                   <div className="p-3">
                     <p className="truncate text-sm font-semibold text-white">{card.name}</p>
-                    <p className="mt-0.5 text-xs text-indigo-200">{card.rarity} · ${card.price.toFixed(2)}</p>
+                    <p className="mt-0.5 text-xs text-zinc-500">{card.rarity} · ${card.price.toFixed(2)}</p>
                   </div>
                 </Link>
               ))}
