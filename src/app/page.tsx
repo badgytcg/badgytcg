@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { getEffectiveCards } from "@/lib/catalog";
 
 const FAN_CARDS = [
   "https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RedWizardPenguin.png",
@@ -12,7 +13,19 @@ const FAN_CARDS = [
 const FAN_ROTATIONS = ["-rotate-12", "-rotate-6", "rotate-0", "rotate-6", "rotate-12"];
 const FAN_OFFSETS = ["translate-y-3", "translate-y-1", "translate-y-0", "translate-y-1", "translate-y-3"];
 
-export default function Home() {
+const RARITY_RANK: Record<string, number> = { Epic: 0, Rare: 1, Uncommon: 2, Common: 3 };
+
+// Dynamic, not statically generated, so "In Stock Now" reflects live
+// admin-edited inventory instead of whatever was true at build time.
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const cards = await getEffectiveCards();
+  const trending = cards
+    .filter((c) => c.stock > 0)
+    .sort((a, b) => (RARITY_RANK[a.rarity] ?? 9) - (RARITY_RANK[b.rarity] ?? 9))
+    .slice(0, 10);
+
   return (
     <div>
       <section className="relative overflow-hidden bg-[#5B6EF5]">
@@ -87,6 +100,39 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {trending.length > 0 && (
+        <section className="bg-[#5B6EF5] px-6 py-16">
+          <div className="mx-auto max-w-6xl">
+            <div className="flex items-center justify-between">
+              <h2 className="font-[var(--font-baloo)] text-2xl font-extrabold uppercase text-white sm:text-3xl">
+                In Stock Now
+              </h2>
+              <Link href="/vibes" className="text-sm font-bold text-white hover:underline">
+                View all →
+              </Link>
+            </div>
+
+            <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+              {trending.map((card) => (
+                <Link
+                  key={card.id}
+                  href={`/vibes/cards/${card.id}`}
+                  className="overflow-hidden rounded-xl bg-zinc-900 ring-1 ring-white/10 transition-transform hover:-translate-y-1"
+                >
+                  <div className="relative h-36 w-full bg-zinc-800">
+                    <Image src={card.image} alt={card.name} fill sizes="160px" className="object-contain" unoptimized />
+                  </div>
+                  <div className="p-3">
+                    <p className="truncate text-sm font-semibold text-white">{card.name}</p>
+                    <p className="mt-0.5 text-xs text-indigo-200">{card.rarity} · ${card.price.toFixed(2)}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
