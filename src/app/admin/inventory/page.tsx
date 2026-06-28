@@ -13,6 +13,7 @@ export default function AdminInventoryPage() {
   const [cards, setCards] = useState<Card[]>([]);
   const [query, setQuery] = useState("");
   const [set, setSet] = useState("All");
+  const [rarityFilter, setRarityFilter] = useState("All");
   const [sort, setSort] = useState<SortKey>("name-asc");
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
@@ -108,7 +109,8 @@ export default function AdminInventoryPage() {
     const result = cards.filter(
       (c) =>
         c.name.toLowerCase().includes(query.toLowerCase()) &&
-        (set === "All" || c.set === set)
+        (set === "All" || c.set === set) &&
+        (rarityFilter === "All" || c.rarity === rarityFilter)
     );
 
     const sorted = [...result];
@@ -132,7 +134,7 @@ export default function AdminInventoryPage() {
         sorted.sort((a, b) => a.name.localeCompare(b.name));
     }
     return sorted;
-  }, [cards, query, set, sort]);
+  }, [cards, query, set, rarityFilter, sort]);
 
   function getEdit(card: Card) {
     return edits[card.id] ?? { price: String(card.price), stock: String(card.stock) };
@@ -269,6 +271,16 @@ export default function AdminInventoryPage() {
           <option value="All">All sets</option>
           {sets.map((s) => (
             <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+        <select
+          value={rarityFilter}
+          onChange={(e) => setRarityFilter(e.target.value)}
+          className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100"
+        >
+          <option value="All">All rarities</option>
+          {rarities.map((r) => (
+            <option key={r} value={r}>{r}</option>
           ))}
         </select>
         <select
