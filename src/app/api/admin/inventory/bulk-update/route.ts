@@ -17,9 +17,10 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { set, rarity, mode, price } = body as {
+  const { set, rarity, color, mode, price } = body as {
     set?: string | null;
     rarity?: string | null;
+    color?: string | null;
     mode: "fixed" | "dyli";
     price?: number;
   };
@@ -31,7 +32,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "price is required for mode 'fixed'" }, { status: 400 });
   }
 
-  const matching = cards.filter((c) => (!set || c.set === set) && (!rarity || c.rarity === rarity));
+  const matching = cards.filter(
+    (c) =>
+      (!set || c.set === set) &&
+      (!rarity || c.rarity === rarity) &&
+      (!color || c.color.split(" ").includes(color))
+  );
   if (matching.length === 0) {
     return NextResponse.json({ updated: 0, skipped: 0 });
   }

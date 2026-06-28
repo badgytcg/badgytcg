@@ -11,6 +11,9 @@ const BULK_ADD_PLACEHOLDER = `4 Get Rekt
 
 const SET_ORDER = ["Enter the Huddle", "Legend of the Lils", "Birb & Pengu"];
 const RARITY_ORDER = ["Common", "Uncommon", "Rare", "Epic"];
+// "Relic"/"Rod" show up in the Color column for non-colored cards, but
+// they're really Types, not colors.
+const NON_COLORS = new Set(["Relic", "Rod"]);
 
 type SortKey = "name-asc" | "name-desc" | "price-asc" | "price-desc" | "stock-asc" | "stock-desc";
 type BulkMode = "fixed" | "dyli";
@@ -20,6 +23,7 @@ export default function AdminInventoryPage() {
   const [query, setQuery] = useState("");
   const [set, setSet] = useState("All");
   const [rarityFilter, setRarityFilter] = useState("All");
+  const [colorFilter, setColorFilter] = useState("All");
   const [sort, setSort] = useState<SortKey>("name-asc");
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
@@ -29,6 +33,7 @@ export default function AdminInventoryPage() {
 
   const [bulkSet, setBulkSet] = useState("All");
   const [bulkRarity, setBulkRarity] = useState("All");
+  const [bulkColor, setBulkColor] = useState("All");
   const [bulkMode, setBulkMode] = useState<BulkMode>("fixed");
   const [bulkPrice, setBulkPrice] = useState("0.50");
   const [bulkApplying, setBulkApplying] = useState(false);
@@ -72,13 +77,27 @@ export default function AdminInventoryPage() {
     () => RARITY_ORDER.filter((r) => cards.some((c) => c.rarity === r)),
     [cards]
   );
+  const colors = useMemo(
+    () =>
+      Array.from(new Set(cards.flatMap((c) => c.color.split(" ")).filter((c) => !NON_COLORS.has(c)))).sort(
+        (a, b) => {
+          if (a === "Colorless") return 1;
+          if (b === "Colorless") return -1;
+          return a.localeCompare(b);
+        }
+      ),
+    [cards]
+  );
 
   const bulkMatches = useMemo(
     () =>
       cards.filter(
-        (c) => (bulkSet === "All" || c.set === bulkSet) && (bulkRarity === "All" || c.rarity === bulkRarity)
+        (c) =>
+          (bulkSet === "All" || c.set === bulkSet) &&
+          (bulkRarity === "All" || c.rarity === bulkRarity) &&
+          (bulkColor === "All" || c.color.split(" ").includes(bulkColor))
       ),
-    [cards, bulkSet, bulkRarity]
+    [cards, bulkSet, bulkRarity, bulkColor]
   );
 
   async function applyBulkUpdate() {
@@ -86,10 +105,11 @@ export default function AdminInventoryPage() {
     const price = bulkMode === "fixed" ? Number(bulkPrice) : undefined;
     if (bulkMode === "fixed" && (!Number.isFinite(price) || price! < 0)) return;
 
+    const filterDesc = `${bulkSet === "All" ? "all sets" : bulkSet}, ${bulkRarity === "All" ? "all rarities" : bulkRarity}, ${bulkColor === "All" ? "all colors" : bulkColor}`;
     const confirmMsg =
       bulkMode === "fixed"
-        ? `Set price to $${price!.toFixed(2)} for ${bulkMatches.length} card(s) (${bulkSet === "All" ? "all sets" : bulkSet}, ${bulkRarity === "All" ? "all rarities" : bulkRarity})?`
-        : `Set price to each card's current Dyli floor price for ${bulkMatches.length} card(s) (${bulkSet === "All" ? "all sets" : bulkSet}, ${bulkRarity === "All" ? "all rarities" : bulkRarity})? Cards with no Dyli price will be skipped.`;
+        ? `Set price to $${price!.toFixed(2)} for ${bulkMatches.length} card(s) (${filterDesc})?`
+        : `Set price to each card's current Dyli floor price for ${bulkMatches.length} card(s) (${filterDesc})? Cards with no Dyli price will be skipped.`;
     if (!window.confirm(confirmMsg)) return;
 
     setBulkApplying(true);
@@ -101,6 +121,7 @@ export default function AdminInventoryPage() {
         body: JSON.stringify({
           set: bulkSet === "All" ? null : bulkSet,
           rarity: bulkRarity === "All" ? null : bulkRarity,
+          color: bulkColor === "All" ? null : bulkColor,
           mode: bulkMode,
           price,
         }),
@@ -150,7 +171,8 @@ export default function AdminInventoryPage() {
       (c) =>
         c.name.toLowerCase().includes(query.toLowerCase()) &&
         (set === "All" || c.set === set) &&
-        (rarityFilter === "All" || c.rarity === rarityFilter)
+        (rarityFilter === "All" || c.rarity === rarityFilter) &&
+        (colorFilter === "All" || c.color.split(" ").includes(colorFilter))
     );
 
     const sorted = [...result];
@@ -174,7 +196,7 @@ export default function AdminInventoryPage() {
         sorted.sort((a, b) => a.name.localeCompare(b.name));
     }
     return sorted;
-  }, [cards, query, set, rarityFilter, sort]);
+  }, [cards, query, set, rarityFilter, colorFilter, sort]);
 
   function getEdit(card: Card) {
     return edits[card.id] ?? { price: String(card.price), stock: String(card.stock) };
@@ -259,6 +281,19 @@ export default function AdminInventoryPage() {
               <option value="All">All rarities</option>
               {rarities.map((r) => (
                 <option key={r} value={r}>{r}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-zinc-500">Color</label>
+            <select
+              value={bulkColor}
+              onChange={(e) => setBulkColor(e.target.value)}
+              className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100"
+            >
+              <option value="All">All colors</option>
+              {colors.map((c) => (
+                <option key={c} value={c}>{c}</option>
               ))}
             </select>
           </div>
@@ -380,6 +415,16 @@ export default function AdminInventoryPage() {
           <option value="All">All rarities</option>
           {rarities.map((r) => (
             <option key={r} value={r}>{r}</option>
+          ))}
+        </select>
+        <select
+          value={colorFilter}
+          onChange={(e) => setColorFilter(e.target.value)}
+          className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100"
+        >
+          <option value="All">All colors</option>
+          {colors.map((c) => (
+            <option key={c} value={c}>{c}</option>
           ))}
         </select>
         <select
