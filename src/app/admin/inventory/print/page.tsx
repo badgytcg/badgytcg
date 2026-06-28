@@ -1,4 +1,4 @@
-import { getEffectiveCards } from "@/lib/catalog";
+import { getEffectiveCards, listStockedVariants } from "@/lib/catalog";
 import PrintButton from "./PrintButton";
 
 const SET_ORDER = ["Enter the Huddle", "Legend of the Lils", "Birb & Pengu"];
@@ -6,8 +6,8 @@ const SET_ORDER = ["Enter the Huddle", "Legend of the Lils", "Birb & Pengu"];
 export const dynamic = "force-dynamic";
 
 export default async function InventoryPrintPage() {
-  const cards = await getEffectiveCards();
-  const inStock = cards
+  const [cards, variants] = await Promise.all([getEffectiveCards(), listStockedVariants()]);
+  const inStock = [...cards, ...variants]
     .filter((c) => c.stock > 0)
     .sort((a, b) => {
       const setDiff = SET_ORDER.indexOf(a.set) - SET_ORDER.indexOf(b.set);

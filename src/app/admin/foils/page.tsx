@@ -5,6 +5,10 @@ import { Card } from "@/lib/types";
 
 type VariantKind = "foil" | "altfoil";
 const VARIANT_LABEL: Record<VariantKind, string> = { foil: "Foil", altfoil: "Alt Foil" };
+const BULK_ADD_PLACEHOLDER = `4 Get Rekt
+1 Lil Waker
+2 Mount Fuji
+...`;
 
 interface VariantRow {
   cardId: string;
@@ -25,6 +29,14 @@ export default function AdminFoilsPage() {
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [edits, setEdits] = useState<Record<string, { price: string; stock: string }>>({});
+
+  const [bulkAddText, setBulkAddText] = useState("");
+  const [bulkAdding, setBulkAdding] = useState(false);
+  const [bulkAddResult, setBulkAddResult] = useState<{
+    updated: { name: string; qty: number; newStock: number }[];
+    unmatched: { name: string; qty: number }[];
+  } | null>(null);
+  const [bulkAddError, setBulkAddError] = useState<string | null>(null);
 
   function load() {
     Promise.all([
@@ -85,6 +97,31 @@ export default function AdminFoilsPage() {
     setRows((prev) => prev.filter((r) => !(r.cardId === cardId && r.kind === kind)));
   }
 
+  async function applyBulkAdd() {
+    if (!bulkAddText.trim()) return;
+    setBulkAdding(true);
+    setBulkAddError(null);
+    setBulkAddResult(null);
+    try {
+      const res = await fetch("/api/admin/foil-inventory/bulk-add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: bulkAddText, kind: addKind }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setBulkAddError(data.error ?? "Couldn't parse that list.");
+        return;
+      }
+      setBulkAddResult(data);
+      load();
+      if (data.unmatched.length === 0) setBulkAddText("");
+    } catch {
+      setBulkAddError("Bulk add failed — try again in a moment.");
+    }
+    setBulkAdding(false);
+  }
+
   if (loading) {
     return <div className="mx-auto max-w-5xl px-6 py-16 text-center text-zinc-500">Loading...</div>;
   }
@@ -140,20 +177,75 @@ export default function AdminFoilsPage() {
         )}
       </section>
 
+      <div className="mb-4 flex rounded-full border border-zinc-700 p-0.5 text-sm">
+        {(["foil", "altfoil"] as VariantKind[]).map((kind) => (
+          <button
+            key={kind}
+            onClick={() => setAddKind(kind)}
+            className={`rounded-full px-4 py-1 ${addKind === kind ? "bg-purple-600 text-white" : "text-zinc-400"}`}
+          >
+            {VARIANT_LABEL[kind]}
+          </button>
+        ))}
+      </div>
+
+      <section className="mb-10 rounded-xl border border-zinc-800 bg-zinc-900 p-5">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+          Bulk Add {VARIANT_LABEL[addKind]} by Text
+        </h2>
+        <p className="mb-4 text-xs text-zinc-500">
+          Paste a list like &quot;4 Get Rekt&quot; (one per line) — quantities get added to whatever&apos;s
+          already in {VARIANT_LABEL[addKind].toLowerCase()} stock. Every line in this paste uses the{" "}
+          {VARIANT_LABEL[addKind]} tier selected above.
+        </p>
+        <textarea
+          value={bulkAddText}
+          onChange={(e) => setBulkAddText(e.target.value)}
+          placeholder={BULK_ADD_PLACEHOLDER}
+          rows={6}
+          className="w-full rounded-lg border border-zinc-700 bg-zinc-950 p-3 font-mono text-sm text-zinc-100 placeholder:text-zinc-600"
+        />
+        <button
+          onClick={applyBulkAdd}
+          disabled={bulkAdding || !bulkAddText.trim()}
+          className="mt-3 rounded-lg bg-purple-600 px-5 py-2 text-sm font-medium text-white hover:bg-purple-500 disabled:bg-zinc-700 disabled:text-zinc-400"
+        >
+          {bulkAdding ? "Adding..." : `Add to ${VARIANT_LABEL[addKind]} Inventory`}
+        </button>
+
+        {bulkAddError && <p className="mt-3 text-sm text-red-400">{bulkAddError}</p>}
+
+        {bulkAddResult && (
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div>
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-green-400">
+                Added ({bulkAddResult.updated.length})
+              </h3>
+              <ul className="space-y-1 text-sm text-zinc-300">
+                {bulkAddResult.updated.map((u, i) => (
+                  <li key={i}>+{u.qty} {u.name} → {u.newStock} in stock</li>
+                ))}
+              </ul>
+            </div>
+            {bulkAddResult.unmatched.length > 0 && (
+              <div>
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-yellow-400">
+                  Not Found ({bulkAddResult.unmatched.length})
+                </h3>
+                <ul className="space-y-1 text-sm text-zinc-300">
+                  {bulkAddResult.unmatched.map((u, i) => (
+                    <li key={i}>{u.qty} {u.name}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+      </section>
+
       <section>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">Add or Edit a Variant</h2>
         <div className="mb-4 flex flex-wrap items-center gap-3">
-          <div className="flex rounded-full border border-zinc-700 p-0.5 text-sm">
-            {(["foil", "altfoil"] as VariantKind[]).map((kind) => (
-              <button
-                key={kind}
-                onClick={() => setAddKind(kind)}
-                className={`rounded-full px-4 py-1 ${addKind === kind ? "bg-purple-600 text-white" : "text-zinc-400"}`}
-              >
-                {VARIANT_LABEL[kind]}
-              </button>
-            ))}
-          </div>
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}

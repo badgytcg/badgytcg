@@ -112,6 +112,28 @@ export async function listSpecialCards(): Promise<Card[]> {
   return rows.map(specialToCard);
 }
 
+/** Every currently-stocked foil/alt-foil, as full Card objects — used by
+ * the admin inventory print report so variants show up alongside base cards. */
+export async function listStockedVariants(): Promise<Card[]> {
+  const overrides = await prisma.cardVariantOverride.findMany();
+  const baseById = new Map(seedCards.map((c) => [c.id, c]));
+
+  return overrides
+    .map((o): Card | null => {
+      const base = baseById.get(o.cardId);
+      if (!base) return null;
+      return {
+        ...base,
+        id: variantCardId(o.cardId, o.kind as VariantKind),
+        name: `${base.name} (${VARIANT_LABEL[o.kind as VariantKind]})`,
+        price: o.price,
+        stock: o.stock,
+        isFoil: true,
+      };
+    })
+    .filter((c): c is Card => c !== null);
+}
+
 export function variantCardId(baseId: string, kind: VariantKind): string {
   return `${baseId}::${kind}`;
 }
