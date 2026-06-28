@@ -40,9 +40,11 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-zinc-950 text-zinc-100">
         <AuthProvider>
           <StoreProvider>
-            <Navbar />
+            <div className="print:hidden">
+              <Navbar />
+            </div>
             <main className="flex-1">{children}</main>
-            <footer className="border-t border-purple-900/40 px-6 py-6 text-center text-xs text-zinc-500">
+            <footer className="border-t border-purple-900/40 px-6 py-6 text-center text-xs text-zinc-500 print:hidden">
               Fan-made storefront, not affiliated with Orange Cap Games.
             </footer>
           </StoreProvider>

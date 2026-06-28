@@ -45,7 +45,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div>
-      <div className="border-b border-zinc-800 bg-zinc-900/50">
+      <div className="border-b border-zinc-800 bg-zinc-900/50 print:hidden">
         <nav className="mx-auto flex max-w-5xl gap-4 px-6">
           {TABS.map((tab) => {
             const active = pathname === tab.href;

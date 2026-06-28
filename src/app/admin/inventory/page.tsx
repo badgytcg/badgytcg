@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { Card } from "@/lib/types";
+
+const BULK_ADD_PLACEHOLDER = `4 Get Rekt
+1 Lil Waker
+2 Mount Fuji
+...`;
 
 const SET_ORDER = ["Enter the Huddle", "Legend of the Lils", "Birb & Pengu"];
 const RARITY_ORDER = ["Common", "Uncommon", "Rare", "Epic"];
@@ -27,6 +33,14 @@ export default function AdminInventoryPage() {
   const [bulkPrice, setBulkPrice] = useState("0.50");
   const [bulkApplying, setBulkApplying] = useState(false);
   const [bulkResult, setBulkResult] = useState<string | null>(null);
+
+  const [bulkAddText, setBulkAddText] = useState("");
+  const [bulkAdding, setBulkAdding] = useState(false);
+  const [bulkAddResult, setBulkAddResult] = useState<{
+    updated: { name: string; qty: number; newStock: number }[];
+    unmatched: { name: string; qty: number }[];
+  } | null>(null);
+  const [bulkAddError, setBulkAddError] = useState<string | null>(null);
 
   async function refreshMarketPrices() {
     setRefreshing(true);
@@ -105,6 +119,32 @@ export default function AdminInventoryPage() {
     setBulkApplying(false);
   }
 
+  async function applyBulkAdd() {
+    if (!bulkAddText.trim()) return;
+    setBulkAdding(true);
+    setBulkAddError(null);
+    setBulkAddResult(null);
+    try {
+      const res = await fetch("/api/admin/inventory/bulk-add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: bulkAddText }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setBulkAddError(data.error ?? "Couldn't parse that list.");
+        return;
+      }
+      setBulkAddResult(data);
+      const refreshed = await fetch("/api/cards").then((r) => r.json());
+      setCards(refreshed.cards ?? []);
+      if (data.unmatched.length === 0) setBulkAddText("");
+    } catch {
+      setBulkAddError("Bulk add failed — try again in a moment.");
+    }
+    setBulkAdding(false);
+  }
+
   const filtered = useMemo(() => {
     const result = cards.filter(
       (c) =>
@@ -173,6 +213,13 @@ export default function AdminInventoryPage() {
         <h1 className="text-2xl font-bold text-zinc-100">Inventory</h1>
         <div className="flex items-center gap-3">
           {refreshResult && <span className="text-xs text-zinc-500">{refreshResult}</span>}
+          <Link
+            href="/admin/inventory/print"
+            target="_blank"
+            className="rounded-lg border border-zinc-700 px-3 py-1.5 text-sm text-zinc-300 hover:border-purple-500"
+          >
+            Print Inventory Report
+          </Link>
           <button
             onClick={refreshMarketPrices}
             disabled={refreshing}
@@ -254,6 +301,58 @@ export default function AdminInventoryPage() {
           </button>
         </div>
         {bulkResult && <p className="mt-3 text-sm text-zinc-400">{bulkResult}</p>}
+      </div>
+
+      <div className="mb-6 rounded-xl border border-zinc-800 bg-zinc-900 p-5">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">Bulk Add by Text</h2>
+        <p className="mb-4 text-xs text-zinc-500">
+          Paste a list like &quot;4 Get Rekt&quot; (one per line) — quantities get added to whatever&apos;s
+          already in stock, so don&apos;t paste the same pile twice.
+        </p>
+        <textarea
+          value={bulkAddText}
+          onChange={(e) => setBulkAddText(e.target.value)}
+          placeholder={BULK_ADD_PLACEHOLDER}
+          rows={6}
+          className="w-full rounded-lg border border-zinc-700 bg-zinc-950 p-3 font-mono text-sm text-zinc-100 placeholder:text-zinc-600"
+        />
+        <button
+          onClick={applyBulkAdd}
+          disabled={bulkAdding || !bulkAddText.trim()}
+          className="mt-3 rounded-lg bg-purple-600 px-5 py-2 text-sm font-medium text-white hover:bg-purple-500 disabled:bg-zinc-700 disabled:text-zinc-400"
+        >
+          {bulkAdding ? "Adding..." : "Add to Inventory"}
+        </button>
+
+        {bulkAddError && <p className="mt-3 text-sm text-red-400">{bulkAddError}</p>}
+
+        {bulkAddResult && (
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div>
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-green-400">
+                Added ({bulkAddResult.updated.length})
+              </h3>
+              <ul className="space-y-1 text-sm text-zinc-300">
+                {bulkAddResult.updated.map((u, i) => (
+                  <li key={i}>+{u.qty} {u.name} → {u.newStock} in stock</li>
+                ))}
+              </ul>
+            </div>
+            {bulkAddResult.unmatched.length > 0 && (
+              <div>
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-yellow-400">
+                  Not Found ({bulkAddResult.unmatched.length})
+                </h3>
+                <ul className="space-y-1 text-sm text-zinc-300">
+                  {bulkAddResult.unmatched.map((u, i) => (
+                    <li key={i}>{u.qty} {u.name}</li>
+                  ))}
+                </ul>
+                <p className="mt-2 text-xs text-zinc-500">Check spelling, then paste just these lines again.</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="mb-4 flex flex-wrap items-center gap-3">
