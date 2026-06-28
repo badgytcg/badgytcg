@@ -23,11 +23,77 @@ const SOURCE_LOGO: Record<string, { src: string; width: number; height: number }
   minmax: { src: "/logos/minmax-logo.png", width: 44, height: 18 },
 };
 
+interface HistoryPoint {
+  source: string;
+  price: number;
+  recordedAt: string;
+}
+
+const CHART_COLOR: Record<string, string> = {
+  dyli: "#facc15",
+  minmax: "#a855f7",
+  site: "#34d399",
+};
+
+function PriceChart({ history }: { history: HistoryPoint[] }) {
+  const bySource = new Map<string, HistoryPoint[]>();
+  for (const p of history) {
+    const list = bySource.get(p.source);
+    if (list) list.push(p);
+    else bySource.set(p.source, [p]);
+  }
+  const series = Array.from(bySource.entries()).filter(([, pts]) => pts.length >= 2);
+  if (series.length === 0) return null;
+
+  const allPrices = history.map((p) => p.price);
+  const min = Math.min(...allPrices);
+  const max = Math.max(...allPrices);
+  const range = max - min || 1;
+  const width = 280;
+  const height = 80;
+
+  function pointsFor(pts: HistoryPoint[]) {
+    return pts
+      .map((p, i) => {
+        const x = (i / (pts.length - 1)) * width;
+        const y = height - ((p.price - min) / range) * height;
+        return `${x},${y}`;
+      })
+      .join(" ");
+  }
+
+  return (
+    <div className="mt-6 rounded-lg border border-zinc-800 p-3">
+      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">Price History</h3>
+      <svg viewBox={`0 0 ${width} ${height}`} className="w-full" style={{ height: 80 }}>
+        {series.map(([source, pts]) => (
+          <polyline
+            key={source}
+            points={pointsFor(pts)}
+            fill="none"
+            stroke={CHART_COLOR[source] ?? "#a1a1aa"}
+            strokeWidth={2}
+          />
+        ))}
+      </svg>
+      <div className="mt-2 flex gap-4 text-xs text-zinc-400">
+        {series.map(([source]) => (
+          <span key={source} className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: CHART_COLOR[source] ?? "#a1a1aa" }} />
+            {source === "site" ? "BadgyTCG" : source === "dyli" ? "Dyli" : "MinMax"}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function CardDetail({ card }: { card: Card }) {
   const { addToCart, addToWishlist } = useStore();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [marketPricesById, setMarketPricesById] = useState<Record<string, MarketPrice[]>>({});
+  const [historyById, setHistoryById] = useState<Record<string, HistoryPoint[]>>({});
   const [variantCards, setVariantCards] = useState<Partial<Record<VariantKind, Card>>>({});
   const [selectedVariant, setSelectedVariant] = useState<"base" | VariantKind>("base");
 
@@ -54,7 +120,14 @@ export default function CardDetail({ card }: { card: Card }) {
       .then((data) => setMarketPricesById((prev) => ({ ...prev, [selected.id]: data.prices ?? [] })));
   }, [selected.id]);
 
+  useEffect(() => {
+    fetch(`/api/cards/${encodeURIComponent(selected.id)}/market-prices/history`)
+      .then((res) => res.json())
+      .then((data) => setHistoryById((prev) => ({ ...prev, [selected.id]: data.history ?? [] })));
+  }, [selected.id]);
+
   const marketPrices = marketPricesById[selected.id] ?? [];
+  const history = historyById[selected.id] ?? [];
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
@@ -185,6 +258,8 @@ export default function CardDetail({ card }: { card: Card }) {
               </ul>
             </div>
           )}
+
+          <PriceChart history={history} />
         </div>
       </div>
     </div>

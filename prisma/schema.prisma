@@ -117,6 +117,7 @@ model CardOverride {
 
 // Cached prices scraped/pulled from other marketplaces, refreshed via the
 // "Refresh Market Prices" admin action rather than on every page view.
+// Always holds just the latest value per cardId+source.
 model MarketPrice {
   id        String   @id @default(cuid())
   cardId    String
@@ -128,6 +129,20 @@ model MarketPrice {
   updatedAt DateTime @updatedAt
 
   @@unique([cardId, source])
+}
+
+// Append-only log of every MarketPrice value seen, one row per refresh per
+// cardId+source. This is what powers price charts and gainers/decliners —
+// MarketPrice itself only ever holds the latest value, not a history.
+model MarketPriceHistory {
+  id         String   @id @default(cuid())
+  cardId     String
+  source     String // "dyli" | "minmax" | "site"
+  price      Float
+  currency   String
+  recordedAt DateTime @default(now())
+
+  @@index([cardId, source, recordedAt])
 }
 
 // A foil/alt-foil copy of a catalog card. `kind` is "foil" or "altfoil" —

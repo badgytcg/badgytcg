@@ -174,9 +174,37 @@ export async function refreshMarketPrices(): Promise<{ dyli: number; minmax: num
     });
   }
 
+  // Append a history point for every value seen this refresh — this is the
+  // only place price history accumulates, so charts/gainers get richer the
+  // more often "Refresh Market Prices" is run.
+  if (lowestByKey.size > 0) {
+    await prisma.marketPriceHistory.createMany({
+      data: Array.from(lowestByKey.values()).map((row) => ({
+        cardId: row.cardId,
+        source: row.source,
+        price: row.price,
+        currency: row.currency,
+      })),
+    });
+  }
+
+  // Also snapshot our own site prices, so "site" shows up as a trend too.
+  const { getEffectiveCards } = await import("@/lib/catalog");
+  const siteCards = await getEffectiveCards();
+  await prisma.marketPriceHistory.createMany({
+    data: siteCards.filter((c) => c.stock > 0).map((c) => ({ cardId: c.id, source: "site", price: c.price, currency: "USD" })),
+  });
+
   return { dyli: dyliRows.length, minmax: minmaxRows.length };
 }
 
 export async function getMarketPrices(cardId: string) {
   return prisma.marketPrice.findMany({ where: { cardId }, orderBy: { source: "asc" } });
+}
+
+export async function getPriceHistory(cardId: string) {
+  return prisma.marketPriceHistory.findMany({
+    where: { cardId },
+    orderBy: { recordedAt: "asc" },
+  });
 }
