@@ -4,8 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/lib/types";
 
 const SET_ORDER = ["Enter the Huddle", "Legend of the Lils", "Birb & Pengu"];
+const RARITY_ORDER = ["Common", "Uncommon", "Rare", "Epic"];
 
 type SortKey = "name-asc" | "name-desc" | "price-asc" | "price-desc" | "stock-asc" | "stock-desc";
+type BulkMode = "fixed" | "dyli";
 
 export default function AdminInventoryPage() {
   const [cards, setCards] = useState<Card[]>([]);
@@ -17,6 +19,13 @@ export default function AdminInventoryPage() {
   const [edits, setEdits] = useState<Record<string, { price: string; stock: string }>>({});
   const [refreshing, setRefreshing] = useState(false);
   const [refreshResult, setRefreshResult] = useState<string | null>(null);
+
+  const [bulkSet, setBulkSet] = useState("All");
+  const [bulkRarity, setBulkRarity] = useState("All");
+  const [bulkMode, setBulkMode] = useState<BulkMode>("fixed");
+  const [bulkPrice, setBulkPrice] = useState("0.50");
+  const [bulkApplying, setBulkApplying] = useState(false);
+  const [bulkResult, setBulkResult] = useState<string | null>(null);
 
   async function refreshMarketPrices() {
     setRefreshing(true);
@@ -44,6 +53,56 @@ export default function AdminInventoryPage() {
     () => SET_ORDER.filter((s) => cards.some((c) => c.set === s)),
     [cards]
   );
+  const rarities = useMemo(
+    () => RARITY_ORDER.filter((r) => cards.some((c) => c.rarity === r)),
+    [cards]
+  );
+
+  const bulkMatches = useMemo(
+    () =>
+      cards.filter(
+        (c) => (bulkSet === "All" || c.set === bulkSet) && (bulkRarity === "All" || c.rarity === bulkRarity)
+      ),
+    [cards, bulkSet, bulkRarity]
+  );
+
+  async function applyBulkUpdate() {
+    if (bulkMatches.length === 0) return;
+    const price = bulkMode === "fixed" ? Number(bulkPrice) : undefined;
+    if (bulkMode === "fixed" && (!Number.isFinite(price) || price! < 0)) return;
+
+    const confirmMsg =
+      bulkMode === "fixed"
+        ? `Set price to $${price!.toFixed(2)} for ${bulkMatches.length} card(s) (${bulkSet === "All" ? "all sets" : bulkSet}, ${bulkRarity === "All" ? "all rarities" : bulkRarity})?`
+        : `Set price to each card's current Dyli floor price for ${bulkMatches.length} card(s) (${bulkSet === "All" ? "all sets" : bulkSet}, ${bulkRarity === "All" ? "all rarities" : bulkRarity})? Cards with no Dyli price will be skipped.`;
+    if (!window.confirm(confirmMsg)) return;
+
+    setBulkApplying(true);
+    setBulkResult(null);
+    try {
+      const res = await fetch("/api/admin/inventory/bulk-update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          set: bulkSet === "All" ? null : bulkSet,
+          rarity: bulkRarity === "All" ? null : bulkRarity,
+          mode: bulkMode,
+          price,
+        }),
+      });
+      const data = await res.json();
+      setBulkResult(
+        bulkMode === "dyli"
+          ? `Updated ${data.updated} card(s), skipped ${data.skipped} (no Dyli price yet).`
+          : `Updated ${data.updated} card(s).`
+      );
+      const refreshed = await fetch("/api/cards").then((r) => r.json());
+      setCards(refreshed.cards ?? []);
+    } catch {
+      setBulkResult("Bulk update failed — try again in a moment.");
+    }
+    setBulkApplying(false);
+  }
 
   const filtered = useMemo(() => {
     const result = cards.filter(
@@ -120,6 +179,79 @@ export default function AdminInventoryPage() {
             {refreshing ? "Refreshing..." : "Refresh Market Prices"}
           </button>
         </div>
+      </div>
+
+      <div className="mb-6 rounded-xl border border-zinc-800 bg-zinc-900 p-5">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">Bulk Price Update</h2>
+        <p className="mb-4 text-xs text-zinc-500">
+          Pick a set/rarity, then apply a price to just those cards — everything outside the filter is untouched.
+        </p>
+        <div className="flex flex-wrap items-end gap-3">
+          <div>
+            <label className="mb-1 block text-xs text-zinc-500">Set</label>
+            <select
+              value={bulkSet}
+              onChange={(e) => setBulkSet(e.target.value)}
+              className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100"
+            >
+              <option value="All">All sets</option>
+              {sets.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-zinc-500">Rarity</label>
+            <select
+              value={bulkRarity}
+              onChange={(e) => setBulkRarity(e.target.value)}
+              className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100"
+            >
+              <option value="All">All rarities</option>
+              {rarities.map((r) => (
+                <option key={r} value={r}>{r}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-zinc-500">Set price to</label>
+            <div className="flex rounded-full border border-zinc-700 p-0.5 text-sm">
+              <button
+                onClick={() => setBulkMode("fixed")}
+                className={`rounded-full px-3 py-1 ${bulkMode === "fixed" ? "bg-purple-600 text-white" : "text-zinc-400"}`}
+              >
+                Fixed amount
+              </button>
+              <button
+                onClick={() => setBulkMode("dyli")}
+                className={`rounded-full px-3 py-1 ${bulkMode === "dyli" ? "bg-purple-600 text-white" : "text-zinc-400"}`}
+              >
+                Dyli floor price
+              </button>
+            </div>
+          </div>
+          {bulkMode === "fixed" && (
+            <div>
+              <label className="mb-1 block text-xs text-zinc-500">Price</label>
+              <input
+                type="number"
+                step="0.01"
+                min={0}
+                value={bulkPrice}
+                onChange={(e) => setBulkPrice(e.target.value)}
+                className="w-24 rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100"
+              />
+            </div>
+          )}
+          <button
+            onClick={applyBulkUpdate}
+            disabled={bulkApplying || bulkMatches.length === 0}
+            className="rounded-lg bg-purple-600 px-5 py-2 text-sm font-medium text-white hover:bg-purple-500 disabled:bg-zinc-700 disabled:text-zinc-400"
+          >
+            {bulkApplying ? "Applying..." : `Apply to ${bulkMatches.length} card(s)`}
+          </button>
+        </div>
+        {bulkResult && <p className="mt-3 text-sm text-zinc-400">{bulkResult}</p>}
       </div>
 
       <div className="mb-4 flex flex-wrap items-center gap-3">
