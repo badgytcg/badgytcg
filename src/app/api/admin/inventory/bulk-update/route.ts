@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     (c) =>
       (!set || c.set === set) &&
       (!rarity || c.rarity === rarity) &&
-      (!color || colorCategory(c.color) === color)
+      (!color || colorCategory(c) === color)
   );
   if (matching.length === 0) {
     return NextResponse.json({ updated: 0, skipped: 0 });

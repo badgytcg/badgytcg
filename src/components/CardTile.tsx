@@ -32,8 +32,8 @@ const COLOR_RING: Record<string, string> = {
   "Multi-color": "ring-fuchsia-500/50",
 };
 
-function ringFor(color: string): string {
-  return COLOR_RING[colorCategory(color)] ?? "ring-zinc-500/50";
+function ringFor(card: Card): string {
+  return COLOR_RING[colorCategory(card)] ?? "ring-zinc-500/50";
 }
 
 const SOURCE_LOGO: Record<string, { src: string; width: number; height: number }> = {
@@ -69,7 +69,7 @@ export default function CardTile({
 
   return (
     <div
-      className={`flex flex-col rounded-xl border border-zinc-800 bg-zinc-900 p-4 ring-1 ${ringFor(card.color)}`}
+      className={`flex flex-col rounded-xl border border-zinc-800 bg-zinc-900 p-4 ring-1 ${ringFor(card)}`}
     >
       <Link href={`/vibes/cards/${card.id}`} className="flex-1">
         <div className="relative mb-3 h-40 overflow-hidden rounded-lg bg-zinc-800">

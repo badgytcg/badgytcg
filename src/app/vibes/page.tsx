@@ -29,7 +29,7 @@ const SET_ORDER = ["Enter the Huddle", "Legend of the Lils", "Birb & Pengu"];
 const SETS = SET_ORDER.filter((s) => cards.some((c) => c.set === s));
 
 const COLORS = Array.from(
-  new Set(cards.map((c) => colorCategory(c.color)).filter((c) => !NON_COLORS.has(c)))
+  new Set(cards.map((c) => colorCategory(c)).filter((c) => !NON_COLORS.has(c)))
 ).sort((a, b) => {
   if (a === "Colorless") return 1;
   if (b === "Colorless") return -1;
@@ -159,7 +159,7 @@ export default function VibesBrowsePage() {
     const result = liveCards.filter((c) => {
       const matchesQuery = c.name.toLowerCase().includes(query.toLowerCase());
       const matchesSet = sets.length === 0 || sets.includes(c.set);
-      const matchesColor = colors.length === 0 || colors.includes(colorCategory(c.color));
+      const matchesColor = colors.length === 0 || colors.includes(colorCategory(c));
       const matchesType = types.length === 0 || types.includes(c.type);
       const matchesRarity = rarities.length === 0 || rarities.includes(c.rarity);
       const matchesAttribute =

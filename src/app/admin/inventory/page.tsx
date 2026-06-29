@@ -80,7 +80,7 @@ export default function AdminInventoryPage() {
   );
   const colors = useMemo(
     () =>
-      Array.from(new Set(cards.map((c) => colorCategory(c.color)).filter((c) => !NON_COLORS.has(c)))).sort(
+      Array.from(new Set(cards.map((c) => colorCategory(c)).filter((c) => !NON_COLORS.has(c)))).sort(
         (a, b) => {
           if (a === "Colorless") return 1;
           if (b === "Colorless") return -1;
@@ -98,7 +98,7 @@ export default function AdminInventoryPage() {
         (c) =>
           (bulkSet === "All" || c.set === bulkSet) &&
           (bulkRarity === "All" || c.rarity === bulkRarity) &&
-          (bulkColor === "All" || colorCategory(c.color) === bulkColor)
+          (bulkColor === "All" || colorCategory(c) === bulkColor)
       ),
     [cards, bulkSet, bulkRarity, bulkColor]
   );
@@ -175,7 +175,7 @@ export default function AdminInventoryPage() {
         c.name.toLowerCase().includes(query.toLowerCase()) &&
         (set === "All" || c.set === set) &&
         (rarityFilter === "All" || c.rarity === rarityFilter) &&
-        (colorFilter === "All" || colorCategory(c.color) === colorFilter)
+        (colorFilter === "All" || colorCategory(c) === colorFilter)
     );
 
     const sorted = [...result];

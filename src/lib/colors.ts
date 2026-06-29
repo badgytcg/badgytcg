@@ -6,14 +6,28 @@
 // actual dual-color rules) is untouched.
 const COLORLESS_ALIASES = new Set(["Brown", "Beige"]);
 
-export function colorCategory(color: string): string {
-  const trimmed = (color ?? "").trim();
+interface ColorCategoryInput {
+  color: string;
+  set?: string;
+  attribute?: string | null;
+}
+
+// The Legend of the Lils Relic-Wizard cards (Half Past Chill, Glow and
+// Behold, Feather Forecast, Potion Commotion, Glass Act) are tagged
+// Colorless in the source data, but should browse as Multi-color.
+function isLotlRelicWizard(card: ColorCategoryInput): boolean {
+  return card.set === "Legend of the Lils" && card.attribute === "Wizard";
+}
+
+export function colorCategory(card: ColorCategoryInput): string {
+  if (isLotlRelicWizard(card)) return "Multi-color";
+  const trimmed = (card.color ?? "").trim();
   if (!trimmed) return "Colorless";
   if (trimmed.includes(" ")) return "Multi-color";
   if (COLORLESS_ALIASES.has(trimmed)) return "Colorless";
   return trimmed;
 }
 
-export function colorCategories(colors: string[]): string[] {
-  return Array.from(new Set(colors.map(colorCategory)));
+export function colorCategories(cards: ColorCategoryInput[]): string[] {
+  return Array.from(new Set(cards.map(colorCategory)));
 }
