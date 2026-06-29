@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/lib/types";
+import { colorCategory } from "@/lib/colors";
 
 interface MarketPrice {
   source: string;
@@ -28,12 +29,11 @@ const COLOR_RING: Record<string, string> = {
   Colorless: "ring-zinc-500/50",
   Relic: "ring-amber-500/50",
   Rod: "ring-amber-500/50",
+  "Multi-color": "ring-fuchsia-500/50",
 };
 
 function ringFor(color: string): string {
-  // Dual colors like "Blue Yellow" key off the first color.
-  const first = color.split(" ")[0];
-  return COLOR_RING[first] ?? "ring-zinc-500/50";
+  return COLOR_RING[colorCategory(color)] ?? "ring-zinc-500/50";
 }
 
 const SOURCE_LOGO: Record<string, { src: string; width: number; height: number }> = {

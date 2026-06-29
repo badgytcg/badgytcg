@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Card } from "@/lib/types";
+import { colorCategory } from "@/lib/colors";
 
 const BULK_ADD_PLACEHOLDER = `4 Get Rekt
 1 Lil Waker
@@ -79,10 +80,12 @@ export default function AdminInventoryPage() {
   );
   const colors = useMemo(
     () =>
-      Array.from(new Set(cards.flatMap((c) => c.color.split(" ")).filter((c) => !NON_COLORS.has(c)))).sort(
+      Array.from(new Set(cards.map((c) => colorCategory(c.color)).filter((c) => !NON_COLORS.has(c)))).sort(
         (a, b) => {
           if (a === "Colorless") return 1;
           if (b === "Colorless") return -1;
+          if (a === "Multi-color") return 1;
+          if (b === "Multi-color") return -1;
           return a.localeCompare(b);
         }
       ),
@@ -95,7 +98,7 @@ export default function AdminInventoryPage() {
         (c) =>
           (bulkSet === "All" || c.set === bulkSet) &&
           (bulkRarity === "All" || c.rarity === bulkRarity) &&
-          (bulkColor === "All" || c.color.split(" ").includes(bulkColor))
+          (bulkColor === "All" || colorCategory(c.color) === bulkColor)
       ),
     [cards, bulkSet, bulkRarity, bulkColor]
   );
@@ -172,7 +175,7 @@ export default function AdminInventoryPage() {
         c.name.toLowerCase().includes(query.toLowerCase()) &&
         (set === "All" || c.set === set) &&
         (rarityFilter === "All" || c.rarity === rarityFilter) &&
-        (colorFilter === "All" || c.color.split(" ").includes(colorFilter))
+        (colorFilter === "All" || colorCategory(c.color) === colorFilter)
     );
 
     const sorted = [...result];

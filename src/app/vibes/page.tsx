@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { cards } from "@/data/cards";
 import { Card } from "@/lib/types";
+import { colorCategory } from "@/lib/colors";
 import CardTile from "@/components/CardTile";
 import { useStore } from "@/context/StoreContext";
 
@@ -28,10 +29,12 @@ const SET_ORDER = ["Enter the Huddle", "Legend of the Lils", "Birb & Pengu"];
 const SETS = SET_ORDER.filter((s) => cards.some((c) => c.set === s));
 
 const COLORS = Array.from(
-  new Set(cards.flatMap((c) => c.color.split(" ")).filter((c) => !NON_COLORS.has(c)))
+  new Set(cards.map((c) => colorCategory(c.color)).filter((c) => !NON_COLORS.has(c)))
 ).sort((a, b) => {
   if (a === "Colorless") return 1;
   if (b === "Colorless") return -1;
+  if (a === "Multi-color") return 1;
+  if (b === "Multi-color") return -1;
   return a.localeCompare(b);
 });
 const TYPES = Array.from(new Set(cards.map((c) => c.type))).filter((t) => !NON_TYPES.has(t)).sort();
@@ -156,8 +159,7 @@ export default function VibesBrowsePage() {
     const result = liveCards.filter((c) => {
       const matchesQuery = c.name.toLowerCase().includes(query.toLowerCase());
       const matchesSet = sets.length === 0 || sets.includes(c.set);
-      const cardColors = c.color.split(" ");
-      const matchesColor = colors.length === 0 || colors.some((col) => cardColors.includes(col));
+      const matchesColor = colors.length === 0 || colors.includes(colorCategory(c.color));
       const matchesType = types.length === 0 || types.includes(c.type);
       const matchesRarity = rarities.length === 0 || rarities.includes(c.rarity);
       const matchesAttribute =

@@ -4,6 +4,7 @@ import { isAdminEmail } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { cards } from "@/data/cards";
 import { getEffectiveCards } from "@/lib/catalog";
+import { colorCategory } from "@/lib/colors";
 
 // Bulk price update scoped to a set/rarity filter — never touches cards
 // outside that filter. mode "fixed" applies a flat price to every match;
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
     (c) =>
       (!set || c.set === set) &&
       (!rarity || c.rarity === rarity) &&
-      (!color || c.color.split(" ").includes(color))
+      (!color || colorCategory(c.color) === color)
   );
   if (matching.length === 0) {
     return NextResponse.json({ updated: 0, skipped: 0 });
