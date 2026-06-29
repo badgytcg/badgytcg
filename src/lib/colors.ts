@@ -4,8 +4,14 @@
 // "Multi-color" category instead — this is purely a display/filter
 // grouping, the underlying card.color data (which reflects the game's
 // actual dual-color rules) is untouched.
+const COLORLESS_ALIASES = new Set(["Brown", "Beige"]);
+
 export function colorCategory(color: string): string {
-  return color.includes(" ") ? "Multi-color" : color;
+  const trimmed = (color ?? "").trim();
+  if (!trimmed) return "Colorless";
+  if (trimmed.includes(" ")) return "Multi-color";
+  if (COLORLESS_ALIASES.has(trimmed)) return "Colorless";
+  return trimmed;
 }
 
 export function colorCategories(colors: string[]): string[] {
