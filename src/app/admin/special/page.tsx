@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Card } from "@/lib/types";
 
 interface SpecialCard {
   id: string;
@@ -16,9 +17,11 @@ const BLANK = { name: "", description: "", imageUrl: "", price: "", grade: "", s
 
 export default function AdminSpecialPage() {
   const [cards, setCards] = useState<SpecialCard[]>([]);
+  const [catalog, setCatalog] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(BLANK);
   const [creating, setCreating] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   function load() {
     fetch("/api/admin/special-cards")
@@ -29,6 +32,23 @@ export default function AdminSpecialPage() {
       });
   }
   useEffect(load, []);
+
+  useEffect(() => {
+    fetch("/api/cards")
+      .then((res) => res.json())
+      .then((data) => setCatalog(data.cards ?? []));
+  }, []);
+
+  const suggestions = useMemo(() => {
+    const q = form.name.trim().toLowerCase();
+    if (!q) return [];
+    return catalog.filter((c) => c.name.toLowerCase().includes(q)).slice(0, 8);
+  }, [catalog, form.name]);
+
+  function pickSuggestion(card: Card) {
+    setForm((prev) => ({ ...prev, name: card.name, imageUrl: card.image, set: card.set }));
+    setShowSuggestions(false);
+  }
 
   async function createCard() {
     const price = Number(form.price);
@@ -72,13 +92,50 @@ export default function AdminSpecialPage() {
       <div className="mb-10 rounded-xl border border-zinc-800 bg-zinc-900 p-5">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">Add Item</h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          <input placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100" />
+          <div className="relative">
+            <input
+              placeholder="Name"
+              value={form.name}
+              onChange={(e) => {
+                setForm({ ...form, name: e.target.value });
+                setShowSuggestions(true);
+              }}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 100)}
+              autoComplete="off"
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100"
+            />
+            {showSuggestions && suggestions.length > 0 && (
+              <ul className="absolute z-10 mt-1 w-full max-h-60 overflow-y-auto rounded-lg border border-zinc-700 bg-zinc-900 shadow-lg">
+                {suggestions.map((card) => (
+                  <li key={card.id}>
+                    <button
+                      type="button"
+                      onMouseDown={() => pickSuggestion(card)}
+                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-zinc-200 hover:bg-zinc-800"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={card.image} alt="" className="h-8 w-6 rounded object-cover" />
+                      <span>
+                        {card.name}
+                        <span className="ml-1 text-xs text-zinc-500">· {card.set}</span>
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <input placeholder="Image URL" value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100" />
           <input type="number" step="0.01" min={0} placeholder="Price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100" />
           <input placeholder="Grade (e.g. PSA 9)" value={form.grade} onChange={(e) => setForm({ ...form, grade: e.target.value })} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100" />
           <input placeholder="Set (optional)" value={form.set} onChange={(e) => setForm({ ...form, set: e.target.value })} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100" />
           <input placeholder="Description (optional)" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100" />
         </div>
+        <p className="mt-2 text-xs text-zinc-500">
+          Start typing a card name to pick it from your catalog — image and set fill in automatically. Still
+          works for one-off names not in the catalog (e.g. a unique promo).
+        </p>
         <button
           onClick={createCard}
           disabled={creating || !form.name || !form.imageUrl || !form.price}
