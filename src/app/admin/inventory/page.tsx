@@ -12,9 +12,6 @@ const BULK_ADD_PLACEHOLDER = `4 Get Rekt
 
 const SET_ORDER = ["Enter the Huddle", "Legend of the Lils", "Birb & Pengu"];
 const RARITY_ORDER = ["Common", "Uncommon", "Rare", "Epic"];
-// "Relic"/"Rod" show up in the Color column for non-colored cards, but
-// they're really Types, not colors.
-const NON_COLORS = new Set(["Relic", "Rod"]);
 
 type SortKey = "name-asc" | "name-desc" | "price-asc" | "price-desc" | "stock-asc" | "stock-desc";
 type BulkMode = "fixed" | "dyli";
@@ -80,7 +77,7 @@ export default function AdminInventoryPage() {
   );
   const colors = useMemo(
     () =>
-      Array.from(new Set(cards.map((c) => colorCategory(c)).filter((c) => !NON_COLORS.has(c)))).sort(
+      Array.from(new Set(cards.map((c) => colorCategory(c)))).sort(
         (a, b) => {
           if (a === "Colorless") return 1;
           if (b === "Colorless") return -1;

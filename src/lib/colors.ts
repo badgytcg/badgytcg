@@ -4,7 +4,10 @@
 // "Multi-color" category instead — this is purely a display/filter
 // grouping, the underlying card.color data (which reflects the game's
 // actual dual-color rules) is untouched.
-const COLORLESS_ALIASES = new Set(["Brown", "Beige"]);
+// "Relic" and "Rod" in the color column just echo the card's Type for
+// otherwise colorless relic/rod cards — fold them into Colorless so they
+// still show up under a color filter instead of being invisible.
+const COLORLESS_ALIASES = new Set(["Brown", "Beige", "Relic", "Rod"]);
 
 interface ColorCategoryInput {
   color: string;

@@ -17,9 +17,6 @@ interface MarketPrice {
   currency: string;
 }
 
-// "Relic"/"Rod" show up in the Color column for non-colored cards, but
-// they're really Types, not colors — exclude them from the color filter.
-const NON_COLORS = new Set(["Relic", "Rod"]);
 // "???" is a handful of joke cards (Wut?, Wen?, Y?) with no real category.
 const NON_TYPES = new Set(["???"]);
 const ATTRIBUTE_GROUPS = ["Birb", "Lil", "Penguin"];
@@ -28,9 +25,7 @@ const VARIANT_OPTIONS = ["Basic", "Foil", "Alt Foil"];
 const SET_ORDER = ["Enter the Huddle", "Legend of the Lils", "Birb & Pengu"];
 const SETS = SET_ORDER.filter((s) => cards.some((c) => c.set === s));
 
-const COLORS = Array.from(
-  new Set(cards.map((c) => colorCategory(c)).filter((c) => !NON_COLORS.has(c)))
-).sort((a, b) => {
+const COLORS = Array.from(new Set(cards.map((c) => colorCategory(c)))).sort((a, b) => {
   if (a === "Colorless") return 1;
   if (b === "Colorless") return -1;
   if (a === "Multi-color") return 1;
