@@ -73,13 +73,14 @@ export default function CardTile({
       className={`flex flex-col rounded-xl border border-zinc-800 bg-zinc-900 p-4 ring-1 ${ringFor(card)}`}
     >
       <Link href={`/vibes/cards/${card.id}`} className="flex-1">
-        <div className="relative mb-3 h-52 overflow-hidden rounded-lg bg-zinc-800">
+        <div className="relative mb-3 overflow-hidden rounded-lg" style={{ aspectRatio: "3/4" }}>
           <Image
             src={card.image}
             alt={card.name}
             fill
             sizes="260px"
-            className={`object-contain ${!inStock ? "grayscale opacity-40" : ""} ${showingVariant ? "drop-shadow-[0_0_12px_rgba(168,85,247,0.6)]" : ""}`}
+            style={{ transform: "scale(1.04)" }}
+            className={`object-cover ${!inStock ? "grayscale opacity-40" : ""} ${showingVariant ? "drop-shadow-[0_0_12px_rgba(168,85,247,0.6)]" : ""}`}
             unoptimized
           />
           {!inStock && (
