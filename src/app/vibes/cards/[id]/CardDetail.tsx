@@ -297,7 +297,7 @@ export default function CardDetail({ card }: { card: Card }) {
             alt={selected.name}
             fill
             sizes="300px"
-            style={{ transform: "scale(1.12)" }}
+            style={{ transform: "scale(1.04)" }}
             className={`object-cover transition-all ${!inStock ? "grayscale opacity-40" : ""} ${selectedVariant !== "base" ? "drop-shadow-[0_0_24px_rgba(168,85,247,0.6)]" : ""}`}
             unoptimized
           />

@@ -271,7 +271,7 @@ export default function DeckImportPage() {
                         alt={e.card.name}
                         fill
                         sizes="160px"
-                        style={{ transform: "scale(1.12)" }}
+                        style={{ transform: "scale(1.04)" }}
                         className="object-cover"
                         unoptimized
                       />
