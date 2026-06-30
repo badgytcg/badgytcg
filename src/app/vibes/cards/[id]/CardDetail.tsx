@@ -213,13 +213,16 @@ export default function CardDetail({ card }: { card: Card }) {
   return (
     <div className="mx-auto max-w-4xl px-6 py-12">
       <div className="grid gap-10 sm:grid-cols-[300px_1fr]">
-        {/* Card image — no padding so the card fills edge-to-edge */}
-        <div className="relative overflow-hidden rounded-xl shadow-2xl" style={{ aspectRatio: "3/4", background: "#000" }}>
+        {/* Card image — the source PNGs have a transparent margin baked in
+            around the rounded card art, so a slight zoom crops that margin
+            out instead of letting the container background show through it. */}
+        <div className="relative overflow-hidden rounded-xl shadow-2xl" style={{ aspectRatio: "3/4" }}>
           <Image
             src={selected.image}
             alt={selected.name}
             fill
             sizes="300px"
+            style={{ transform: "scale(1.12)" }}
             className={`object-cover transition-all ${!inStock ? "grayscale opacity-40" : ""} ${selectedVariant !== "base" ? "drop-shadow-[0_0_24px_rgba(168,85,247,0.6)]" : ""}`}
             unoptimized
           />
