@@ -108,6 +108,34 @@ function StatBox({ label, value }: { label: string; value: string | number | nul
   );
 }
 
+// Parses ability text tokens:
+//   [ACT]  → "ACT" pill badge
+//   _F_    → ↷ curved-arrow cost icon (the "flip/tap" action cost in Vibes TCG)
+//   newlines → <br />
+function AbilityText({ text }: { text: string }) {
+  const parts = text.split(/(\[ACT\]|_F_|\n)/g);
+  return (
+    <p className="text-sm leading-relaxed text-zinc-200">
+      {parts.map((part, i) => {
+        if (part === "[ACT]")
+          return (
+            <span key={i} className="inline-flex items-center rounded bg-purple-800/60 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-purple-300 mr-1">
+              ACT
+            </span>
+          );
+        if (part === "_F_")
+          return (
+            <span key={i} className="inline-flex items-center justify-center rounded-full border border-purple-500 text-purple-300 mx-0.5" style={{ width: 18, height: 18, fontSize: 12, lineHeight: 1 }}>
+              ↷
+            </span>
+          );
+        if (part === "\n") return <br key={i} />;
+        return <span key={i}>{part}</span>;
+      })}
+    </p>
+  );
+}
+
 export default function CardDetail({ card }: { card: Card }) {
   const { addToCart, addToWishlist } = useStore();
   const [qty, setQty] = useState(1);
@@ -174,14 +202,14 @@ export default function CardDetail({ card }: { card: Card }) {
   return (
     <div className="mx-auto max-w-4xl px-6 py-12">
       <div className="grid gap-10 sm:grid-cols-[300px_1fr]">
-        {/* Card image */}
-        <div className="relative overflow-hidden rounded-2xl bg-zinc-900 shadow-2xl" style={{ aspectRatio: "3/4" }}>
+        {/* Card image — no padding so the card fills edge-to-edge */}
+        <div className="relative overflow-hidden rounded-xl shadow-2xl" style={{ aspectRatio: "3/4", background: "#000" }}>
           <Image
             src={selected.image}
             alt={selected.name}
             fill
             sizes="300px"
-            className={`object-contain p-2 transition-all ${!inStock ? "grayscale opacity-40" : ""} ${selectedVariant !== "base" ? "drop-shadow-[0_0_24px_rgba(168,85,247,0.6)]" : ""}`}
+            className={`object-cover transition-all ${!inStock ? "grayscale opacity-40" : ""} ${selectedVariant !== "base" ? "drop-shadow-[0_0_24px_rgba(168,85,247,0.6)]" : ""}`}
             unoptimized
           />
           {!inStock && (
@@ -222,7 +250,7 @@ export default function CardDetail({ card }: { card: Card }) {
           {card.ability && (
             <div className="rounded-xl border border-zinc-700 bg-zinc-900/60 px-4 py-4">
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-purple-400">Ability</p>
-              <p className="text-sm leading-relaxed text-zinc-200">{card.ability}</p>
+              <AbilityText text={card.ability} />
             </div>
           )}
 
