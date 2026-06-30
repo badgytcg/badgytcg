@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Card } from "@/lib/types";
 import { useStore } from "@/context/StoreContext";
+import { colorCategory } from "@/lib/colors";
 
 interface MarketPrice {
   source: string;
@@ -17,10 +18,18 @@ interface MarketPrice {
 type VariantKind = "foil" | "altfoil";
 const VARIANT_LABEL: Record<VariantKind, string> = { foil: "Foil", altfoil: "Alt Foil" };
 const VARIANT_KINDS: VariantKind[] = ["foil", "altfoil"];
+const VARIANT_COL_KEYS = ["base", "foil", "altfoil"] as const;
+type ColKey = (typeof VARIANT_COL_KEYS)[number];
+const COL_LABEL: Record<ColKey, string> = { base: "Base", foil: "Foil", altfoil: "Alt Foil" };
 
 const SOURCE_LOGO: Record<string, { src: string; width: number; height: number }> = {
   dyli: { src: "/logos/dyli-logo.png", width: 48, height: 18 },
   minmax: { src: "/logos/minmax-logo.png", width: 44, height: 18 },
+};
+
+const SOURCE_ACCENT: Record<string, string> = {
+  dyli: "bg-yellow-400",
+  minmax: "bg-purple-500",
 };
 
 interface HistoryPoint {
@@ -49,22 +58,22 @@ function PriceChart({ history }: { history: HistoryPoint[] }) {
   const min = Math.min(...allPrices);
   const max = Math.max(...allPrices);
   const range = max - min || 1;
-  const width = 280;
+  const width = 320;
   const height = 80;
 
   function pointsFor(pts: HistoryPoint[]) {
     return pts
       .map((p, i) => {
         const x = (i / (pts.length - 1)) * width;
-        const y = height - ((p.price - min) / range) * height;
+        const y = height - ((p.price - min) / range) * (height - 8) - 4;
         return `${x},${y}`;
       })
       .join(" ");
   }
 
   return (
-    <div className="mt-6 rounded-lg border border-zinc-800 p-3">
-      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">Price History</h3>
+    <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
+      <h3 className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-500">Price History</h3>
       <svg viewBox={`0 0 ${width} ${height}`} className="w-full" style={{ height: 80 }}>
         {series.map(([source, pts]) => (
           <polyline
@@ -73,6 +82,8 @@ function PriceChart({ history }: { history: HistoryPoint[] }) {
             fill="none"
             stroke={CHART_COLOR[source] ?? "#a1a1aa"}
             strokeWidth={2}
+            strokeLinejoin="round"
+            strokeLinecap="round"
           />
         ))}
       </svg>
@@ -84,6 +95,15 @@ function PriceChart({ history }: { history: HistoryPoint[] }) {
           </span>
         ))}
       </div>
+    </div>
+  );
+}
+
+function StatBox({ label, value }: { label: string; value: string | number | null }) {
+  return (
+    <div className="rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3">
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500">{label}</p>
+      <p className="mt-0.5 text-sm font-medium text-zinc-100">{value ?? "—"}</p>
     </div>
   );
 }
@@ -100,7 +120,6 @@ export default function CardDetail({ card }: { card: Card }) {
   useEffect(() => {
     setSelectedVariant("base");
     setVariantCards({});
-
     for (const kind of VARIANT_KINDS) {
       fetch(`/api/cards/${encodeURIComponent(`${card.id}::${kind}`)}`)
         .then((res) => (res.ok ? res.json() : null))
@@ -114,11 +133,16 @@ export default function CardDetail({ card }: { card: Card }) {
   const inStock = selected.stock > 0;
   const availableVariants = VARIANT_KINDS.filter((k) => variantCards[k]);
 
+  // Fetch market prices for base + all variants simultaneously so we can
+  // display a complete table (Base | Foil | Alt Foil columns) at once.
   useEffect(() => {
-    fetch(`/api/cards/${encodeURIComponent(selected.id)}/market-prices`)
-      .then((res) => res.json())
-      .then((data) => setMarketPricesById((prev) => ({ ...prev, [selected.id]: data.prices ?? [] })));
-  }, [selected.id]);
+    const ids = [card.id, `${card.id}::foil`, `${card.id}::altfoil`];
+    for (const id of ids) {
+      fetch(`/api/cards/${encodeURIComponent(id)}/market-prices`)
+        .then((res) => res.json())
+        .then((data) => setMarketPricesById((prev) => ({ ...prev, [id]: data.prices ?? [] })));
+    }
+  }, [card.id]);
 
   useEffect(() => {
     fetch(`/api/cards/${encodeURIComponent(selected.id)}/market-prices/history`)
@@ -126,19 +150,38 @@ export default function CardDetail({ card }: { card: Card }) {
       .then((data) => setHistoryById((prev) => ({ ...prev, [selected.id]: data.history ?? [] })));
   }, [selected.id]);
 
-  const marketPrices = marketPricesById[selected.id] ?? [];
   const history = historyById[selected.id] ?? [];
 
+  // Build a source→colKey→price lookup for the market prices table.
+  const allSources = Array.from(
+    new Set(Object.values(marketPricesById).flatMap((arr) => arr.map((p) => p.source)))
+  );
+  function getPriceForCol(source: string, colKey: ColKey): MarketPrice | undefined {
+    const id = colKey === "base" ? card.id : `${card.id}::${colKey}`;
+    return (marketPricesById[id] ?? []).find((p) => p.source === source);
+  }
+
+  const colorLabel = colorCategory(card);
+  const tags = [card.type, card.attribute, card.rarity].filter(Boolean) as string[];
+
+  const RARITY_COLOR: Record<string, string> = {
+    Common: "border-zinc-600 text-zinc-400",
+    Uncommon: "border-green-600 text-green-400",
+    Rare: "border-blue-500 text-blue-400",
+    Epic: "border-purple-500 text-purple-400",
+  };
+
   return (
-    <div className="mx-auto max-w-3xl px-6 py-12">
-      <div className="grid gap-8 sm:grid-cols-2">
-        <div className="relative h-96 overflow-hidden rounded-xl bg-zinc-800">
+    <div className="mx-auto max-w-4xl px-6 py-12">
+      <div className="grid gap-10 sm:grid-cols-[300px_1fr]">
+        {/* Card image */}
+        <div className="relative overflow-hidden rounded-2xl bg-zinc-900 shadow-2xl" style={{ aspectRatio: "3/4" }}>
           <Image
             src={selected.image}
             alt={selected.name}
             fill
-            sizes="400px"
-            className={`object-contain ${!inStock ? "grayscale opacity-40" : ""} ${selectedVariant !== "base" ? "drop-shadow-[0_0_20px_rgba(168,85,247,0.5)]" : ""}`}
+            sizes="300px"
+            className={`object-contain p-2 transition-all ${!inStock ? "grayscale opacity-40" : ""} ${selectedVariant !== "base" ? "drop-shadow-[0_0_24px_rgba(168,85,247,0.6)]" : ""}`}
             unoptimized
           />
           {!inStock && (
@@ -149,23 +192,46 @@ export default function CardDetail({ card }: { card: Card }) {
             </div>
           )}
         </div>
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-100">{card.name}</h1>
-          <p className="mt-1 text-sm text-zinc-400">{card.set} · {card.rarity} · {card.color}</p>
-          {card.cost !== null && (
-            <p className="mt-1 text-sm text-zinc-400">Cost {card.cost} · Vibe {card.vibe}</p>
-          )}
+
+        {/* Right column */}
+        <div className="flex flex-col gap-5">
+          {/* Title + tags */}
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-zinc-100">{card.name}</h1>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {tags.map((tag) => (
+                <span
+                  key={tag}
+                  className={`rounded-full border px-3 py-0.5 text-xs font-medium ${RARITY_COLOR[tag] ?? "border-zinc-700 text-zinc-400"}`}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Stat grid */}
+          <div className="grid grid-cols-2 gap-2">
+            <StatBox label="Color" value={colorLabel} />
+            <StatBox label="Cost" value={card.cost} />
+            <StatBox label="Vibe" value={card.vibe} />
+            <StatBox label="Set" value={card.set} />
+          </div>
+
+          {/* Ability */}
           {card.ability && (
-            <p className="mt-3 whitespace-pre-line rounded-lg bg-zinc-900 p-3 text-sm text-zinc-300">
-              {card.ability}
-            </p>
+            <div className="rounded-xl border border-zinc-700 bg-zinc-900/60 px-4 py-4">
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-purple-400">Ability</p>
+              <p className="text-sm leading-relaxed text-zinc-200">{card.ability}</p>
+            </div>
           )}
 
+          {/* Variant toggle */}
           {availableVariants.length > 0 && (
-            <div className="mt-4 inline-flex rounded-full border border-zinc-700 p-1 text-sm">
+            <div className="inline-flex self-start rounded-full border border-zinc-700 bg-zinc-900 p-1 text-sm">
               <button
                 onClick={() => setSelectedVariant("base")}
-                className={`rounded-full px-3 py-1 ${selectedVariant === "base" ? "bg-purple-600 text-white" : "text-zinc-400"}`}
+                className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${selectedVariant === "base" ? "bg-purple-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
               >
                 Base
               </button>
@@ -173,7 +239,7 @@ export default function CardDetail({ card }: { card: Card }) {
                 <button
                   key={kind}
                   onClick={() => setSelectedVariant(kind)}
-                  className={`rounded-full px-3 py-1 ${selectedVariant === kind ? "bg-purple-600 text-white" : "text-zinc-400"}`}
+                  className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${selectedVariant === kind ? "bg-purple-600 text-white" : "text-zinc-400 hover:text-zinc-200"}`}
                 >
                   {VARIANT_LABEL[kind]}
                 </button>
@@ -181,81 +247,107 @@ export default function CardDetail({ card }: { card: Card }) {
             </div>
           )}
 
-          <p className="mt-4 text-2xl font-semibold text-purple-300">${selected.price.toFixed(2)}</p>
-          <p className={`mt-1 text-sm ${inStock ? "text-green-400" : "text-zinc-500"}`}>
-            {inStock ? `${selected.stock} in stock` : "Out of stock"}
-          </p>
-
-          <div className="mt-6 flex items-center gap-3">
-            <input
-              type="number"
-              min={1}
-              value={qty}
-              onChange={(e) => setQty(Math.max(1, Number(e.target.value)))}
-              className="w-20 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100"
-            />
-            {inStock ? (
+          {/* Price + buy */}
+          <div className="flex flex-wrap items-end gap-4">
+            <div>
+              <p className="text-3xl font-bold text-purple-300">${selected.price.toFixed(2)}</p>
+              <p className={`mt-0.5 text-sm ${inStock ? "text-green-400" : "text-zinc-500"}`}>
+                {inStock ? `${selected.stock} in stock` : "Out of stock"}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                min={1}
+                value={qty}
+                onChange={(e) => setQty(Math.max(1, Number(e.target.value)))}
+                className="w-16 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100"
+              />
+              {inStock ? (
+                <button
+                  onClick={() => { addToCart(selected.id, qty); setAdded(true); setTimeout(() => setAdded(false), 1500); }}
+                  className="rounded-lg bg-purple-600 px-5 py-2 text-sm font-semibold text-white hover:bg-purple-500"
+                >
+                  Add to Cart
+                </button>
+              ) : (
+                <button
+                  onClick={() => { addToWishlist([{ cardName: selected.name, cardId: selected.id, qty, note: "Card request" }]); setAdded(true); setTimeout(() => setAdded(false), 1500); }}
+                  className="rounded-lg bg-zinc-700 px-5 py-2 text-sm font-semibold text-zinc-100 hover:bg-zinc-600"
+                >
+                  Request Card
+                </button>
+              )}
               <button
-                onClick={() => {
-                  addToCart(selected.id, qty);
-                  setAdded(true);
-                  setTimeout(() => setAdded(false), 1500);
-                }}
-                className="rounded-lg bg-purple-600 px-5 py-2 text-sm font-medium text-white hover:bg-purple-500"
+                onClick={() => { addToWishlist([{ cardName: selected.name, cardId: selected.id, qty }]); setAdded(true); setTimeout(() => setAdded(false), 1500); }}
+                className="rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-300 hover:border-purple-500 hover:text-purple-300"
               >
-                Add to cart
+                ♡ Wishlist
               </button>
-            ) : (
-              <button
-                onClick={() => {
-                  addToWishlist([{ cardName: selected.name, cardId: selected.id, qty, note: "Card request" }]);
-                  setAdded(true);
-                  setTimeout(() => setAdded(false), 1500);
-                }}
-                className="rounded-lg bg-zinc-700 px-5 py-2 text-sm font-medium text-zinc-100 hover:bg-zinc-600"
-              >
-                Request {selectedVariant === "base" ? "card" : VARIANT_LABEL[selectedVariant].toLowerCase()}
-              </button>
-            )}
-            <button
-              onClick={() => {
-                addToWishlist([{ cardName: selected.name, cardId: selected.id, qty }]);
-                setAdded(true);
-                setTimeout(() => setAdded(false), 1500);
-              }}
-              className="rounded-lg border border-zinc-700 px-5 py-2 text-sm font-medium text-zinc-300 hover:border-purple-500 hover:text-purple-300"
-            >
-              ♡ Wishlist
-            </button>
-            {added && <span className="text-sm text-green-400">Added!</span>}
+              {added && <span className="text-sm text-green-400">Added!</span>}
+            </div>
           </div>
 
-          {marketPrices.length > 0 && (
-            <div className="mt-6 rounded-lg border border-zinc-800 p-3">
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">
-                Market Prices Elsewhere
-              </h3>
-              <ul className="space-y-2 text-sm">
-                {marketPrices.map((mp) => {
-                  const logo = SOURCE_LOGO[mp.source];
-                  return (
-                    <li key={mp.source} className="flex items-center justify-between">
-                      {logo ? (
-                        <Image src={logo.src} alt={mp.label} width={logo.width} height={logo.height} />
-                      ) : (
-                        <span className="text-zinc-400">{mp.label}</span>
-                      )}
-                      {mp.url ? (
-                        <a href={mp.url} target="_blank" rel="noopener noreferrer" className="text-purple-300 hover:underline">
-                          {mp.price.toFixed(2)} {mp.currency}
-                        </a>
-                      ) : (
-                        <span className="text-zinc-200">{mp.price.toFixed(2)} {mp.currency}</span>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
+          {/* Market prices table — Base / Foil / Alt Foil columns */}
+          {allSources.length > 0 && (
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 overflow-hidden">
+              <p className="px-4 pt-3 pb-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
+                Market Prices
+              </p>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-zinc-800 text-right text-xs text-zinc-500">
+                    <th className="px-4 py-2 text-left"></th>
+                    {VARIANT_COL_KEYS.map((col) => (
+                      <th key={col} className="px-3 py-2 font-medium">{COL_LABEL[col]}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-800/60">
+                  {allSources.map((source) => {
+                    const logo = SOURCE_LOGO[source];
+                    const accent = SOURCE_ACCENT[source] ?? "bg-zinc-600";
+                    return (
+                      <tr key={source}>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <span className={`h-3 w-1 rounded-full ${accent}`} />
+                            {logo ? (
+                              <Image src={logo.src} alt={source} width={logo.width} height={logo.height} />
+                            ) : (
+                              <span className="text-xs text-zinc-400">{source}</span>
+                            )}
+                          </div>
+                        </td>
+                        {VARIANT_COL_KEYS.map((col) => {
+                          const mp = getPriceForCol(source, col);
+                          return (
+                            <td key={col} className="px-3 py-3 text-right">
+                              {mp ? (
+                                <div className="flex flex-col items-end gap-1">
+                                  <span className="font-medium text-zinc-100">${mp.price.toFixed(2)}</span>
+                                  {mp.url && (
+                                    <a
+                                      href={mp.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="rounded bg-purple-700 px-2 py-0.5 text-[10px] font-semibold text-white hover:bg-purple-600"
+                                    >
+                                      Buy →
+                                    </a>
+                                  )}
+                                </div>
+                              ) : (
+                                <span className="text-zinc-600">—</span>
+                              )}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           )}
 
