@@ -14,7 +14,12 @@ const SET_ORDER = ["Enter the Huddle", "Legend of the Lils", "Birb & Pengu"];
 const RARITY_ORDER = ["Common", "Uncommon", "Rare", "Epic"];
 
 type SortKey = "name-asc" | "name-desc" | "price-asc" | "price-desc" | "stock-asc" | "stock-desc";
-type BulkMode = "fixed" | "dyli";
+type BulkMode = "fixed" | "dyli" | "minmax" | "scg";
+const FLOOR_MODE_LABEL: Record<Exclude<BulkMode, "fixed">, string> = {
+  dyli: "Dyli floor price",
+  minmax: "MinMax floor price",
+  scg: "StarCity floor price",
+};
 
 interface Consigner {
   slug: string;
@@ -132,7 +137,7 @@ export default function AdminInventoryPage() {
     const confirmMsg =
       bulkMode === "fixed"
         ? `Set price to $${price!.toFixed(2)} for ${bulkMatches.length} card(s) (${filterDesc})?`
-        : `Set price to each card's current Dyli floor price for ${bulkMatches.length} card(s) (${filterDesc})? Cards with no Dyli price will be skipped.`;
+        : `Set price to each card's current ${FLOOR_MODE_LABEL[bulkMode]} for ${bulkMatches.length} card(s) (${filterDesc})? Cards with no ${FLOOR_MODE_LABEL[bulkMode].replace(" floor price", "")} price will be skipped.`;
     if (!window.confirm(confirmMsg)) return;
 
     setBulkApplying(true);
@@ -151,8 +156,8 @@ export default function AdminInventoryPage() {
       });
       const data = await res.json();
       setBulkResult(
-        bulkMode === "dyli"
-          ? `Updated ${data.updated} card(s), skipped ${data.skipped} (no Dyli price yet).`
+        bulkMode !== "fixed"
+          ? `Updated ${data.updated} card(s), skipped ${data.skipped} (no ${FLOOR_MODE_LABEL[bulkMode].replace(" floor price", "")} price yet).`
           : `Updated ${data.updated} card(s).`
       );
       const refreshed = await fetch("/api/cards").then((r) => r.json());
@@ -330,12 +335,15 @@ export default function AdminInventoryPage() {
               >
                 Fixed amount
               </button>
-              <button
-                onClick={() => setBulkMode("dyli")}
-                className={`rounded-full px-3 py-1 ${bulkMode === "dyli" ? "bg-purple-600 text-white" : "text-zinc-400"}`}
-              >
-                Dyli floor price
-              </button>
+              {(["dyli", "minmax", "scg"] as const).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setBulkMode(mode)}
+                  className={`rounded-full px-3 py-1 ${bulkMode === mode ? "bg-purple-600 text-white" : "text-zinc-400"}`}
+                >
+                  {FLOOR_MODE_LABEL[mode]}
+                </button>
+              ))}
             </div>
           </div>
           {bulkMode === "fixed" && (
