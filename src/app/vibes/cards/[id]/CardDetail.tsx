@@ -276,7 +276,6 @@ export default function CardDetail({ card }: { card: Card }) {
   }
 
   const colorLabel = colorCategory(card);
-  const tags = [card.type, card.attribute, card.rarity].filter(Boolean) as string[];
 
   const RARITY_COLOR: Record<string, string> = {
     Common: "border-zinc-600 bg-zinc-700/40 text-zinc-300",
@@ -284,6 +283,17 @@ export default function CardDetail({ card }: { card: Card }) {
     Rare: "border-blue-500 bg-blue-900/40 text-blue-300",
     Epic: "border-purple-500 bg-purple-900/40 text-purple-300",
   };
+  // Type and attribute get their own subtle, theme-matching tint so the
+  // tag row isn't a wall of identical zinc pills — rarity keeps its own
+  // semantic colors from RARITY_COLOR above.
+  const tags: { label: string; className: string }[] = [
+    card.type && { label: card.type, className: "border-indigo-600 bg-indigo-900/40 text-indigo-300" },
+    card.attribute && { label: card.attribute, className: "border-teal-600 bg-teal-900/40 text-teal-300" },
+    card.rarity && {
+      label: card.rarity,
+      className: RARITY_COLOR[card.rarity] ?? "border-zinc-700 bg-zinc-800/50 text-zinc-300",
+    },
+  ].filter(Boolean) as { label: string; className: string }[];
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-12">
@@ -318,10 +328,10 @@ export default function CardDetail({ card }: { card: Card }) {
             <div className="mt-2 flex flex-wrap gap-2">
               {tags.map((tag) => (
                 <span
-                  key={tag}
-                  className={`rounded-full border px-3 py-0.5 text-xs font-medium ${RARITY_COLOR[tag] ?? "border-zinc-700 bg-zinc-800/50 text-zinc-300"}`}
+                  key={tag.label}
+                  className={`rounded-full border px-3 py-0.5 text-xs font-medium ${tag.className}`}
                 >
-                  {tag}
+                  {tag.label}
                 </span>
               ))}
             </div>
