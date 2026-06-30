@@ -59,7 +59,7 @@ export default function AdminInventoryPage() {
     try {
       const res = await fetch("/api/admin/market-prices/refresh", { method: "POST" });
       const data = await res.json();
-      setRefreshResult(`Matched ${data.dyli} Dyli price(s) and ${data.minmax} MinMax price(s).`);
+      setRefreshResult(`Matched ${data.dyli} Dyli, ${data.minmax} MinMax, and ${data.scg} SCG price(s).`);
     } catch {
       setRefreshResult("Refresh failed — try again in a moment.");
     }

@@ -27,11 +27,19 @@ const SOURCE_LOGO: Record<string, { src: string; width: number; height: number }
   minmax: { src: "/logos/minmax-logo.png", width: 44, height: 18 },
 };
 
+const SOURCE_LABEL: Record<string, string> = {
+  site: "BadgyTCG",
+  dyli: "Dyli",
+  minmax: "MinMax",
+  scg: "StarCityGames",
+};
+
 const DYLI_AFFILIATE = "https://www.dyli.io/?code=km7g2673";
 
 const SOURCE_ACCENT: Record<string, string> = {
   dyli: "bg-yellow-400",
   minmax: "bg-purple-500",
+  scg: "bg-blue-500",
 };
 
 interface HistoryPoint {
@@ -43,6 +51,7 @@ interface HistoryPoint {
 const CHART_COLOR: Record<string, string> = {
   dyli: "#facc15",
   minmax: "#a855f7",
+  scg: "#3b82f6",
   site: "#34d399",
 };
 
@@ -93,7 +102,7 @@ function PriceChart({ history }: { history: HistoryPoint[] }) {
         {series.map(([source]) => (
           <span key={source} className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full" style={{ backgroundColor: CHART_COLOR[source] ?? "#a1a1aa" }} />
-            {source === "site" ? "BadgyTCG" : source === "dyli" ? "Dyli" : "MinMax"}
+            {SOURCE_LABEL[source] ?? source}
           </span>
         ))}
       </div>
@@ -345,7 +354,7 @@ export default function CardDetail({ card }: { card: Card }) {
                             {logo ? (
                               <Image src={logo.src} alt={source} width={logo.width} height={logo.height} />
                             ) : (
-                              <span className="text-xs text-zinc-400">{source}</span>
+                              <span className="text-xs font-medium text-zinc-300">{SOURCE_LABEL[source] ?? source}</span>
                             )}
                           </div>
                         </td>

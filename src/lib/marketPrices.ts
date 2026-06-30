@@ -46,6 +46,15 @@ const byNameOnly = new Map(cards.map((c) => [normalizeCardKey(c.name), c]));
 // which don't all match our setCode field 1:1.
 const MINMAX_SET_TAG_MAP: Record<string, string> = { eth: "eth", lol: "lotl", bap: "bap" };
 
+// SCG category pages we scrape (one per set) — these render their product
+// grid client-side via a "Hawk" search widget, so a plain fetch only gets an
+// empty shell. A headless browser is required to let it hydrate.
+const SCG_CATEGORY_URLS = [
+  { url: "https://starcitygames.com/vibes/birb-pengu/", setCode: "bap" },
+  { url: "https://starcitygames.com/vibes/enter-the-huddle/singles/", setCode: "eth" },
+  { url: "https://starcitygames.com/vibes/legend-of-the-lils/singles/", setCode: "lotl" },
+];
+
 // --- Dyli: real marketplace API, paginated. ---
 async function fetchDyliPrices(): Promise<PriceRow[]> {
   const apiKey = process.env.DYLI_API_KEY;
@@ -149,13 +158,126 @@ async function fetchMinMaxPrices(): Promise<PriceRow[]> {
   return rows;
 }
 
-export async function refreshMarketPrices(): Promise<{ dyli: number; minmax: number }> {
+interface ScgItem {
+  name: string | null;
+  finish: string | null;
+  price: string | null;
+  stock: string | null;
+  number: string | null;
+  set: string | null;
+  url: string | null;
+}
+
+async function scrapeScgCategory(page: import("playwright").Page, url: string): Promise<ScgItem[]> {
+  await page.goto(url, { waitUntil: "networkidle", timeout: 60000 });
+  await page.waitForSelector(".item-name-base", { timeout: 20000 }).catch(() => {});
+
+  const perPageSelect = page.locator("select.items-per-page-select").first();
+  if ((await perPageSelect.count()) > 0) {
+    await perPageSelect.selectOption("96").catch(() => {});
+    await page.waitForTimeout(2500);
+    await page.waitForLoadState("networkidle").catch(() => {});
+  }
+
+  const items: ScgItem[] = [];
+  let pageNum = 1;
+  while (pageNum <= 15) {
+    await page.waitForSelector(".item-name-base", { timeout: 20000 }).catch(() => {});
+    const pageItems: ScgItem[] = await page.evaluate(() => {
+      const results: ScgItem[] = [];
+      document.querySelectorAll(".hawk-results-item").forEach((card) => {
+        const nameEl = card.querySelector(".item-name-base");
+        if (!nameEl) return;
+        const finishEl = card.querySelector(".finish-chip");
+        const priceEl = card.querySelector(".price-value");
+        const stockEl = card.querySelector(".price-stock");
+        const numberEl = card.querySelector(".header-collector-number");
+        const setEl = card.querySelector(".item-category-link");
+        const linkEl = card.querySelector("a.item-title-link");
+        results.push({
+          name: nameEl.textContent?.trim() ?? null,
+          finish: finishEl?.textContent?.trim() ?? null,
+          price: priceEl?.textContent?.trim() ?? null,
+          stock: stockEl?.textContent?.trim() ?? null,
+          number: numberEl?.textContent?.trim() ?? null,
+          set: setEl?.textContent?.trim() ?? null,
+          url: linkEl?.getAttribute("href") ?? null,
+        });
+      });
+      return results;
+    });
+    items.push(...pageItems);
+
+    const nextBtn = page.locator('button.page-navigation[aria-label="Goto Next Page"]');
+    if ((await nextBtn.count()) === 0) break;
+    const disabled = await nextBtn
+      .first()
+      .evaluate((el) => (el as HTMLButtonElement).disabled || el.classList.contains("disabled") || el.closest("li")?.classList.contains("disabled"));
+    if (disabled) break;
+    await nextBtn.first().click();
+    await page.waitForTimeout(2000);
+    pageNum++;
+  }
+  return items;
+}
+
+// --- StarCityGames: client-rendered category pages, no public API — scraped
+// with a headless browser since the product grid only exists after JS hydration. ---
+async function fetchScgPrices(): Promise<PriceRow[]> {
+  const rows: PriceRow[] = [];
+  let browser: import("playwright").Browser | null = null;
+
+  try {
+    const { chromium } = await import("playwright");
+    browser = await chromium.launch();
+    const page = await browser.newPage({
+      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+    });
+
+    for (const { url, setCode } of SCG_CATEGORY_URLS) {
+      const items = await scrapeScgCategory(page, url).catch(() => []);
+
+      for (const item of items) {
+        if (!item.price || !item.number || item.stock?.toLowerCase().includes("out of stock")) continue;
+
+        const number = item.number.replace(/^#0*/, "") || "0";
+        const card = bySetCodeAndNumber.get(`${setCode}::${number}`);
+        if (!card) continue;
+
+        const kind: VariantKind | null = item.finish?.toLowerCase() === "foil" ? "foil" : null;
+        const cardId = kind ? variantCardId(card.id, kind) : card.id;
+        const price = Number(item.price.replace(/[^0-9.]/g, ""));
+        if (!Number.isFinite(price)) continue;
+
+        rows.push({
+          cardId,
+          source: "scg",
+          label: "StarCityGames",
+          price,
+          currency: "USD",
+          url: item.url ? `https://starcitygames.com${item.url}` : url,
+        });
+      }
+    }
+  } catch {
+    // Headless browser unavailable (e.g. chromium binary not installed in
+    // this environment) — skip SCG for this refresh rather than failing
+    // the whole job; Dyli/MinMax still update normally.
+    return [];
+  } finally {
+    await browser?.close();
+  }
+
+  return rows;
+}
+
+export async function refreshMarketPrices(): Promise<{ dyli: number; minmax: number; scg: number }> {
   // Drop the old two-row-per-card scheme (primary + secondary) now that we
   // only track the resale floor price under a single "dyli" source.
   await prisma.marketPrice.deleteMany({ where: { source: { in: ["dyli_primary", "dyli_secondary"] } } });
 
-  const [dyliRows, minmaxRows] = await Promise.all([fetchDyliPrices(), fetchMinMaxPrices()]);
-  const allRows = [...dyliRows, ...minmaxRows];
+  const [dyliRows, minmaxRows, scgRows] = await Promise.all([fetchDyliPrices(), fetchMinMaxPrices(), fetchScgPrices()]);
+  const allRows = [...dyliRows, ...minmaxRows, ...scgRows];
 
   // A card can match more than one listing on a given source (e.g. two
   // separate Dyli drops for the same printing) — keep only the cheapest.
@@ -195,7 +317,7 @@ export async function refreshMarketPrices(): Promise<{ dyli: number; minmax: num
     data: siteCards.filter((c) => c.stock > 0).map((c) => ({ cardId: c.id, source: "site", price: c.price, currency: "USD" })),
   });
 
-  return { dyli: dyliRows.length, minmax: minmaxRows.length };
+  return { dyli: dyliRows.length, minmax: minmaxRows.length, scg: scgRows.length };
 }
 
 export async function getMarketPrices(cardId: string) {
