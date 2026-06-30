@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { decrementStockAfterPurchase } from "@/lib/catalog";
+import { sendEmail, adminAlertEmail } from "@/lib/email";
 import type Stripe from "stripe";
 
 // Stripe needs the raw, unparsed request body to verify the signature.
@@ -55,7 +56,7 @@ export async function POST(request: Request) {
     };
   });
 
-  await prisma.order.create({
+  const order = await prisma.order.create({
     data: {
       userId: session.client_reference_id || null,
       guestEmail: session.client_reference_id ? null : session.customer_details?.email,
@@ -69,6 +70,29 @@ export async function POST(request: Request) {
   // Decrement stock for each purchased card (or remove it, for one-off specials).
   for (const item of orderItems) {
     await decrementStockAfterPurchase(item.cardId, item.qty);
+  }
+
+  const alertTo = adminAlertEmail();
+  if (alertTo) {
+    const buyerEmail = order.guestEmail ?? session.customer_details?.email ?? "(signed-in user)";
+    const lines = orderItems.map((i) => `  ${i.qty}x ${i.cardName} — $${(i.priceCents / 100).toFixed(2)} ea`);
+    try {
+      await sendEmail({
+        to: alertTo,
+        subject: `New order — $${(order.totalCents / 100).toFixed(2)}`,
+        text: [
+          `New order from ${buyerEmail}`,
+          `Total: $${(order.totalCents / 100).toFixed(2)}`,
+          "",
+          "Items:",
+          ...lines,
+          "",
+          `Order ID: ${order.id}`,
+        ].join("\n"),
+      });
+    } catch (err) {
+      console.error("[order alert email] failed:", err);
+    }
   }
 
   return NextResponse.json({ received: true });
