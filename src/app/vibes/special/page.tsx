@@ -48,7 +48,9 @@ export default function SpecialCardsPage() {
               {card.description && <p className="mt-1 text-xs text-zinc-400">{card.description}</p>}
               <div className="mt-3 flex items-center justify-between">
                 <span className="font-medium text-purple-300">${card.price.toFixed(2)}</span>
-                <span className="text-xs text-green-400">In stock</span>
+                <span className="text-xs text-green-400">
+                  {card.stock > 1 ? `${card.stock} in stock` : "In stock"}
+                </span>
               </div>
               <div className="mt-3 flex gap-2">
                 <button
