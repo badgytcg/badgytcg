@@ -37,8 +37,9 @@ function ringFor(card: Card): string {
 }
 
 const SOURCE_LOGO: Record<string, { src: string; width: number; height: number }> = {
-  dyli: { src: "/logos/dyli-logo.png", width: 32, height: 12 },
-  minmax: { src: "/logos/minmax-logo.png", width: 30, height: 12 },
+  dyli: { src: "/logos/dyli-logo.png", width: 38, height: 14 },
+  minmax: { src: "/logos/minmax-logo.png", width: 36, height: 14 },
+  scg: { src: "/logos/scg-logo.png", width: 38, height: 14 },
 };
 
 const VARIANT_LABEL: Record<VariantKind, string> = { foil: "Foil", altfoil: "Alt Foil" };
@@ -72,12 +73,12 @@ export default function CardTile({
       className={`flex flex-col rounded-xl border border-zinc-800 bg-zinc-900 p-4 ring-1 ${ringFor(card)}`}
     >
       <Link href={`/vibes/cards/${card.id}`} className="flex-1">
-        <div className="relative mb-3 h-40 overflow-hidden rounded-lg bg-zinc-800">
+        <div className="relative mb-3 h-52 overflow-hidden rounded-lg bg-zinc-800">
           <Image
             src={card.image}
             alt={card.name}
             fill
-            sizes="200px"
+            sizes="260px"
             className={`object-contain ${!inStock ? "grayscale opacity-40" : ""} ${showingVariant ? "drop-shadow-[0_0_12px_rgba(168,85,247,0.6)]" : ""}`}
             unoptimized
           />
@@ -89,8 +90,8 @@ export default function CardTile({
             </div>
           )}
         </div>
-        <h3 className="font-semibold text-zinc-100">{card.name}</h3>
-        <p className="text-xs text-zinc-500">{card.set} · {card.rarity}</p>
+        <h3 className="text-lg font-semibold text-zinc-100">{card.name}</h3>
+        <p className="text-sm text-zinc-500">{card.set} · {card.rarity}</p>
       </Link>
 
       {available.length > 0 && (
@@ -114,17 +115,17 @@ export default function CardTile({
       )}
 
       <div className="mt-3 flex items-center justify-between">
-        <span className="font-medium text-purple-300">${price.toFixed(2)}</span>
-        <span className={`text-xs ${inStock ? "text-green-400" : "text-zinc-500"}`}>
+        <span className="text-lg font-medium text-purple-300">${price.toFixed(2)}</span>
+        <span className={`text-sm ${inStock ? "text-green-400" : "text-zinc-500"}`}>
           {inStock ? `${stock} in stock` : "Out of stock"}
         </span>
       </div>
       {marketPrices.length > 0 && (
-        <div className="mt-1 space-y-1">
+        <div className="mt-1.5 space-y-1.5">
           {marketPrices.map((mp) => {
             const logo = SOURCE_LOGO[mp.source];
             return (
-              <div key={mp.source} className="flex items-center justify-between text-[11px] text-zinc-400">
+              <div key={mp.source} className="flex items-center justify-between text-xs text-zinc-400">
                 {logo ? (
                   <Image src={logo.src} alt={mp.label} width={logo.width} height={logo.height} className="opacity-80" />
                 ) : (
@@ -138,7 +139,7 @@ export default function CardTile({
       )}
       <button
         onClick={() => onAdd(selectedId)}
-        className="mt-3 flex items-center justify-center gap-2 rounded-lg bg-purple-600 py-1.5 text-sm font-medium text-white hover:bg-purple-500"
+        className="mt-3 flex items-center justify-center gap-2 rounded-lg bg-purple-600 py-2 text-base font-medium text-white hover:bg-purple-500"
       >
         Add to deck
         {getQtyInDeck(selectedId) > 0 && (
