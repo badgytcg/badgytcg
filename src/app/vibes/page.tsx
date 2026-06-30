@@ -135,6 +135,120 @@ function RangeSlider({
   );
 }
 
+function DeckPanelContent({
+  deckName,
+  setDeckName,
+  deckEntries,
+  setDeckQty,
+  totalCards,
+  availableQty,
+  totalCost,
+  missingCount,
+  confirmed,
+  requested,
+  handleAddToCart,
+  handleRequestWholeDeck,
+}: {
+  deckName: string;
+  setDeckName: (name: string) => void;
+  deckEntries: { card: Card; qty: number }[];
+  setDeckQty: (cardId: string, qty: number) => void;
+  totalCards: number;
+  availableQty: number;
+  totalCost: number;
+  missingCount: number;
+  confirmed: boolean;
+  requested: boolean;
+  handleAddToCart: () => void;
+  handleRequestWholeDeck: () => void;
+}) {
+  return (
+    <>
+      <input
+        value={deckName}
+        onChange={(e) => setDeckName(e.target.value)}
+        className="mb-4 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm font-medium text-zinc-100"
+      />
+
+      {deckEntries.length === 0 ? (
+        <p className="text-sm text-zinc-500">Click &quot;Add to deck&quot; on any card to start building.</p>
+      ) : (
+        <ul className="mb-4 max-h-80 space-y-2 overflow-y-auto pr-1">
+          {deckEntries.map(({ card, qty }) => {
+            const short = qty > card.stock;
+            return (
+              <li key={card.id} className="flex items-center justify-between gap-2 text-sm">
+                <span className="flex min-w-0 items-center gap-1.5 truncate text-zinc-200">
+                  <span className="truncate">{card.name}</span>
+                  {short && (
+                    <span
+                      title={`Only ${card.stock} available out of ${qty} added`}
+                      className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-yellow-500/20 text-[10px] font-bold text-yellow-400"
+                    >
+                      !
+                    </span>
+                  )}
+                </span>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setDeckQty(card.id, qty - 1)}
+                    className="h-6 w-6 rounded border border-zinc-700 text-zinc-300 hover:border-purple-500"
+                  >
+                    −
+                  </button>
+                  <span className="w-6 text-center text-zinc-300">{qty}</span>
+                  <button
+                    onClick={() => setDeckQty(card.id, qty + 1)}
+                    className="h-6 w-6 rounded border border-zinc-700 text-zinc-300 hover:border-purple-500"
+                  >
+                    +
+                  </button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      <div className="border-t border-zinc-800 pt-4 text-sm">
+        <div className="flex justify-between text-zinc-400">
+          <span>Cards</span>
+          <span>{totalCards}</span>
+        </div>
+        <div className="flex justify-between text-zinc-400">
+          <span>In stock</span>
+          <span className={availableQty === totalCards ? "text-green-400" : "text-yellow-400"}>
+            {availableQty} / {totalCards}
+          </span>
+        </div>
+        <div className="mt-2 flex justify-between text-lg font-semibold text-zinc-100">
+          <span>Total</span>
+          <span className="text-purple-300">${totalCost.toFixed(2)}</span>
+        </div>
+      </div>
+
+      <div className="mt-4 flex flex-col gap-2">
+        <button
+          onClick={handleAddToCart}
+          disabled={deckEntries.length === 0 || confirmed}
+          className="rounded-lg bg-purple-600 py-2 text-sm font-medium text-white hover:bg-purple-500 disabled:bg-zinc-700 disabled:text-zinc-400"
+        >
+          {confirmed ? "Added!" : "Buy what's in stock"}
+        </button>
+        {missingCount > 0 && (
+          <button
+            onClick={handleRequestWholeDeck}
+            disabled={deckEntries.length === 0 || requested}
+            className="rounded-lg border border-zinc-700 py-2 text-sm font-medium text-zinc-300 hover:border-purple-500 hover:text-purple-300 disabled:opacity-40"
+          >
+            {requested ? "Requested!" : "♡ Request entire deck instead"}
+          </button>
+        )}
+      </div>
+    </>
+  );
+}
+
 export default function VibesBrowsePage() {
   const { addManyToCart, addToWishlist } = useStore();
 
@@ -198,6 +312,12 @@ export default function VibesBrowsePage() {
   // pushes the whole card grid below the fold) but always shown on lg+
   // regardless of this state — see the lg:block override below.
   const [filtersOpen, setFiltersOpen] = useState(false);
+  // On mobile the deck-builder sidebar isn't reachable without scrolling
+  // past the entire card grid, so it's hidden there in favor of a floating
+  // "View Deck" bar that opens this as an overlay instead — same component
+  // tree, so the in-progress deck never resets, and a Back button just
+  // closes the overlay rather than navigating anywhere.
+  const [deckPanelOpen, setDeckPanelOpen] = useState(false);
 
   // The deck being built as the customer browses — entirely separate from
   // the "buy this one card right now" flow on a card's own detail page.
@@ -500,90 +620,68 @@ export default function VibesBrowsePage() {
           )}
         </div>
 
-        <aside className="self-start rounded-xl border border-zinc-800 bg-zinc-900 p-5 lg:sticky lg:top-28">
-          <input
-            value={deckName}
-            onChange={(e) => setDeckName(e.target.value)}
-            className="mb-4 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm font-medium text-zinc-100"
+        {/* Desktop deck builder — hidden on mobile in favor of the floating
+            bar + overlay below, since this sidebar would otherwise sit
+            below the entire card grid and require a long scroll to reach. */}
+        <aside className="hidden self-start rounded-xl border border-zinc-800 bg-zinc-900 p-5 lg:sticky lg:top-28 lg:block">
+          <DeckPanelContent
+            deckName={deckName}
+            setDeckName={setDeckName}
+            deckEntries={deckEntries}
+            setDeckQty={setDeckQty}
+            totalCards={totalCards}
+            availableQty={availableQty}
+            totalCost={totalCost}
+            missingCount={missingCount}
+            confirmed={confirmed}
+            requested={requested}
+            handleAddToCart={handleAddToCart}
+            handleRequestWholeDeck={handleRequestWholeDeck}
           />
-
-          {deckEntries.length === 0 ? (
-            <p className="text-sm text-zinc-500">Click &quot;Add to deck&quot; on any card to start building.</p>
-          ) : (
-            <ul className="mb-4 max-h-80 space-y-2 overflow-y-auto pr-1">
-              {deckEntries.map(({ card, qty }) => {
-                const short = qty > card.stock;
-                return (
-                <li key={card.id} className="flex items-center justify-between gap-2 text-sm">
-                  <span className="flex min-w-0 items-center gap-1.5 truncate text-zinc-200">
-                    <span className="truncate">{card.name}</span>
-                    {short && (
-                      <span
-                        title={`Only ${card.stock} available out of ${qty} added`}
-                        className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-yellow-500/20 text-[10px] font-bold text-yellow-400"
-                      >
-                        !
-                      </span>
-                    )}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => setDeckQty(card.id, qty - 1)}
-                      className="h-6 w-6 rounded border border-zinc-700 text-zinc-300 hover:border-purple-500"
-                    >
-                      −
-                    </button>
-                    <span className="w-6 text-center text-zinc-300">{qty}</span>
-                    <button
-                      onClick={() => setDeckQty(card.id, qty + 1)}
-                      className="h-6 w-6 rounded border border-zinc-700 text-zinc-300 hover:border-purple-500"
-                    >
-                      +
-                    </button>
-                  </div>
-                </li>
-                );
-              })}
-            </ul>
-          )}
-
-          <div className="border-t border-zinc-800 pt-4 text-sm">
-            <div className="flex justify-between text-zinc-400">
-              <span>Cards</span>
-              <span>{totalCards}</span>
-            </div>
-            <div className="flex justify-between text-zinc-400">
-              <span>In stock</span>
-              <span className={availableQty === totalCards ? "text-green-400" : "text-yellow-400"}>
-                {availableQty} / {totalCards}
-              </span>
-            </div>
-            <div className="mt-2 flex justify-between text-lg font-semibold text-zinc-100">
-              <span>Total</span>
-              <span className="text-purple-300">${totalCost.toFixed(2)}</span>
-            </div>
-          </div>
-
-          <div className="mt-4 flex flex-col gap-2">
-            <button
-              onClick={handleAddToCart}
-              disabled={deckEntries.length === 0 || confirmed}
-              className="rounded-lg bg-purple-600 py-2 text-sm font-medium text-white hover:bg-purple-500 disabled:bg-zinc-700 disabled:text-zinc-400"
-            >
-              {confirmed ? "Added!" : "Buy what's in stock"}
-            </button>
-            {missingCount > 0 && (
-              <button
-                onClick={handleRequestWholeDeck}
-                disabled={deckEntries.length === 0 || requested}
-                className="rounded-lg border border-zinc-700 py-2 text-sm font-medium text-zinc-300 hover:border-purple-500 hover:text-purple-300 disabled:opacity-40"
-              >
-                {requested ? "Requested!" : "♡ Request entire deck instead"}
-              </button>
-            )}
-          </div>
         </aside>
       </div>
+
+      {/* Mobile: floating bar to open the deck as an overlay, rather than
+          stacking the deck panel below the whole grid. */}
+      {deckEntries.length > 0 && !deckPanelOpen && (
+        <button
+          onClick={() => setDeckPanelOpen(true)}
+          className="fixed inset-x-4 bottom-4 z-40 flex items-center justify-between rounded-xl bg-purple-600 px-5 py-3 text-sm font-semibold text-white shadow-2xl lg:hidden"
+        >
+          <span>{totalCards} card{totalCards === 1 ? "" : "s"} in deck</span>
+          <span>${totalCost.toFixed(2)} · View Deck →</span>
+        </button>
+      )}
+
+      {deckPanelOpen && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-zinc-950 lg:hidden">
+          <div className="flex items-center gap-3 border-b border-zinc-800 px-4 py-3">
+            <button
+              onClick={() => setDeckPanelOpen(false)}
+              className="flex items-center gap-1 rounded-lg border border-zinc-700 px-3 py-1.5 text-sm text-zinc-300"
+            >
+              ← Back to Browse
+            </button>
+            <h2 className="text-sm font-medium text-zinc-400">Your Deck</h2>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4">
+            <DeckPanelContent
+              deckName={deckName}
+              setDeckName={setDeckName}
+              deckEntries={deckEntries}
+              setDeckQty={setDeckQty}
+              totalCards={totalCards}
+              availableQty={availableQty}
+              totalCost={totalCost}
+              missingCount={missingCount}
+              confirmed={confirmed}
+              requested={requested}
+              handleAddToCart={handleAddToCart}
+              handleRequestWholeDeck={handleRequestWholeDeck}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
