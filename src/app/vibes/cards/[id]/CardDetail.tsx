@@ -25,6 +25,7 @@ const COL_LABEL: Record<ColKey, string> = { base: "Base", foil: "Foil", altfoil:
 const SOURCE_LOGO: Record<string, { src: string; width: number; height: number }> = {
   dyli: { src: "/logos/dyli-logo.png", width: 48, height: 18 },
   minmax: { src: "/logos/minmax-logo.png", width: 44, height: 18 },
+  scg: { src: "/logos/scg-logo.png", width: 48, height: 18 },
 };
 
 const SOURCE_LABEL: Record<string, string> = {
