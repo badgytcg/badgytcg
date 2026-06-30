@@ -71,41 +71,115 @@ function PriceChart({ history }: { history: HistoryPoint[] }) {
   const max = Math.max(...allPrices);
   const range = max - min || 1;
   const width = 320;
-  const height = 80;
+  const height = 100;
+  const padTop = 8;
+  const padBottom = 18; // room for the x-axis date labels
+  const plotHeight = height - padTop - padBottom;
+
+  function yFor(price: number) {
+    return padTop + plotHeight - ((price - min) / range) * plotHeight;
+  }
 
   function pointsFor(pts: HistoryPoint[]) {
-    return pts
-      .map((p, i) => {
-        const x = (i / (pts.length - 1)) * width;
-        const y = height - ((p.price - min) / range) * (height - 8) - 4;
-        return `${x},${y}`;
-      })
-      .join(" ");
+    return pts.map((p, i) => ({
+      x: pts.length > 1 ? (i / (pts.length - 1)) * width : width / 2,
+      y: yFor(p.price),
+      price: p.price,
+      date: p.recordedAt,
+    }));
   }
+
+  const gridLines = [min, (min + max) / 2, max];
+  const firstDate = history.length > 0 ? history[0].recordedAt : null;
+  const lastDate = history.length > 0 ? history[history.length - 1].recordedAt : null;
+  const fmtDate = (iso: string) => new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 
   return (
     <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
       <h3 className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-500">Price History</h3>
-      <svg viewBox={`0 0 ${width} ${height}`} className="w-full" style={{ height: 80 }}>
-        {series.map(([source, pts]) => (
-          <polyline
-            key={source}
-            points={pointsFor(pts)}
-            fill="none"
-            stroke={CHART_COLOR[source] ?? "#a1a1aa"}
-            strokeWidth={2}
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          />
-        ))}
-      </svg>
-      <div className="mt-2 flex gap-4 text-xs text-zinc-400">
-        {series.map(([source]) => (
-          <span key={source} className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: CHART_COLOR[source] ?? "#a1a1aa" }} />
-            {SOURCE_LABEL[source] ?? source}
-          </span>
-        ))}
+      <div className="flex gap-2">
+        {/* Y-axis price labels */}
+        <div
+          className="flex shrink-0 flex-col justify-between text-right text-[10px] text-zinc-500"
+          style={{ height, paddingTop: padTop, paddingBottom: padBottom }}
+        >
+          <span>${max.toFixed(2)}</span>
+          {max !== min && <span>${((min + max) / 2).toFixed(2)}</span>}
+          <span>${min.toFixed(2)}</span>
+        </div>
+
+        <svg viewBox={`0 0 ${width} ${height}`} className="w-full" style={{ height }}>
+          {/* horizontal gridlines */}
+          {gridLines.map((g, i) => (
+            <line
+              key={i}
+              x1={0}
+              x2={width}
+              y1={yFor(g)}
+              y2={yFor(g)}
+              stroke="#3f3f46"
+              strokeWidth={1}
+              strokeDasharray={i === gridLines.length - 1 || i === 0 ? undefined : "3 3"}
+            />
+          ))}
+
+          {series.map(([source, pts]) => {
+            const points = pointsFor(pts);
+            return (
+              <g key={source}>
+                <polyline
+                  points={points.map((p) => `${p.x},${p.y}`).join(" ")}
+                  fill="none"
+                  stroke={CHART_COLOR[source] ?? "#a1a1aa"}
+                  strokeWidth={2}
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                />
+                {points.map((p, i) => (
+                  <circle key={i} cx={p.x} cy={p.y} r={3} fill={CHART_COLOR[source] ?? "#a1a1aa"}>
+                    <title>
+                      {(SOURCE_LABEL[source] ?? source)} — ${p.price.toFixed(2)} ({fmtDate(p.date)})
+                    </title>
+                  </circle>
+                ))}
+              </g>
+            );
+          })}
+
+          {/* x-axis date range */}
+          {firstDate && (
+            <text x={0} y={height - 4} fontSize={9} fill="#71717a">
+              {fmtDate(firstDate)}
+            </text>
+          )}
+          {lastDate && (
+            <text x={width} y={height - 4} fontSize={9} fill="#71717a" textAnchor="end">
+              {fmtDate(lastDate)}
+            </text>
+          )}
+        </svg>
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-4 text-xs text-zinc-400">
+        {series.map(([source, pts]) => {
+          const first = pts[0].price;
+          const last = pts[pts.length - 1].price;
+          const delta = last - first;
+          const pct = first !== 0 ? (delta / first) * 100 : 0;
+          const deltaColor = delta > 0 ? "text-red-400" : delta < 0 ? "text-green-400" : "text-zinc-500";
+          return (
+            <span key={source} className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: CHART_COLOR[source] ?? "#a1a1aa" }} />
+              <span className="font-medium text-zinc-300">{SOURCE_LABEL[source] ?? source}</span>
+              <span>${last.toFixed(2)}</span>
+              {delta !== 0 && (
+                <span className={deltaColor}>
+                  {delta > 0 ? "▲" : "▼"} {Math.abs(pct).toFixed(0)}%
+                </span>
+              )}
+            </span>
+          );
+        })}
       </div>
     </div>
   );
