@@ -11,11 +11,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   const { id } = await params;
   const body = await request.json();
-  const { name, description, imageUrl, price, grade, set } = body;
+  const { name, description, imageUrl, price, grade, set, qty } = body;
 
   const card = await prisma.specialCard.update({
     where: { id },
-    data: { name, description, imageUrl, price, grade, set },
+    data: { name, description, imageUrl, price, grade, set, qty },
   });
   return NextResponse.json({ card });
 }

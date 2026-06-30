@@ -170,9 +170,9 @@ model CardVariantOverride {
 }
 
 // Manually-curated one-off inventory: graded slabs, special/rare foils, etc.
-// that aren't part of the regular 548-card catalog. No stock field on
-// purpose — if it's listed here, it's available; admin deletes the row once
-// it sells rather than zeroing out a quantity.
+// that aren't part of the regular 548-card catalog. Admin sets qty directly
+// (e.g. 10 copies of the same promo) rather than adding 10 separate rows;
+// remove the row once the last one sells.
 model SpecialCard {
   id          String   @id @default(cuid())
   name        String
@@ -181,5 +181,6 @@ model SpecialCard {
   price       Float
   grade       String? // e.g. "PSA 9", "Beckett 9.5"
   set         String?
+  qty         Int      @default(1)
   createdAt   DateTime @default(now())
 }

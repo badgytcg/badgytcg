@@ -81,6 +81,7 @@ interface SpecialCardRow {
   price: number;
   grade: string | null;
   set: string | null;
+  qty: number;
 }
 
 function specialToCard(special: SpecialCardRow): Card {
@@ -99,7 +100,7 @@ function specialToCard(special: SpecialCardRow): Card {
     cost: null,
     vibe: null,
     price: special.price,
-    stock: 1, // existence = available; admin deletes the row once it sells
+    stock: special.qty,
     image: special.imageUrl,
     isSpecial: true,
     description: special.description,

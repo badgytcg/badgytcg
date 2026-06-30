@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json();
-  const { name, description, imageUrl, price, grade, set } = body;
+  const { name, description, imageUrl, price, grade, set, qty } = body;
   if (typeof name !== "string" || typeof imageUrl !== "string" || typeof price !== "number") {
     return NextResponse.json({ error: "Expected { name, imageUrl, price }" }, { status: 400 });
   }
@@ -32,6 +32,7 @@ export async function POST(request: Request) {
       description: description ?? null,
       grade: grade ?? null,
       set: set ?? null,
+      qty: typeof qty === "number" && qty > 0 ? Math.floor(qty) : 1,
     },
   });
   return NextResponse.json({ card }, { status: 201 });
