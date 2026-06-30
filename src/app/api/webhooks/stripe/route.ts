@@ -34,13 +34,24 @@ export async function POST(request: Request) {
     expand: ["data.price.product"],
   });
 
+  // Snapshot consigner ownership at the moment of sale so reports remain
+  // accurate even if ownership is later re-assigned in inventory.
+  const cardIds = lineItems.data.map((item) => {
+    const product = item.price?.product as Stripe.Product;
+    return product.metadata.cardId as string;
+  });
+  const overrides = await prisma.cardOverride.findMany({ where: { cardId: { in: cardIds } } });
+  const ownerByCardId = new Map(overrides.map((o) => [o.cardId, o.owner]));
+
   const orderItems = lineItems.data.map((item) => {
     const product = item.price?.product as Stripe.Product;
+    const cardId = product.metadata.cardId as string;
     return {
-      cardId: product.metadata.cardId as string,
+      cardId,
       cardName: product.name,
       qty: item.quantity ?? 1,
       priceCents: item.price?.unit_amount ?? 0,
+      owner: ownerByCardId.get(cardId) ?? "badgy",
     };
   });
 

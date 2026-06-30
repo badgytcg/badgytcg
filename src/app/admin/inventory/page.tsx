@@ -16,8 +16,16 @@ const RARITY_ORDER = ["Common", "Uncommon", "Rare", "Epic"];
 type SortKey = "name-asc" | "name-desc" | "price-asc" | "price-desc" | "stock-asc" | "stock-desc";
 type BulkMode = "fixed" | "dyli";
 
+interface Consigner {
+  slug: string;
+  name: string;
+}
+
 export default function AdminInventoryPage() {
   const [cards, setCards] = useState<Card[]>([]);
+  const [consigners, setConsigners] = useState<Consigner[]>([]);
+  const [ownerMap, setOwnerMap] = useState<Map<string, string>>(new Map());
+  const [ownerFilter, setOwnerFilter] = useState("All");
   const [query, setQuery] = useState("");
   const [set, setSet] = useState("All");
   const [rarityFilter, setRarityFilter] = useState("All");
@@ -59,13 +67,28 @@ export default function AdminInventoryPage() {
   }
 
   useEffect(() => {
-    fetch("/api/cards")
-      .then((res) => res.json())
-      .then((data) => {
-        setCards(data.cards ?? []);
-        setLoading(false);
-      });
+    Promise.all([
+      fetch("/api/cards").then((r) => r.json()),
+      fetch("/api/admin/consigners").then((r) => r.json()),
+      fetch("/api/admin/inventory/owner").then((r) => r.json()),
+    ]).then(([cardsData, consData, ownersData]) => {
+      setCards(cardsData.cards ?? []);
+      setConsigners(consData.consigners ?? []);
+      const map = new Map<string, string>();
+      for (const row of ownersData.overrides ?? []) map.set(row.cardId, row.owner);
+      setOwnerMap(map);
+      setLoading(false);
+    });
   }, []);
+
+  async function setOwner(cardId: string, owner: string) {
+    setOwnerMap((prev) => new Map(prev).set(cardId, owner));
+    await fetch("/api/admin/inventory/owner", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cardId, owner }),
+    });
+  }
 
   const sets = useMemo(
     () => SET_ORDER.filter((s) => cards.some((c) => c.set === s)),
@@ -172,7 +195,8 @@ export default function AdminInventoryPage() {
         c.name.toLowerCase().includes(query.toLowerCase()) &&
         (set === "All" || c.set === set) &&
         (rarityFilter === "All" || c.rarity === rarityFilter) &&
-        (colorFilter === "All" || colorCategory(c) === colorFilter)
+        (colorFilter === "All" || colorCategory(c) === colorFilter) &&
+        (ownerFilter === "All" || (ownerMap.get(c.id) ?? "badgy") === ownerFilter)
     );
 
     const sorted = [...result];
@@ -196,7 +220,7 @@ export default function AdminInventoryPage() {
         sorted.sort((a, b) => a.name.localeCompare(b.name));
     }
     return sorted;
-  }, [cards, query, set, rarityFilter, colorFilter, sort]);
+  }, [cards, query, set, rarityFilter, colorFilter, ownerFilter, ownerMap, sort]);
 
   function getEdit(card: Card) {
     return edits[card.id] ?? { price: String(card.price), stock: String(card.stock) };
@@ -428,6 +452,16 @@ export default function AdminInventoryPage() {
           ))}
         </select>
         <select
+          value={ownerFilter}
+          onChange={(e) => setOwnerFilter(e.target.value)}
+          className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100"
+        >
+          <option value="All">All owners</option>
+          {consigners.map((c) => (
+            <option key={c.slug} value={c.slug}>{c.name}</option>
+          ))}
+        </select>
+        <select
           value={sort}
           onChange={(e) => setSort(e.target.value as SortKey)}
           className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100"
@@ -451,6 +485,7 @@ export default function AdminInventoryPage() {
               <th className="px-4 py-3">Set</th>
               <th className="px-4 py-3">Price</th>
               <th className="px-4 py-3">Stock</th>
+              <th className="px-4 py-3">Owner</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
@@ -458,6 +493,7 @@ export default function AdminInventoryPage() {
             {filtered.slice(0, 200).map((card) => {
               const edit = getEdit(card);
               const dirty = edit.price !== String(card.price) || edit.stock !== String(card.stock);
+              const cardOwner = ownerMap.get(card.id) ?? "badgy";
               return (
                 <tr key={card.id} className="bg-zinc-950">
                   <td className="px-4 py-2 text-zinc-200">{card.name}</td>
@@ -480,6 +516,17 @@ export default function AdminInventoryPage() {
                       onChange={(e) => setEdit(card.id, "stock", e.target.value)}
                       className="w-20 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-zinc-100"
                     />
+                  </td>
+                  <td className="px-4 py-2">
+                    <select
+                      value={cardOwner}
+                      onChange={(e) => setOwner(card.id, e.target.value)}
+                      className="rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs text-zinc-100"
+                    >
+                      {consigners.map((c) => (
+                        <option key={c.slug} value={c.slug}>{c.name}</option>
+                      ))}
+                    </select>
                   </td>
                   <td className="px-4 py-2">
                     <button
