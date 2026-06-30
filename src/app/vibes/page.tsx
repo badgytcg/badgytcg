@@ -312,11 +312,9 @@ export default function VibesBrowsePage() {
   // pushes the whole card grid below the fold) but always shown on lg+
   // regardless of this state — see the lg:block override below.
   const [filtersOpen, setFiltersOpen] = useState(false);
-  // On mobile the deck-builder sidebar isn't reachable without scrolling
-  // past the entire card grid, so it's hidden there in favor of a floating
-  // "View Deck" bar that opens this as an overlay instead — same component
-  // tree, so the in-progress deck never resets, and a Back button just
-  // closes the overlay rather than navigating anywhere.
+  // On mobile the deck builder is its own collapsible section (same pattern
+  // as Filters) rather than the desktop sidebar, which would otherwise sit
+  // below the entire card grid — collapsed by default.
   const [deckPanelOpen, setDeckPanelOpen] = useState(false);
 
   // The deck being built as the customer browses — entirely separate from
@@ -546,6 +544,42 @@ export default function VibesBrowsePage() {
           </div>
         </aside>
 
+        {/* Mobile: deck builder as its own collapsible section right below
+            the filters, collapsed by default — same pattern as Filters, and
+            avoids requiring a scroll past the whole card grid to reach it. */}
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900 lg:hidden">
+          <button
+            onClick={() => setDeckPanelOpen((v) => !v)}
+            className="flex w-full items-center justify-between px-5 py-4 text-sm font-medium text-zinc-100"
+          >
+            <span className="flex items-center gap-2">
+              Your Deck
+              {totalCards > 0 && (
+                <span className="rounded-full bg-purple-600 px-2 py-0.5 text-xs text-white">{totalCards}</span>
+              )}
+            </span>
+            <span className={`text-zinc-400 transition-transform ${deckPanelOpen ? "rotate-180" : ""}`}>⌄</span>
+          </button>
+          {deckPanelOpen && (
+            <div className="p-5 pt-0">
+              <DeckPanelContent
+                deckName={deckName}
+                setDeckName={setDeckName}
+                deckEntries={deckEntries}
+                setDeckQty={setDeckQty}
+                totalCards={totalCards}
+                availableQty={availableQty}
+                totalCost={totalCost}
+                missingCount={missingCount}
+                confirmed={confirmed}
+                requested={requested}
+                handleAddToCart={handleAddToCart}
+                handleRequestWholeDeck={handleRequestWholeDeck}
+              />
+            </div>
+          )}
+        </div>
+
         <div>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-zinc-500">{filtered.length} card(s)</p>
@@ -640,48 +674,6 @@ export default function VibesBrowsePage() {
           />
         </aside>
       </div>
-
-      {/* Mobile: floating bar to open the deck as an overlay, rather than
-          stacking the deck panel below the whole grid. */}
-      {deckEntries.length > 0 && !deckPanelOpen && (
-        <button
-          onClick={() => setDeckPanelOpen(true)}
-          className="fixed inset-x-4 bottom-4 z-40 flex items-center justify-between rounded-xl bg-purple-600 px-5 py-3 text-sm font-semibold text-white shadow-2xl lg:hidden"
-        >
-          <span>{totalCards} card{totalCards === 1 ? "" : "s"} in deck</span>
-          <span>${totalCost.toFixed(2)} · View Deck →</span>
-        </button>
-      )}
-
-      {deckPanelOpen && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-zinc-950 lg:hidden">
-          <div className="flex items-center gap-3 border-b border-zinc-800 px-4 py-3">
-            <button
-              onClick={() => setDeckPanelOpen(false)}
-              className="flex items-center gap-1 rounded-lg border border-zinc-700 px-3 py-1.5 text-sm text-zinc-300"
-            >
-              ← Back to Browse
-            </button>
-            <h2 className="text-sm font-medium text-zinc-400">Your Deck</h2>
-          </div>
-          <div className="flex-1 overflow-y-auto p-4">
-            <DeckPanelContent
-              deckName={deckName}
-              setDeckName={setDeckName}
-              deckEntries={deckEntries}
-              setDeckQty={setDeckQty}
-              totalCards={totalCards}
-              availableQty={availableQty}
-              totalCost={totalCost}
-              missingCount={missingCount}
-              confirmed={confirmed}
-              requested={requested}
-              handleAddToCart={handleAddToCart}
-              handleRequestWholeDeck={handleRequestWholeDeck}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
