@@ -49,4 +49,8 @@ export interface DeckImportResult {
   deckPrice: number; // price you charge for the full pre-built deck
   available: { card: Card; qty: number }[];
   missing: WishlistLine[];
+  // Every requested line at its full requested qty, with the matched catalog
+  // card if one was found (regardless of stock) — used for card art, stats,
+  // and pricing displays that need to see the whole decklist at once.
+  entries: { card: Card | null; cardName: string; qty: number }[];
 }

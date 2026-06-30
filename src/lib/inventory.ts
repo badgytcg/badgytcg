@@ -24,9 +24,12 @@ export function findCardByAnyName(name: string, catalog?: Card[]): Card | undefi
 export function matchDeckToInventory(deck: ParsedDeck, deckPrice = 0, catalog?: Card[]): DeckImportResult {
   const available: DeckImportResult["available"] = [];
   const missing: WishlistLine[] = [];
+  const entries: DeckImportResult["entries"] = [];
 
   for (const entry of deck.entries) {
     const card = findCardByAnyName(entry.name, catalog);
+    entries.push({ card: card ?? null, cardName: entry.name, qty: entry.qty });
+
     if (!card) {
       missing.push({
         cardName: entry.name,
@@ -53,5 +56,5 @@ export function matchDeckToInventory(deck: ParsedDeck, deckPrice = 0, catalog?: 
     }
   }
 
-  return { deckName: deck.deckName, deckPrice, available, missing };
+  return { deckName: deck.deckName, deckPrice, available, missing, entries };
 }
