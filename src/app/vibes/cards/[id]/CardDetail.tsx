@@ -296,8 +296,8 @@ export default function CardDetail({ card }: { card: Card }) {
   ].filter(Boolean) as { label: string; className: string }[];
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-10">
-      <div className="grid gap-6 sm:grid-cols-[260px_1fr]">
+    <div className="mx-auto max-w-4xl px-6 py-10">
+      <div className="grid gap-8 sm:grid-cols-[320px_1fr]">
         {/* Card image — the source PNGs have a transparent margin baked in
             around the rounded card art, so a slight zoom crops that margin
             out instead of letting the container background show through it. */}
@@ -306,7 +306,7 @@ export default function CardDetail({ card }: { card: Card }) {
             src={selected.image}
             alt={selected.name}
             fill
-            sizes="260px"
+            sizes="320px"
             style={{ transform: "scale(1.04)" }}
             className={`object-cover transition-all ${!inStock ? "grayscale opacity-40" : ""} ${selectedVariant !== "base" ? "drop-shadow-[0_0_24px_rgba(168,85,247,0.6)]" : ""}`}
             unoptimized

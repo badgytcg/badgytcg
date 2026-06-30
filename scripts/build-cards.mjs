@@ -35,6 +35,16 @@ function slugify(value) {
     .replace(/^-+|-+$/g, "");
 }
 
+// Action/Fit cards store cost as a run of colored-pip letters (e.g. "BB",
+// "RRR") instead of a number — the card art just shows the pip count, so
+// that's what we display too. Character/Relic costs are already numeric.
+function parseCost(value) {
+  if (value === "" || value === "EMPTY") return null;
+  if (/^[0-9]+$/.test(value)) return Number(value);
+  if (/^[A-Z]+$/.test(value)) return value.length;
+  return null;
+}
+
 const raw = readFileSync(csvPath, "utf8");
 const allRows = parse(raw, { columns: true, skip_empty_lines: true });
 const rows = allRows.filter((row) => !EXCLUDED_CARDS.has(`${row.Set}-${row.CardID}`));
@@ -48,10 +58,10 @@ const cards = rows.map((row) => ({
   cardNumber: row.CardID,
   color: row.Color,
   type: row.Type,
-  attribute: row.Attribute || null,
+  attribute: row.Attribute && row.Attribute !== "EMPTY" ? row.Attribute : null,
   ability: row.Ability || null,
-  cost: row.Cost === "" ? null : Number(row.Cost),
-  vibe: row.Vibe === "" ? null : Number(row.Vibe),
+  cost: parseCost(row.Cost),
+  vibe: row.Vibe === "" || row.Vibe === "EMPTY" ? null : Number(row.Vibe),
   rarity: RARITY_NAMES[row.Rarity] ?? row.Rarity,
   image: row.imageURL,
 }));
