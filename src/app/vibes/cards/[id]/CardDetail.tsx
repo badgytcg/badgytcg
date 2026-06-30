@@ -205,10 +205,10 @@ export default function CardDetail({ card }: { card: Card }) {
   const tags = [card.type, card.attribute, card.rarity].filter(Boolean) as string[];
 
   const RARITY_COLOR: Record<string, string> = {
-    Common: "border-zinc-600 text-zinc-400",
-    Uncommon: "border-green-600 text-green-400",
-    Rare: "border-blue-500 text-blue-400",
-    Epic: "border-purple-500 text-purple-400",
+    Common: "border-zinc-600 bg-zinc-700/40 text-zinc-300",
+    Uncommon: "border-green-600 bg-green-900/40 text-green-300",
+    Rare: "border-blue-500 bg-blue-900/40 text-blue-300",
+    Epic: "border-purple-500 bg-purple-900/40 text-purple-300",
   };
 
   return (
@@ -245,7 +245,7 @@ export default function CardDetail({ card }: { card: Card }) {
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className={`rounded-full border px-3 py-0.5 text-xs font-medium ${RARITY_COLOR[tag] ?? "border-zinc-700 text-zinc-400"}`}
+                  className={`rounded-full border px-3 py-0.5 text-xs font-medium ${RARITY_COLOR[tag] ?? "border-zinc-700 bg-zinc-800/50 text-zinc-300"}`}
                 >
                   {tag}
                 </span>
