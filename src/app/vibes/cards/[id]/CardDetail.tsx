@@ -27,6 +27,8 @@ const SOURCE_LOGO: Record<string, { src: string; width: number; height: number }
   minmax: { src: "/logos/minmax-logo.png", width: 44, height: 18 },
 };
 
+const DYLI_AFFILIATE = "https://www.dyli.io/?code=km7g2673";
+
 const SOURCE_ACCENT: Record<string, string> = {
   dyli: "bg-yellow-400",
   minmax: "bg-purple-500",
@@ -353,16 +355,17 @@ export default function CardDetail({ card }: { card: Card }) {
                             <td key={col} className="px-3 py-3 text-right">
                               {mp ? (
                                 <div className="flex flex-col items-end gap-1">
-                                  <span className="font-medium text-zinc-100">${mp.price.toFixed(2)}</span>
-                                  {mp.url && (
+                                  {source === "dyli" ? (
                                     <a
-                                      href={mp.url}
+                                      href={DYLI_AFFILIATE}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="rounded bg-purple-700 px-2 py-0.5 text-[10px] font-semibold text-white hover:bg-purple-600"
+                                      className="font-medium text-yellow-300 hover:underline"
                                     >
-                                      Buy →
+                                      ${mp.price.toFixed(2)}
                                     </a>
+                                  ) : (
+                                    <span className="font-medium text-zinc-100">${mp.price.toFixed(2)}</span>
                                   )}
                                 </div>
                               ) : (
