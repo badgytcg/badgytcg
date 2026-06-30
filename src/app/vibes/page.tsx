@@ -41,7 +41,10 @@ function attributeGroupsFor(card: { attribute: string | null }): string[] {
   return ATTRIBUTE_GROUPS.filter((g) => card.attribute!.includes(g));
 }
 
-type SortKey = "name" | "cost-asc" | "cost-desc" | "vibe-asc" | "vibe-desc" | "rarity";
+type SortKey = "name" | "cost-asc" | "cost-desc" | "vibe-asc" | "vibe-desc" | "rarity" | "price-asc" | "price-desc";
+
+const COST_BOUNDS = { min: 0, max: 16 };
+const VIBE_BOUNDS = { min: 0, max: 21 };
 
 function toggle<T>(list: T[], value: T): T[] {
   return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
@@ -78,6 +81,55 @@ function FilterGroup({
             </button>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+function RangeSlider({
+  label,
+  bounds,
+  valueMin,
+  valueMax,
+  onChange,
+}: {
+  label: string;
+  bounds: { min: number; max: number };
+  valueMin: number;
+  valueMax: number;
+  onChange: (min: number, max: number) => void;
+}) {
+  const { min, max } = bounds;
+  const pctMin = ((valueMin - min) / (max - min)) * 100;
+  const pctMax = ((valueMax - min) / (max - min)) * 100;
+  return (
+    <div className="mb-5">
+      <h3 className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-zinc-500">
+        <span>{label}</span>
+        <span className="normal-case text-zinc-400">{valueMin} – {valueMax}</span>
+      </h3>
+      <div className="relative h-5">
+        <div className="absolute top-1/2 h-1 w-full -translate-y-1/2 rounded-full bg-zinc-700" />
+        <div
+          className="absolute top-1/2 h-1 -translate-y-1/2 rounded-full bg-purple-500"
+          style={{ left: `${pctMin}%`, right: `${100 - pctMax}%` }}
+        />
+        <input
+          type="range"
+          min={min}
+          max={max}
+          value={valueMin}
+          onChange={(e) => onChange(Math.min(Number(e.target.value), valueMax), valueMax)}
+          className="range-thumb absolute top-1/2 h-5 w-full -translate-y-1/2 appearance-none bg-transparent"
+        />
+        <input
+          type="range"
+          min={min}
+          max={max}
+          value={valueMax}
+          onChange={(e) => onChange(valueMin, Math.max(Number(e.target.value), valueMin))}
+          className="range-thumb absolute top-1/2 h-5 w-full -translate-y-1/2 appearance-none bg-transparent"
+        />
       </div>
     </div>
   );
@@ -134,10 +186,10 @@ export default function VibesBrowsePage() {
   const [rarities, setRarities] = useState<string[]>([]);
   const [attributeGroups, setAttributeGroups] = useState<string[]>([]);
   const [variantFilter, setVariantFilter] = useState<string[]>([]);
-  const [costMin, setCostMin] = useState("");
-  const [costMax, setCostMax] = useState("");
-  const [vibeMin, setVibeMin] = useState("");
-  const [vibeMax, setVibeMax] = useState("");
+  const [costMin, setCostMin] = useState(COST_BOUNDS.min);
+  const [costMax, setCostMax] = useState(COST_BOUNDS.max);
+  const [vibeMin, setVibeMin] = useState(VIBE_BOUNDS.min);
+  const [vibeMax, setVibeMax] = useState(VIBE_BOUNDS.max);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sort, setSort] = useState<SortKey>("name");
   const [pageSize, setPageSize] = useState(100);
@@ -170,10 +222,12 @@ export default function VibesBrowsePage() {
             (v === "Alt Foil" && !!cardVariants?.altfoil)
         );
       const matchesStock = !inStockOnly || c.stock > 0;
-      const matchesCostMin = costMin === "" || (c.cost ?? -Infinity) >= Number(costMin);
-      const matchesCostMax = costMax === "" || (c.cost ?? Infinity) <= Number(costMax);
-      const matchesVibeMin = vibeMin === "" || (c.vibe ?? -Infinity) >= Number(vibeMin);
-      const matchesVibeMax = vibeMax === "" || (c.vibe ?? Infinity) <= Number(vibeMax);
+      const matchesCost =
+        (costMin === COST_BOUNDS.min && costMax === COST_BOUNDS.max) ||
+        ((c.cost ?? 0) >= costMin && (c.cost ?? 0) <= costMax);
+      const matchesVibe =
+        (vibeMin === VIBE_BOUNDS.min && vibeMax === VIBE_BOUNDS.max) ||
+        ((c.vibe ?? 0) >= vibeMin && (c.vibe ?? 0) <= vibeMax);
       return (
         matchesQuery &&
         matchesSet &&
@@ -183,10 +237,8 @@ export default function VibesBrowsePage() {
         matchesAttribute &&
         matchesVariant &&
         matchesStock &&
-        matchesCostMin &&
-        matchesCostMax &&
-        matchesVibeMin &&
-        matchesVibeMax
+        matchesCost &&
+        matchesVibe
       );
     });
 
@@ -206,6 +258,12 @@ export default function VibesBrowsePage() {
         break;
       case "rarity":
         sorted.sort((a, b) => RARITY_ORDER.indexOf(a.rarity) - RARITY_ORDER.indexOf(b.rarity));
+        break;
+      case "price-asc":
+        sorted.sort((a, b) => a.price - b.price);
+        break;
+      case "price-desc":
+        sorted.sort((a, b) => b.price - a.price);
         break;
       default:
         sorted.sort((a, b) => a.name.localeCompare(b.name));
@@ -229,10 +287,10 @@ export default function VibesBrowsePage() {
     setRarities([]);
     setAttributeGroups([]);
     setVariantFilter([]);
-    setCostMin("");
-    setCostMax("");
-    setVibeMin("");
-    setVibeMax("");
+    setCostMin(COST_BOUNDS.min);
+    setCostMax(COST_BOUNDS.max);
+    setVibeMin(VIBE_BOUNDS.min);
+    setVibeMax(VIBE_BOUNDS.max);
     setInStockOnly(false);
     setSort("name");
   }
@@ -318,6 +376,11 @@ export default function VibesBrowsePage() {
             className="mb-5 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500"
           />
 
+          <label className="mb-5 flex items-center gap-2 text-sm text-zinc-300">
+            <input type="checkbox" checked={inStockOnly} onChange={(e) => setInStockOnly(e.target.checked)} />
+            In stock only
+          </label>
+
           <FilterGroup title="Set" options={SETS} selected={sets} onToggle={(v) => setSets(toggle(sets, v))} />
           <FilterGroup title="Color" options={COLORS} selected={colors} onToggle={(v) => setColors(toggle(colors, v))} />
           <FilterGroup title="Type" options={TYPES} selected={types} onToggle={(v) => setTypes(toggle(types, v))} />
@@ -325,28 +388,8 @@ export default function VibesBrowsePage() {
           <FilterGroup title="Attribute" options={ATTRIBUTE_GROUPS} selected={attributeGroups} onToggle={(v) => setAttributeGroups(toggle(attributeGroups, v))} />
           <FilterGroup title="Variant" options={VARIANT_OPTIONS} selected={variantFilter} onToggle={(v) => setVariantFilter(toggle(variantFilter, v))} />
 
-          <div className="mb-5">
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">Cost</h3>
-            <div className="flex items-center gap-2">
-              <input type="number" min={0} value={costMin} onChange={(e) => setCostMin(e.target.value)} placeholder="Min" className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-2 py-1.5 text-sm text-zinc-100" />
-              <span className="text-zinc-500">–</span>
-              <input type="number" min={0} value={costMax} onChange={(e) => setCostMax(e.target.value)} placeholder="Max" className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-2 py-1.5 text-sm text-zinc-100" />
-            </div>
-          </div>
-
-          <div className="mb-5">
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">Vibe</h3>
-            <div className="flex items-center gap-2">
-              <input type="number" min={0} value={vibeMin} onChange={(e) => setVibeMin(e.target.value)} placeholder="Min" className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-2 py-1.5 text-sm text-zinc-100" />
-              <span className="text-zinc-500">–</span>
-              <input type="number" min={0} value={vibeMax} onChange={(e) => setVibeMax(e.target.value)} placeholder="Max" className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-2 py-1.5 text-sm text-zinc-100" />
-            </div>
-          </div>
-
-          <label className="mb-4 flex items-center gap-2 text-sm text-zinc-300">
-            <input type="checkbox" checked={inStockOnly} onChange={(e) => setInStockOnly(e.target.checked)} />
-            In stock only
-          </label>
+          <RangeSlider label="Cost" bounds={COST_BOUNDS} valueMin={costMin} valueMax={costMax} onChange={(lo, hi) => { setCostMin(lo); setCostMax(hi); }} />
+          <RangeSlider label="Vibe" bounds={VIBE_BOUNDS} valueMin={vibeMin} valueMax={vibeMax} onChange={(lo, hi) => { setVibeMin(lo); setVibeMax(hi); }} />
 
           <button onClick={clearFilters} className="w-full rounded-lg border border-zinc-700 py-1.5 text-sm text-zinc-300 hover:border-purple-500">
             Clear filters
@@ -381,6 +424,8 @@ export default function VibesBrowsePage() {
                 <option value="vibe-asc">Vibe: Low to High</option>
                 <option value="vibe-desc">Vibe: High to Low</option>
                 <option value="rarity">Rarity</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
               </select>
             </div>
           </div>
@@ -436,9 +481,21 @@ export default function VibesBrowsePage() {
             <p className="text-sm text-zinc-500">Click &quot;Add to deck&quot; on any card to start building.</p>
           ) : (
             <ul className="mb-4 max-h-80 space-y-2 overflow-y-auto pr-1">
-              {deckEntries.map(({ card, qty }) => (
+              {deckEntries.map(({ card, qty }) => {
+                const short = qty > card.stock;
+                return (
                 <li key={card.id} className="flex items-center justify-between gap-2 text-sm">
-                  <span className="truncate text-zinc-200">{card.name}</span>
+                  <span className="flex min-w-0 items-center gap-1.5 truncate text-zinc-200">
+                    <span className="truncate">{card.name}</span>
+                    {short && (
+                      <span
+                        title={`Only ${card.stock} available out of ${qty} added`}
+                        className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-yellow-500/20 text-[10px] font-bold text-yellow-400"
+                      >
+                        !
+                      </span>
+                    )}
+                  </span>
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => setDeckQty(card.id, qty - 1)}
@@ -455,7 +512,8 @@ export default function VibesBrowsePage() {
                     </button>
                   </div>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           )}
 

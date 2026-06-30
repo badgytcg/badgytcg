@@ -101,6 +101,7 @@ export default function DeckImportPage() {
   const [confirmed, setConfirmed] = useState(false);
   const [requested, setRequested] = useState(false);
   const [catalog, setCatalog] = useState<Card[] | undefined>(undefined);
+  const [importExpanded, setImportExpanded] = useState(true);
 
   // Fetch the live (admin-editable) catalog once so deck matching reflects
   // current stock rather than whatever was true at build time.
@@ -121,6 +122,7 @@ export default function DeckImportPage() {
       const matched = matchDeckToInventory(deck, DECK_BUNDLE_PRICE, catalog);
       setRawDeck(deck);
       setResult(matched);
+      setImportExpanded(false);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Couldn't parse that deck code.");
     }
@@ -211,25 +213,48 @@ export default function DeckImportPage() {
         fully sourced.
       </p>
 
-      <textarea
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-        placeholder={PLACEHOLDER}
-        rows={12}
-        className="mt-6 w-full rounded-lg border border-zinc-700 bg-zinc-900 p-4 font-mono text-sm text-zinc-100 placeholder:text-zinc-600"
-      />
+      {(importExpanded || !result) && (
+        <>
+          <textarea
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder={PLACEHOLDER}
+            rows={12}
+            className="mt-6 w-full rounded-lg border border-zinc-700 bg-zinc-900 p-4 font-mono text-sm text-zinc-100 placeholder:text-zinc-600"
+          />
 
-      <button
-        onClick={handleParse}
-        className="mt-4 rounded-lg bg-purple-600 px-5 py-2 text-sm font-medium text-white hover:bg-purple-500"
-      >
-        Check Deck
-      </button>
+          <div className="mt-4 flex gap-3">
+            <button
+              onClick={handleParse}
+              className="rounded-lg bg-purple-600 px-5 py-2 text-sm font-medium text-white hover:bg-purple-500"
+            >
+              Check Deck
+            </button>
+            {result && (
+              <button
+                onClick={() => setImportExpanded(false)}
+                className="rounded-lg border border-zinc-700 px-5 py-2 text-sm font-medium text-zinc-300 hover:border-purple-500 hover:text-purple-300"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </>
+      )}
 
       {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
 
+      {result && stats && !importExpanded && (
+        <button
+          onClick={() => setImportExpanded(true)}
+          className="mt-6 text-sm text-purple-400 hover:underline"
+        >
+          ← Check or import a different deck
+        </button>
+      )}
+
       {result && stats && (
-        <div className="mt-8 rounded-xl border border-zinc-800 bg-zinc-900 p-6">
+        <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-900 p-6">
           <div className="flex flex-wrap items-start justify-between gap-6">
             <div>
               <h2 className="text-lg font-semibold text-zinc-100">{result.deckName}</h2>
@@ -272,7 +297,7 @@ export default function DeckImportPage() {
                         fill
                         sizes="160px"
                         style={{ transform: "scale(1.04)" }}
-                        className="object-cover"
+                        className={`object-cover ${haveQty === 0 ? "grayscale opacity-40" : ""}`}
                         unoptimized
                       />
                     ) : (
