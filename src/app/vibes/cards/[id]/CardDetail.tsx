@@ -187,9 +187,9 @@ function PriceChart({ history }: { history: HistoryPoint[] }) {
 
 function StatBox({ label, value }: { label: string; value: string | number | null }) {
   return (
-    <div className="rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-3">
+    <div className="rounded-lg border border-zinc-700 bg-zinc-900 px-4 py-2.5">
       <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500">{label}</p>
-      <p className="mt-0.5 text-sm font-medium text-zinc-100">{value ?? "—"}</p>
+      <p className="mt-0.5 text-base font-medium text-zinc-100">{value ?? "—"}</p>
     </div>
   );
 }
@@ -201,7 +201,7 @@ function StatBox({ label, value }: { label: string; value: string | number | nul
 function AbilityText({ text }: { text: string }) {
   const parts = text.split(/(\[ACT\]|_F_|\n)/g);
   return (
-    <p className="text-sm leading-relaxed text-zinc-200">
+    <p className="text-base leading-relaxed text-zinc-200">
       {parts.map((part, i) => {
         if (part === "[ACT]")
           return (
@@ -296,8 +296,8 @@ export default function CardDetail({ card }: { card: Card }) {
   ].filter(Boolean) as { label: string; className: string }[];
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-12">
-      <div className="grid gap-10 sm:grid-cols-[300px_1fr]">
+    <div className="mx-auto max-w-3xl px-6 py-10">
+      <div className="grid gap-6 sm:grid-cols-[260px_1fr]">
         {/* Card image — the source PNGs have a transparent margin baked in
             around the rounded card art, so a slight zoom crops that margin
             out instead of letting the container background show through it. */}
@@ -306,7 +306,7 @@ export default function CardDetail({ card }: { card: Card }) {
             src={selected.image}
             alt={selected.name}
             fill
-            sizes="300px"
+            sizes="260px"
             style={{ transform: "scale(1.04)" }}
             className={`object-cover transition-all ${!inStock ? "grayscale opacity-40" : ""} ${selectedVariant !== "base" ? "drop-shadow-[0_0_24px_rgba(168,85,247,0.6)]" : ""}`}
             unoptimized
@@ -321,15 +321,15 @@ export default function CardDetail({ card }: { card: Card }) {
         </div>
 
         {/* Right column */}
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-3">
           {/* Title + tags */}
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-zinc-100">{card.name}</h1>
-            <div className="mt-2 flex flex-wrap gap-2">
+            <div className="mt-2 flex flex-wrap gap-1.5">
               {tags.map((tag) => (
                 <span
                   key={tag.label}
-                  className={`rounded-full border px-3 py-0.5 text-xs font-medium ${tag.className}`}
+                  className={`rounded-full border px-3 py-1 text-sm font-medium ${tag.className}`}
                 >
                   {tag.label}
                 </span>
@@ -338,7 +338,7 @@ export default function CardDetail({ card }: { card: Card }) {
           </div>
 
           {/* Stat grid */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-1.5">
             <StatBox label="Color" value={colorLabel} />
             <StatBox label="Cost" value={card.cost} />
             <StatBox label="Vibe" value={card.vibe} />
@@ -347,8 +347,8 @@ export default function CardDetail({ card }: { card: Card }) {
 
           {/* Ability */}
           {card.ability && (
-            <div className="rounded-xl border border-zinc-700 bg-zinc-900/60 px-4 py-4">
-              <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-purple-400">Ability</p>
+            <div className="rounded-xl border border-zinc-700 bg-zinc-900/60 px-4 py-3">
+              <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-purple-400">Ability</p>
               <AbilityText text={card.ability} />
             </div>
           )}
