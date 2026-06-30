@@ -2,6 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import localFont from "next/font/local";
+
+const menco = localFont({
+  src: [
+    { path: "../../fonts/Menco-Bold.otf", weight: "700", style: "normal" },
+    { path: "../../fonts/Menco-Black.otf", weight: "900", style: "normal" },
+  ],
+  variable: "--font-menco",
+});
 
 const TABS = [
   { name: "Browse Singles", href: "/vibes" },
@@ -14,7 +23,7 @@ export default function VibesLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
 
   return (
-    <div className="relative">
+    <div className={`${menco.variable} relative font-[family-name:var(--font-menco)]`}>
       {/* Faint card-art ambiance behind the page — masked to a soft radial
           fade so it blends into the dark background instead of competing
           with the card grid. */}
