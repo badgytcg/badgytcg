@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { isAdminEmail } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
+import { logAdminAction } from "@/lib/audit";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
@@ -17,6 +18,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     where: { id },
     data: { name, description, imageUrl, price, grade, set, qty },
   });
+  await logAdminAction({
+    adminEmail: session!.user!.email!,
+    action: "special_cards.update",
+    detail: `Updated "${card.name}" (${id}) — $${card.price.toFixed(2)} x${card.qty}`,
+    request,
+  });
   return NextResponse.json({ card });
 }
 
@@ -29,6 +36,12 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
   }
 
   const { id } = await params;
-  await prisma.specialCard.delete({ where: { id } });
+  const card = await prisma.specialCard.delete({ where: { id } });
+  await logAdminAction({
+    adminEmail: session!.user!.email!,
+    action: "special_cards.delete",
+    detail: `Removed "${card.name}" (${id})`,
+    request,
+  });
   return NextResponse.json({ ok: true });
 }

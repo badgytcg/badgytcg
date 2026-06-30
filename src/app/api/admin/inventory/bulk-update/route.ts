@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { cards } from "@/data/cards";
 import { getEffectiveCards } from "@/lib/catalog";
 import { colorCategory } from "@/lib/colors";
+import { logAdminAction } from "@/lib/audit";
+import { isRateLimited, clientKeyFor } from "@/lib/rateLimit";
 
 const FLOOR_SOURCES = new Set(["dyli", "minmax", "scg"]);
 const SOURCE_LABEL: Record<string, string> = { dyli: "Dyli", minmax: "MinMax", scg: "StarCityGames" };
@@ -19,6 +21,9 @@ export async function POST(request: Request) {
   const session = await auth();
   if (!isAdminEmail(session?.user?.email)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  if (isRateLimited(clientKeyFor(request, "bulk-update"), 20, 60_000)) {
+    return NextResponse.json({ error: "Too many bulk updates — wait a minute and try again." }, { status: 429 });
   }
 
   const body = await request.json();
@@ -84,6 +89,13 @@ export async function POST(request: Request) {
       updated++;
     }
   }
+
+  await logAdminAction({
+    adminEmail: session!.user!.email!,
+    action: "inventory.bulk_update",
+    detail: `mode=${mode} set=${set ?? "all"} rarity=${rarity ?? "all"} color=${color ?? "all"} updated=${updated} skipped=${skipped}`,
+    request,
+  });
 
   return NextResponse.json({ updated, skipped, sourceLabel: mode !== "fixed" ? SOURCE_LABEL[mode] : undefined });
 }

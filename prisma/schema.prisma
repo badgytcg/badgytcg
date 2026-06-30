@@ -184,3 +184,18 @@ model SpecialCard {
   qty         Int      @default(1)
   createdAt   DateTime @default(now())
 }
+
+// Append-only record of every admin mutation (price/stock changes, customer
+// emails sent, order status changes, etc.) so unauthorized or mistaken
+// changes can be traced back to a specific account and time. Never updated
+// or deleted by the app — only ever inserted into.
+model AdminAuditLog {
+  id         String   @id @default(cuid())
+  adminEmail String
+  action     String // short machine-readable tag, e.g. "inventory.bulk_update"
+  detail     String // human-readable summary of what changed
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+}

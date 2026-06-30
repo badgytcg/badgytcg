@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { isAdminEmail } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
+import { logAdminAction } from "@/lib/audit";
 
 export async function GET() {
   const session = await auth();
@@ -34,6 +35,12 @@ export async function POST(request: Request) {
       set: set ?? null,
       qty: typeof qty === "number" && qty > 0 ? Math.floor(qty) : 1,
     },
+  });
+  await logAdminAction({
+    adminEmail: session!.user!.email!,
+    action: "special_cards.create",
+    detail: `Added "${card.name}" — $${card.price.toFixed(2)} x${card.qty}`,
+    request,
   });
   return NextResponse.json({ card }, { status: 201 });
 }

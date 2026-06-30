@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { isAdminEmail } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
+import { logAdminAction } from "@/lib/audit";
 
 // GET /api/admin/inventory/owner — returns {cardId, owner} for all CardOverride rows
 export async function GET() {
@@ -23,5 +24,11 @@ export async function PATCH(request: Request) {
   if (!cardId || !owner) return NextResponse.json({ error: "cardId and owner required" }, { status: 400 });
 
   await prisma.cardOverride.update({ where: { cardId }, data: { owner } });
+  await logAdminAction({
+    adminEmail: session!.user!.email!,
+    action: "inventory.set_owner",
+    detail: `Set owner of ${cardId} to "${owner}"`,
+    request,
+  });
   return NextResponse.json({ ok: true });
 }

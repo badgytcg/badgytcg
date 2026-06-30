@@ -194,6 +194,10 @@ export default function VibesBrowsePage() {
   const [sort, setSort] = useState<SortKey>("name");
   const [pageSize, setPageSize] = useState(100);
   const [page, setPage] = useState(1);
+  // Filters panel is collapsed by default on mobile (where it otherwise
+  // pushes the whole card grid below the fold) but always shown on lg+
+  // regardless of this state — see the lg:block override below.
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   // The deck being built as the customer browses — entirely separate from
   // the "buy this one card right now" flow on a card's own detail page.
@@ -363,25 +367,50 @@ export default function VibesBrowsePage() {
     setRequested(true);
   }
 
+  const activeFilterCount =
+    sets.length +
+    colors.length +
+    types.length +
+    rarities.length +
+    attributeGroups.length +
+    variantFilter.length +
+    (inStockOnly ? 1 : 0) +
+    (costMin !== COST_BOUNDS.min || costMax !== COST_BOUNDS.max ? 1 : 0) +
+    (vibeMin !== VIBE_BOUNDS.min || vibeMax !== VIBE_BOUNDS.max ? 1 : 0);
+
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">
       <h1 className="mb-6 text-2xl font-bold text-zinc-100">Browse Vibes Singles</h1>
 
       <div className="grid gap-8 lg:grid-cols-[260px_1fr_320px]">
-        <aside className="self-start rounded-xl border border-zinc-800 bg-zinc-900 p-5 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto">
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search card name..."
-            className="mb-5 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500"
-          />
+        <aside className="self-start rounded-xl border border-zinc-800 bg-zinc-900 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto">
+          <button
+            onClick={() => setFiltersOpen((v) => !v)}
+            className="flex w-full items-center justify-between px-5 py-4 text-sm font-medium text-zinc-100 lg:hidden"
+          >
+            <span className="flex items-center gap-2">
+              Filters
+              {activeFilterCount > 0 && (
+                <span className="rounded-full bg-purple-600 px-2 py-0.5 text-xs text-white">{activeFilterCount}</span>
+              )}
+            </span>
+            <span className={`text-zinc-400 transition-transform ${filtersOpen ? "rotate-180" : ""}`}>⌄</span>
+          </button>
 
-          <label className="mb-5 flex items-center gap-2 text-sm text-zinc-300">
-            <input type="checkbox" checked={inStockOnly} onChange={(e) => setInStockOnly(e.target.checked)} />
-            In stock only
-          </label>
+          <div className={`${filtersOpen ? "block" : "hidden"} p-5 pt-0 lg:block lg:p-5`}>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search card name..."
+              className="mb-5 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500"
+            />
 
-          <FilterGroup title="Set" options={SETS} selected={sets} onToggle={(v) => setSets(toggle(sets, v))} />
+            <label className="mb-5 flex items-center gap-2 text-sm text-zinc-300">
+              <input type="checkbox" checked={inStockOnly} onChange={(e) => setInStockOnly(e.target.checked)} />
+              In stock only
+            </label>
+
+            <FilterGroup title="Set" options={SETS} selected={sets} onToggle={(v) => setSets(toggle(sets, v))} />
           <FilterGroup title="Color" options={COLORS} selected={colors} onToggle={(v) => setColors(toggle(colors, v))} />
           <FilterGroup title="Type" options={TYPES} selected={types} onToggle={(v) => setTypes(toggle(types, v))} />
           <FilterGroup title="Rarity" options={RARITIES} selected={rarities} onToggle={(v) => setRarities(toggle(rarities, v))} />
@@ -391,9 +420,10 @@ export default function VibesBrowsePage() {
           <RangeSlider label="Cost" bounds={COST_BOUNDS} valueMin={costMin} valueMax={costMax} onChange={(lo, hi) => { setCostMin(lo); setCostMax(hi); }} />
           <RangeSlider label="Vibe" bounds={VIBE_BOUNDS} valueMin={vibeMin} valueMax={vibeMax} onChange={(lo, hi) => { setVibeMin(lo); setVibeMax(hi); }} />
 
-          <button onClick={clearFilters} className="w-full rounded-lg border border-zinc-700 py-1.5 text-sm text-zinc-300 hover:border-purple-500">
-            Clear filters
-          </button>
+            <button onClick={clearFilters} className="w-full rounded-lg border border-zinc-700 py-1.5 text-sm text-zinc-300 hover:border-purple-500">
+              Clear filters
+            </button>
+          </div>
         </aside>
 
         <div>
