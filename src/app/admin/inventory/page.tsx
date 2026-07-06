@@ -58,6 +58,10 @@ export default function AdminInventoryPage() {
   } | null>(null);
   const [bulkAddError, setBulkAddError] = useState<string | null>(null);
 
+  const [restoreFile, setRestoreFile] = useState<File | null>(null);
+  const [restoring, setRestoring] = useState(false);
+  const [restoreResult, setRestoreResult] = useState<string | null>(null);
+
   async function refreshMarketPrices() {
     setRefreshing(true);
     setRefreshResult(null);
@@ -192,6 +196,34 @@ export default function AdminInventoryPage() {
       setBulkAddError("Bulk add failed — try again in a moment.");
     }
     setBulkAdding(false);
+  }
+
+  async function applyRestore() {
+    if (!restoreFile) return;
+    if (!window.confirm(`Upload "${restoreFile.name}" and restore all inventory prices/stock? This will overwrite current values for every card in the CSV.`)) return;
+    setRestoring(true);
+    setRestoreResult(null);
+    try {
+      const text = await restoreFile.text();
+      const res = await fetch("/api/admin/inventory/restore", {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: text,
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setRestoreResult(`Error: ${data.error}`);
+      } else {
+        setRestoreResult(`Restored ${data.restored} card(s) successfully.${data.errors?.length ? ` (${data.errors.length} row(s) skipped — see console)` : ""}`);
+        if (data.errors?.length) console.warn("[restore] skipped rows:", data.errors);
+        const refreshed = await fetch("/api/cards").then((r) => r.json());
+        setCards(refreshed.cards ?? []);
+        setRestoreFile(null);
+      }
+    } catch {
+      setRestoreResult("Restore failed — try again in a moment.");
+    }
+    setRestoring(false);
   }
 
   const filtered = useMemo(() => {
@@ -419,6 +451,37 @@ export default function AdminInventoryPage() {
               </div>
             )}
           </div>
+        )}
+      </div>
+
+      <div className="mb-6 rounded-xl border border-zinc-800 bg-zinc-900 p-5">
+        <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-zinc-500">Restore from Backup</h2>
+        <p className="mb-4 text-xs text-zinc-500">
+          Upload a CSV backup (emailed to you daily) to restore all prices and stock.
+          Format: <code className="rounded bg-zinc-800 px-1">cardId,price,stock</code> — overwrites every card in the file.
+        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="cursor-pointer rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-sm text-zinc-300 hover:border-purple-500">
+            {restoreFile ? restoreFile.name : "Choose CSV file…"}
+            <input
+              type="file"
+              accept=".csv,text/csv"
+              className="hidden"
+              onChange={(e) => { setRestoreFile(e.target.files?.[0] ?? null); setRestoreResult(null); }}
+            />
+          </label>
+          <button
+            onClick={applyRestore}
+            disabled={!restoreFile || restoring}
+            className="rounded-lg bg-orange-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-orange-600 disabled:bg-zinc-700 disabled:text-zinc-400"
+          >
+            {restoring ? "Restoring…" : "Restore Inventory"}
+          </button>
+        </div>
+        {restoreResult && (
+          <p className={`mt-3 text-sm ${restoreResult.startsWith("Error") ? "text-red-400" : "text-green-400"}`}>
+            {restoreResult}
+          </p>
         )}
       </div>
 

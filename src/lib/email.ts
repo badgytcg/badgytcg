@@ -15,7 +15,12 @@ function getTransport() {
   });
 }
 
-export async function sendEmail(opts: { to: string; subject: string; text: string }): Promise<boolean> {
+export async function sendEmail(opts: {
+  to: string;
+  subject: string;
+  text: string;
+  attachments?: Array<{ filename: string; content: string; contentType: string }>;
+}): Promise<boolean> {
   const transport = getTransport();
   if (!transport) {
     console.warn("[email] GMAIL_USER/GMAIL_APP_PASSWORD not set — skipping send:", opts.subject);
@@ -26,6 +31,7 @@ export async function sendEmail(opts: { to: string; subject: string; text: strin
     to: opts.to,
     subject: opts.subject,
     text: opts.text,
+    attachments: opts.attachments,
   });
   return true;
 }
