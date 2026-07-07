@@ -147,10 +147,10 @@ export default function AdminSpecialPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-10">
-      <h1 className="mb-2 text-2xl font-bold text-zinc-100">Graded &amp; Special Foils</h1>
+      <h1 className="mb-2 text-2xl font-bold text-zinc-100">Graded Cards &amp; Promos</h1>
       <p className="mb-6 text-sm text-zinc-400">
         Fully manual inventory. Set a quantity when you have multiples, adjust as they sell, and remove once
-        you&apos;re out. These show up under the &quot;Graded &amp; Foils&quot; tab in Vibes.
+        you&apos;re out. These show up under the &quot;Graded Cards &amp; Promos&quot; tab in Vibes.
       </p>
 
       {/* Add form */}

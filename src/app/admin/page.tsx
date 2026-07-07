@@ -18,8 +18,8 @@ export default function AdminHome() {
           <p className="mt-1 text-sm text-zinc-400">Separate price &amp; stock for foil copies of catalog cards.</p>
         </Link>
         <Link href="/admin/special" className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 hover:border-purple-500">
-          <h2 className="font-semibold text-zinc-100">Graded &amp; Special</h2>
-          <p className="mt-1 text-sm text-zinc-400">Manually add one-off graded slabs &amp; rare foils.</p>
+          <h2 className="font-semibold text-zinc-100">Graded &amp; Promos</h2>
+          <p className="mt-1 text-sm text-zinc-400">Manually add graded slabs and promo cards.</p>
         </Link>
         <Link href="/admin/scan" className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 hover:border-purple-500">
           <h2 className="font-semibold text-zinc-100">Scan</h2>

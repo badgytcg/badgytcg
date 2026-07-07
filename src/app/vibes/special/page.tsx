@@ -27,9 +27,9 @@ export default function SpecialCardsPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">
-      <h1 className="mb-2 text-2xl font-bold text-zinc-100">Graded &amp; Special Foils</h1>
+      <h1 className="mb-2 text-2xl font-bold text-zinc-100">Graded Cards &amp; Promos</h1>
       <p className="mb-6 text-sm text-zinc-400">
-        One-off graded slabs and rare foils — only what&apos;s actually in hand right now.
+        Graded slabs and promo cards — only what&apos;s actually in hand right now.
       </p>
 
       {loading ? (

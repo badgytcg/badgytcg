@@ -8,7 +8,7 @@ const TABS = [
   { name: "Requests", href: "/admin/requests" },
   { name: "Inventory", href: "/admin/inventory" },
   { name: "Foils", href: "/admin/foils" },
-  { name: "Special", href: "/admin/special" },
+  { name: "Graded & Promos", href: "/admin/special" },
   { name: "Scan", href: "/admin/scan" },
   { name: "Orders", href: "/admin/orders" },
   { name: "Consigners", href: "/admin/consigners" },
