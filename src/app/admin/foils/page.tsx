@@ -150,27 +150,68 @@ export default function AdminFoilsPage() {
                   <th className="px-4 py-3">Variant</th>
                   <th className="px-4 py-3">Price</th>
                   <th className="px-4 py-3">Stock</th>
-                  <th className="px-4 py-3"></th>
+                  <th className="px-4 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800">
-                {rows.map((row) => (
-                  <tr key={`${row.cardId}::${row.kind}`} className="bg-zinc-950">
-                    <td className="px-4 py-2 text-zinc-200">{row.name}</td>
-                    <td className="px-4 py-2 text-zinc-500">{row.set}</td>
-                    <td className="px-4 py-2 text-purple-300">{row.kindLabel}</td>
-                    <td className="px-4 py-2 text-zinc-300">${row.price.toFixed(2)}</td>
-                    <td className="px-4 py-2 text-zinc-300">{row.stock}</td>
-                    <td className="px-4 py-2">
-                      <button
-                        onClick={() => removeVariant(row.cardId, row.kind)}
-                        className="rounded-lg border border-zinc-700 px-3 py-1 text-xs text-zinc-300 hover:border-red-500 hover:text-red-400"
-                      >
-                        Remove
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {rows.map((row) => {
+                  const key = `${row.cardId}::${row.kind}`;
+                  const card = cards.find((c) => c.id === row.cardId);
+                  const edit = card
+                    ? getEdit(card, row.kind)
+                    : edits[key] ?? { price: String(row.price), stock: String(row.stock) };
+                  return (
+                    <tr key={key} className="bg-zinc-950">
+                      <td className="px-4 py-2 text-zinc-200">{row.name}</td>
+                      <td className="px-4 py-2 text-zinc-500">{row.set}</td>
+                      <td className="px-4 py-2 text-purple-300">{row.kindLabel}</td>
+                      <td className="px-4 py-2">
+                        <input
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          value={edit.price}
+                          onChange={(e) =>
+                            card
+                              ? setEdit(card.id, row.kind, "price", e.target.value)
+                              : setEdits((prev) => ({ ...prev, [key]: { ...edit, price: e.target.value } }))
+                          }
+                          className="w-20 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-zinc-100"
+                        />
+                      </td>
+                      <td className="px-4 py-2">
+                        <input
+                          type="number"
+                          min={0}
+                          value={edit.stock}
+                          onChange={(e) =>
+                            card
+                              ? setEdit(card.id, row.kind, "stock", e.target.value)
+                              : setEdits((prev) => ({ ...prev, [key]: { ...edit, stock: e.target.value } }))
+                          }
+                          className="w-20 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-zinc-100"
+                        />
+                      </td>
+                      <td className="px-4 py-2">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => card && save(card, row.kind)}
+                            disabled={savingId === key || !card}
+                            className="rounded-lg bg-purple-600 px-3 py-1 text-xs font-medium text-white hover:bg-purple-500 disabled:bg-zinc-700"
+                          >
+                            {savingId === key ? "Saving..." : "Save"}
+                          </button>
+                          <button
+                            onClick={() => removeVariant(row.cardId, row.kind)}
+                            className="rounded-lg border border-zinc-700 px-3 py-1 text-xs text-zinc-300 hover:border-red-500 hover:text-red-400"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
