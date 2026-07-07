@@ -43,6 +43,14 @@ export interface MarketOverview {
   budgetPicks: SimpleCard[];
 }
 
+export interface OutOfStockCard {
+  id: string;
+  name: string;
+  set: string;
+  rarity: string;
+  price: number;
+}
+
 // Admin-only stats kept separate from the public overview
 export interface AdminStats {
   totalInventoryValue: number;
@@ -51,6 +59,7 @@ export interface AdminStats {
   totalCatalog: number;
   cardsAvailable: number;
   priceTiers: Array<{ label: string; count: number; totalValue: number; avgPrice: number }>;
+  outOfStock: OutOfStockCard[];
 }
 
 const TIER_DEFS = [
@@ -173,7 +182,7 @@ export async function getAdminStats(): Promise<AdminStats> {
   const cards = await getEffectiveCards();
   const regularCards = cards.filter((c) => !c.id.startsWith("special::"));
   const inStock = regularCards.filter((c) => c.stock > 0);
-  const outOfStockCount = regularCards.filter((c) => c.stock === 0).length;
+  const outOfStockCards = regularCards.filter((c) => c.stock === 0);
 
   const totalInventoryValue = inStock.reduce((sum, c) => sum + c.price * c.stock, 0);
   const totalUnits = inStock.reduce((sum, c) => sum + c.stock, 0);
@@ -193,9 +202,12 @@ export async function getAdminStats(): Promise<AdminStats> {
   return {
     totalInventoryValue,
     totalUnits,
-    outOfStockCount,
+    outOfStockCount: outOfStockCards.length,
     totalCatalog: allSeedCards.length,
     cardsAvailable: inStock.length,
     priceTiers,
+    outOfStock: outOfStockCards
+      .sort((a, b) => a.set.localeCompare(b.set) || a.name.localeCompare(b.name))
+      .map((c) => ({ id: c.id, name: c.name, set: c.set, rarity: c.rarity, price: c.price })),
   };
 }
