@@ -62,6 +62,12 @@ export default function AdminInventoryPage() {
   const [restoring, setRestoring] = useState(false);
   const [restoreResult, setRestoreResult] = useState<string | null>(null);
 
+  const [bulkSearchText, setBulkSearchText] = useState("");
+  const [bulkSearchResults, setBulkSearchResults] = useState<Card[] | null>(null);
+  const [bulkSearchUnmatched, setBulkSearchUnmatched] = useState<string[]>([]);
+  const [bulkSearchSaving, setBulkSearchSaving] = useState<string | null>(null);
+  const [bulkSearchEdits, setBulkSearchEdits] = useState<Record<string, { price: string; stock: string }>>({});
+
   async function refreshMarketPrices() {
     setRefreshing(true);
     setRefreshResult(null);
@@ -196,6 +202,61 @@ export default function AdminInventoryPage() {
       setBulkAddError("Bulk add failed — try again in a moment.");
     }
     setBulkAdding(false);
+  }
+
+  function runBulkSearch() {
+    const names = bulkSearchText
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+    if (names.length === 0) return;
+
+    const matched: Card[] = [];
+    const unmatched: string[] = [];
+    for (const name of names) {
+      const q = name.toLowerCase();
+      const found = cards.find(
+        (c) =>
+          c.name.toLowerCase() === q ||
+          c.name.toLowerCase().includes(q) ||
+          q.includes(c.name.toLowerCase())
+      );
+      if (found) {
+        if (!matched.find((c) => c.id === found.id)) matched.push(found);
+      } else {
+        unmatched.push(name);
+      }
+    }
+    setBulkSearchResults(matched);
+    setBulkSearchUnmatched(unmatched);
+    setBulkSearchEdits({});
+  }
+
+  function getBulkSearchEdit(card: Card) {
+    return bulkSearchEdits[card.id] ?? { price: String(card.price), stock: String(card.stock) };
+  }
+
+  function setBulkSearchEdit(cardId: string, field: "price" | "stock", value: string) {
+    const card = cards.find((c) => c.id === cardId)!;
+    setBulkSearchEdits((prev) => ({
+      ...prev,
+      [cardId]: { ...getBulkSearchEdit(card), [field]: value },
+    }));
+  }
+
+  async function saveBulkSearchCard(card: Card) {
+    const edit = getBulkSearchEdit(card);
+    const price = Number(edit.price);
+    const stock = Number(edit.stock);
+    if (!Number.isFinite(price) || !Number.isFinite(stock) || price < 0 || stock < 0) return;
+    setBulkSearchSaving(card.id);
+    await fetch("/api/admin/inventory", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cardId: card.id, price, stock }),
+    });
+    setCards((prev) => prev.map((c) => (c.id === card.id ? { ...c, price, stock } : c)));
+    setBulkSearchSaving(null);
   }
 
   async function applyRestore() {
@@ -482,6 +543,104 @@ export default function AdminInventoryPage() {
           <p className={`mt-3 text-sm ${restoreResult.startsWith("Error") ? "text-red-400" : "text-green-400"}`}>
             {restoreResult}
           </p>
+        )}
+      </div>
+
+      {/* Bulk Name Search */}
+      <div className="mb-6 rounded-xl border border-zinc-800 bg-zinc-900 p-5">
+        <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-zinc-500">Bulk Card Search</h2>
+        <p className="mb-3 text-xs text-zinc-500">
+          Paste card names (one per line) to pull up their current prices and stock — then edit inline and save.
+        </p>
+        <textarea
+          value={bulkSearchText}
+          onChange={(e) => { setBulkSearchText(e.target.value); setBulkSearchResults(null); }}
+          placeholder={"Arches\nNyan Cat\nBinkus, Who Eats the Stars\nGet Rekt"}
+          rows={5}
+          className="w-full rounded-lg border border-zinc-700 bg-zinc-950 p-3 font-mono text-sm text-zinc-100 placeholder:text-zinc-600"
+        />
+        <button
+          onClick={runBulkSearch}
+          disabled={!bulkSearchText.trim()}
+          className="mt-3 rounded-lg bg-purple-600 px-5 py-2 text-sm font-medium text-white hover:bg-purple-500 disabled:bg-zinc-700 disabled:text-zinc-400"
+        >
+          Search
+        </button>
+
+        {bulkSearchResults !== null && (
+          <div className="mt-5">
+            {bulkSearchResults.length > 0 && (
+              <div className="overflow-x-auto rounded-xl border border-zinc-800">
+                <table className="w-full text-sm">
+                  <thead className="bg-zinc-900 text-left text-xs uppercase tracking-wide text-zinc-500">
+                    <tr>
+                      <th className="px-4 py-3">Card</th>
+                      <th className="px-4 py-3">Set</th>
+                      <th className="px-4 py-3">Rarity</th>
+                      <th className="px-4 py-3">Price</th>
+                      <th className="px-4 py-3">Stock</th>
+                      <th className="px-4 py-3"></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-800">
+                    {bulkSearchResults.map((card) => {
+                      const edit = getBulkSearchEdit(card);
+                      const dirty =
+                        edit.price !== String(card.price) || edit.stock !== String(card.stock);
+                      return (
+                        <tr key={card.id} className="bg-zinc-950">
+                          <td className="px-4 py-2 font-medium text-zinc-200">{card.name}</td>
+                          <td className="px-4 py-2 text-zinc-500">{card.set}</td>
+                          <td className="px-4 py-2 text-zinc-400">{card.rarity}</td>
+                          <td className="px-4 py-2">
+                            <input
+                              type="number"
+                              step="0.01"
+                              min={0}
+                              value={edit.price}
+                              onChange={(e) => setBulkSearchEdit(card.id, "price", e.target.value)}
+                              className="w-24 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-zinc-100"
+                            />
+                          </td>
+                          <td className="px-4 py-2">
+                            <input
+                              type="number"
+                              min={0}
+                              value={edit.stock}
+                              onChange={(e) => setBulkSearchEdit(card.id, "stock", e.target.value)}
+                              className="w-20 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-zinc-100"
+                            />
+                          </td>
+                          <td className="px-4 py-2">
+                            <button
+                              onClick={() => saveBulkSearchCard(card)}
+                              disabled={!dirty || bulkSearchSaving === card.id}
+                              className="rounded-lg bg-purple-600 px-3 py-1 text-xs font-medium text-white hover:bg-purple-500 disabled:bg-zinc-700 disabled:text-zinc-400"
+                            >
+                              {bulkSearchSaving === card.id ? "Saving..." : "Save"}
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {bulkSearchUnmatched.length > 0 && (
+              <div className="mt-3 rounded-lg border border-yellow-800 bg-yellow-950/30 px-4 py-3">
+                <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-yellow-500">
+                  Not found ({bulkSearchUnmatched.length})
+                </p>
+                <ul className="space-y-0.5 text-sm text-yellow-300">
+                  {bulkSearchUnmatched.map((n) => <li key={n}>{n}</li>)}
+                </ul>
+              </div>
+            )}
+            {bulkSearchResults.length === 0 && bulkSearchUnmatched.length === 0 && (
+              <p className="text-sm text-zinc-500">No cards matched.</p>
+            )}
+          </div>
         )}
       </div>
 

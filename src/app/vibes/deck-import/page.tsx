@@ -200,8 +200,6 @@ export default function DeckImportPage() {
     : 0;
   const haveCount = result ? result.available.reduce((s, a) => s + a.qty, 0) : 0;
   const isComplete = result ? result.missing.length === 0 : false;
-  const overLimit = totalRequested > 52;
-
   return (
     <div className="mx-auto max-w-5xl px-6 py-12">
       <h1 className="text-2xl font-bold text-zinc-100">Import a Deck Code</h1>
@@ -267,11 +265,6 @@ export default function DeckImportPage() {
                   <span className="text-yellow-400">{result.missing.length} card type(s) need sourcing.</span>
                 )}
               </p>
-              {overLimit && (
-                <p className="mt-2 rounded-lg border border-yellow-700 bg-yellow-950/40 px-3 py-2 text-sm text-yellow-300">
-                  ⚠️ This deck has {totalRequested} cards — standard Vibes decks are 52. You can still buy everything below.
-                </p>
-              )}
             </div>
 
             <div className="flex flex-wrap gap-8">
