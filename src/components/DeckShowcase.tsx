@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/lib/types";
+import { findCardByAnyName } from "@/lib/inventory";
 
 type FeaturedDeck = {
   id: string;
@@ -34,18 +35,12 @@ function resolveDeck(deck: FeaturedDeck, catalog: Card[]): ResolvedDeck {
     })
     .filter((x): x is { qty: number; name: string } => x !== null);
 
-  const lowerCatalog = catalog.map((c) => ({ ...c, _lower: c.name.toLowerCase() }));
-
   let resolvedPrice = 0;
   let previewImage: string | null = null;
   const resolvedCards: ResolvedCard[] = [];
 
   for (const line of lines) {
-    const lower = line.name.toLowerCase();
-    const match =
-      lowerCatalog.find((c) => c._lower === lower) ??
-      lowerCatalog.find((c) => c._lower.includes(lower)) ??
-      lowerCatalog.find((c) => lower.includes(c._lower));
+    const match = findCardByAnyName(line.name, catalog);
     const image = match?.image ?? null;
     resolvedPrice += (match?.price ?? 0) * line.qty;
     if (!previewImage && image) previewImage = image;
