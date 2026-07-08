@@ -14,14 +14,16 @@ type FeaturedDeck = {
   cardList: string;
 };
 
+type ResolvedCard = { qty: number; name: string; image: string | null };
+
 type ResolvedDeck = FeaturedDeck & {
   resolvedPrice: number;
   previewImage: string | null;
-  cardLines: { qty: number; name: string }[];
+  resolvedCards: ResolvedCard[];
 };
 
 function resolveDeck(deck: FeaturedDeck, catalog: Card[]): ResolvedDeck {
-  const cardLines = deck.cardList
+  const lines = deck.cardList
     .split("\n")
     .filter(Boolean)
     .map((line) => {
@@ -34,23 +36,25 @@ function resolveDeck(deck: FeaturedDeck, catalog: Card[]): ResolvedDeck {
 
   let resolvedPrice = 0;
   let previewImage: string | null = null;
+  const resolvedCards: ResolvedCard[] = [];
 
-  for (const line of cardLines) {
+  for (const line of lines) {
     const lower = line.name.toLowerCase();
-    const match = lowerCatalog.find((c) => c._lower === lower)
-      ?? lowerCatalog.find((c) => c._lower.includes(lower))
-      ?? lowerCatalog.find((c) => lower.includes(c._lower));
-    if (match) {
-      resolvedPrice += match.price * line.qty;
-      if (!previewImage && match.image) previewImage = match.image;
-    }
+    const match =
+      lowerCatalog.find((c) => c._lower === lower) ??
+      lowerCatalog.find((c) => c._lower.includes(lower)) ??
+      lowerCatalog.find((c) => lower.includes(c._lower));
+    const image = match?.image ?? null;
+    resolvedPrice += (match?.price ?? 0) * line.qty;
+    if (!previewImage && image) previewImage = image;
+    resolvedCards.push({ qty: line.qty, name: line.name, image });
   }
 
   return {
     ...deck,
     resolvedPrice: deck.price ?? resolvedPrice,
     previewImage,
-    cardLines,
+    resolvedCards,
   };
 }
 
@@ -103,11 +107,11 @@ export default function DeckShowcase({ catalog }: { catalog: Card[] }) {
         <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 shadow-2xl shadow-purple-950/30">
           <div className="grid lg:grid-cols-2">
 
-            {/* Left: hero image + deck info */}
+            {/* Left: hero card + deck info */}
             <div className="relative flex flex-col justify-between p-8">
               {deck.previewImage && (
                 <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-l-2xl opacity-20">
-                  <Image src={deck.previewImage} alt="" fill sizes="600px" className="object-cover object-center scale-110 blur-sm" unoptimized />
+                  <Image src={deck.previewImage} alt="" fill sizes="600px" className="scale-110 object-cover object-center blur-sm" unoptimized />
                 </div>
               )}
               <div className="relative">
@@ -124,9 +128,6 @@ export default function DeckShowcase({ catalog }: { catalog: Card[] }) {
                   </span>
                 </div>
                 <h3 className="mt-3 text-2xl font-extrabold text-white sm:text-3xl">{deck.name}</h3>
-                {deck.description && (
-                  <p className="mt-3 text-sm leading-relaxed text-zinc-400">{deck.description}</p>
-                )}
               </div>
 
               <div className="relative mt-8">
@@ -151,18 +152,51 @@ export default function DeckShowcase({ catalog }: { catalog: Card[] }) {
               </div>
             </div>
 
-            {/* Right: card list */}
-            <div className="border-t border-zinc-800 bg-zinc-950/60 p-8 lg:border-l lg:border-t-0">
-              <p className="mb-4 text-xs font-bold uppercase tracking-widest text-zinc-500">Deck Contents</p>
-              <ul className="grid grid-cols-2 gap-x-6 gap-y-1.5">
-                {deck.cardLines.map((line, i) => (
-                  <li key={i} className="flex items-center gap-2 text-sm">
-                    <span className="w-5 text-right font-bold text-purple-400">{line.qty}x</span>
-                    <span className="truncate text-zinc-300">{line.name}</span>
-                  </li>
-                ))}
-              </ul>
+            {/* Right: description + card image grid */}
+            <div className="flex flex-col border-t border-zinc-800 bg-zinc-950/60 lg:border-l lg:border-t-0">
+              {/* Description banner */}
+              {deck.description && (
+                <div className="border-b border-zinc-800 px-6 py-5">
+                  <p className="mb-1 text-xs font-bold uppercase tracking-widest text-zinc-500">About This Deck</p>
+                  <p className="text-sm leading-relaxed text-zinc-300">{deck.description}</p>
+                </div>
+              )}
+
+              {/* Card image grid */}
+              <div className="flex-1 overflow-y-auto p-6">
+                <p className="mb-4 text-xs font-bold uppercase tracking-widest text-zinc-500">Deck Contents</p>
+                <div className="grid grid-cols-4 gap-2 sm:grid-cols-5">
+                  {deck.resolvedCards.map((card, i) => (
+                    <div key={i} className="group relative flex flex-col items-center gap-1">
+                      <div className="relative w-full overflow-hidden rounded-lg" style={{ aspectRatio: "3/4" }}>
+                        {card.image ? (
+                          <Image
+                            src={card.image}
+                            alt={card.name}
+                            fill
+                            sizes="100px"
+                            className="object-cover transition-transform group-hover:scale-105"
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-[9px] text-zinc-600">
+                            ?
+                          </div>
+                        )}
+                        {/* Qty badge */}
+                        <span className="absolute bottom-1 right-1 rounded bg-black/70 px-1 py-0.5 text-[9px] font-bold text-purple-300">
+                          ×{card.qty}
+                        </span>
+                      </div>
+                      <p className="line-clamp-1 w-full text-center text-[9px] text-zinc-500" title={card.name}>
+                        {card.name}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
+
           </div>
         </div>
 
