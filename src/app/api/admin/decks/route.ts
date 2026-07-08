@@ -1,0 +1,31 @@
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { isAdminEmail } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
+
+export async function GET(req: NextRequest) {
+  void req;
+  const session = await getServerSession(authOptions);
+  if (!isAdminEmail(session?.user?.email)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const decks = await prisma.featuredDeck.findMany({ orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }] });
+  return NextResponse.json({ decks });
+}
+
+export async function POST(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!isAdminEmail(session?.user?.email)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const body = await req.json();
+  const { name, type, description, price, cardList, active, sortOrder } = body;
+  if (!name || !type || price == null || !cardList) {
+    return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  }
+  const deck = await prisma.featuredDeck.create({
+    data: { name, type, description: description ?? null, price: Number(price), cardList, active: active ?? true, sortOrder: sortOrder ?? 0 },
+  });
+  return NextResponse.json({ deck });
+}

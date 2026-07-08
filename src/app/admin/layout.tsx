@@ -13,6 +13,7 @@ const TABS = [
   { name: "Orders", href: "/admin/orders" },
   { name: "Consigners", href: "/admin/consigners" },
   { name: "Sales Report", href: "/admin/consigner-report" },
+  { name: "Featured Decks", href: "/admin/decks" },
   { name: "Stats", href: "/admin/stats" },
   { name: "Activity Log", href: "/admin/audit-log" },
 ];

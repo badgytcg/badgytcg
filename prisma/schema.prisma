@@ -185,6 +185,20 @@ model SpecialCard {
   createdAt   DateTime @default(now())
 }
 
+// Pre-built Starter or Meta decks showcased on the homepage.
+// cardList stores newline-separated "qty CardName" lines.
+model FeaturedDeck {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   // "starter" | "meta"
+  description String?
+  price       Float
+  cardList    String   // "4 Get Rekt\n2 Nyan Cat\n..."
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
 // Append-only record of every admin mutation (price/stock changes, customer
 // emails sent, order status changes, etc.) so unauthorized or mistaken
 // changes can be traced back to a specific account and time. Never updated

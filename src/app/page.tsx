@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getEffectiveCards } from "@/lib/catalog";
+import DeckShowcase from "@/components/DeckShowcase";
 
 const FAN_CARDS = [
   "https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RedWizardPenguin.png",
@@ -102,6 +103,8 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      <DeckShowcase catalog={cards} />
 
       {trending.length > 0 && (
         <section className="bg-zinc-950 px-6 py-16">
