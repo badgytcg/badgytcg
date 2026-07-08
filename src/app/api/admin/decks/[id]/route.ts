@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { isAdminEmail } from "@/lib/auth";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/authOptions";
+import { auth } from "@/lib/auth";
+import { isAdminEmail } from "@/lib/admin";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!isAdminEmail(session?.user?.email)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -29,7 +28,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   void req;
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!isAdminEmail(session?.user?.email)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
