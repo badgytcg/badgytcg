@@ -39,10 +39,11 @@ export default function SpecialCardsPage() {
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {cards.map((card) => (
-            <div key={card.id} className="flex flex-col rounded-xl border border-zinc-800 bg-zinc-900 p-4 ring-1 ring-purple-500/30">
-              <div className="relative mb-3 h-40 overflow-hidden rounded-lg bg-zinc-800">
-                <Image src={card.image} alt={card.name} fill sizes="200px" className="object-contain" unoptimized />
+            <div key={card.id} className="flex flex-col rounded-xl border border-zinc-800 bg-zinc-900 ring-1 ring-purple-500/30 overflow-hidden">
+              <div className="relative w-full bg-zinc-800" style={{ aspectRatio: "3/4" }}>
+                <Image src={card.image} alt={card.name} fill sizes="300px" className="object-cover object-center" unoptimized />
               </div>
+              <div className="flex flex-col flex-1 p-4">
               <h3 className="font-semibold text-zinc-100">{card.name}</h3>
               <p className="text-xs text-zinc-500">{card.grade ?? card.rarity} · {card.set}</p>
               {card.description && <p className="mt-1 text-xs text-zinc-400">{card.description}</p>}
@@ -69,6 +70,7 @@ export default function SpecialCardsPage() {
                 >
                   ♡
                 </button>
+              </div>
               </div>
             </div>
           ))}
