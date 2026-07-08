@@ -192,7 +192,8 @@ model FeaturedDeck {
   name        String
   type        String   // "starter" | "meta"
   description String?
-  price       Float?   // null = auto-sum card prices; set for a fixed bundle price
+  price       Float?   // null or 0 = auto-sum card prices; positive = fixed override
+  discount    Float    @default(0) // dollar amount off the calculated/override price
   cardList    String   // "4 Get Rekt\n2 Nyan Cat\n..."
   active      Boolean  @default(true)
   sortOrder   Int      @default(0)

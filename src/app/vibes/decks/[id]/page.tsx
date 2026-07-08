@@ -15,6 +15,7 @@ type FeaturedDeck = {
   type: string;
   description: string | null;
   price: number | null;
+  discount: number;
   cardList: string;
 };
 
@@ -51,16 +52,18 @@ export default function DeckDetailPage() {
     }
   }, [deck, catalog]);
 
-  const resolvedPrice = useMemo(() => {
+  const basePrice = useMemo(() => {
     if (!deck) return 0;
-    if (deck.price != null) return deck.price;
+    if (deck.price != null && deck.price > 0) return deck.price;
     if (!result) return 0;
     return result.entries.reduce((sum, e) => sum + (e.card ? e.card.price * e.qty : 0), 0);
   }, [deck, result]);
 
+  const resolvedPrice = Math.max(0, basePrice - (deck?.discount ?? 0));
+  const hasDiscount = (deck?.discount ?? 0) > 0;
+
   const inStockCount = result?.available.reduce((s, a) => s + a.qty, 0) ?? 0;
   const totalCount = result ? result.available.reduce((s, a) => s + a.qty, 0) + result.missing.reduce((s, m) => s + m.qty, 0) : 0;
-  const isBundlePrice = deck?.price != null;
 
   function handleAddToCart() {
     if (!result) return;
@@ -123,8 +126,11 @@ export default function DeckDetailPage() {
         <div className="mt-6 flex flex-wrap items-center gap-6 rounded-xl border border-zinc-800 bg-zinc-900 px-6 py-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Price</p>
-            <p className="text-2xl font-extrabold text-green-400">${resolvedPrice.toFixed(2)}</p>
-            {isBundlePrice && <p className="text-xs text-purple-400">Bundle deal</p>}
+            <div className="flex items-baseline gap-2">
+              <p className="text-2xl font-extrabold text-green-400">${resolvedPrice.toFixed(2)}</p>
+              {hasDiscount && <p className="text-base text-zinc-500 line-through">${basePrice.toFixed(2)}</p>}
+            </div>
+            {hasDiscount && <p className="text-xs font-semibold text-green-500">You save ${deck!.discount.toFixed(2)}</p>}
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">In Stock</p>

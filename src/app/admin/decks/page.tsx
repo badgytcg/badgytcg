@@ -8,26 +8,17 @@ type FeaturedDeck = {
   type: string;
   description: string | null;
   price: number | null;
+  discount: number;
   cardList: string;
   active: boolean;
   sortOrder: number;
-};
-
-const EMPTY: Omit<FeaturedDeck, "id"> = {
-  name: "",
-  type: "starter",
-  description: "",
-  price: null,
-  cardList: "",
-  active: true,
-  sortOrder: 0,
 };
 
 type FormState = {
   name: string;
   type: string;
   description: string;
-  priceOverride: string; // empty string = auto
+  discount: string;
   cardList: string;
   active: boolean;
   sortOrder: number;
@@ -37,7 +28,7 @@ const EMPTY_FORM: FormState = {
   name: "",
   type: "starter",
   description: "",
-  priceOverride: "",
+  discount: "",
   cardList: "",
   active: true,
   sortOrder: 0,
@@ -48,7 +39,7 @@ function deckToForm(deck: FeaturedDeck): FormState {
     name: deck.name,
     type: deck.type,
     description: deck.description ?? "",
-    priceOverride: deck.price != null ? String(deck.price) : "",
+    discount: deck.discount > 0 ? String(deck.discount) : "",
     cardList: deck.cardList,
     active: deck.active,
     sortOrder: deck.sortOrder,
@@ -94,12 +85,13 @@ export default function AdminDecksPage() {
     }
     setSaving(true);
     setError(null);
-    const price = form.priceOverride.trim() !== "" ? Number(form.priceOverride) : null;
+    const discount = form.discount.trim() !== "" ? Number(form.discount) : 0;
     const body = {
       name: form.name,
       type: form.type,
       description: form.description || null,
-      price,
+      price: null, // always auto-calculate
+      discount,
       cardList: form.cardList,
       active: form.active,
       sortOrder: Number(form.sortOrder),
@@ -137,19 +129,14 @@ export default function AdminDecksPage() {
     <div className="mx-auto max-w-4xl px-6 py-10">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-zinc-100">Featured Decks</h1>
-        <button
-          onClick={startNew}
-          className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-500"
-        >
+        <button onClick={startNew} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-500">
           + New Deck
         </button>
       </div>
 
       {showForm && (
         <div className="mb-8 rounded-xl border border-zinc-700 bg-zinc-900 p-6">
-          <h2 className="mb-4 text-lg font-semibold text-zinc-100">
-            {editingId ? "Edit Deck" : "New Deck"}
-          </h2>
+          <h2 className="mb-4 text-lg font-semibold text-zinc-100">{editingId ? "Edit Deck" : "New Deck"}</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-xs font-medium text-zinc-400">Deck Name *</label>
@@ -173,17 +160,16 @@ export default function AdminDecksPage() {
             </div>
             <div>
               <label className="mb-1 block text-xs font-medium text-zinc-400">
-                Bundle Price Override ($){" "}
-                <span className="text-zinc-600">— leave blank to auto-sum card prices</span>
+                Discount ($) <span className="text-zinc-600">— leave blank for no discount</span>
               </label>
               <input
                 type="number"
                 min="0"
                 step="0.01"
-                value={form.priceOverride}
-                onChange={(e) => setForm({ ...form, priceOverride: e.target.value })}
+                value={form.discount}
+                onChange={(e) => setForm({ ...form, discount: e.target.value })}
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100"
-                placeholder="Auto (sum of card prices)"
+                placeholder="e.g. 5.00"
               />
             </div>
             <div>
@@ -251,9 +237,7 @@ export default function AdminDecksPage() {
       ) : decks.length === 0 ? (
         <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-12 text-center">
           <p className="text-zinc-500">No featured decks yet.</p>
-          <button onClick={startNew} className="mt-4 text-sm text-purple-400 hover:underline">
-            Add your first deck
-          </button>
+          <button onClick={startNew} className="mt-4 text-sm text-purple-400 hover:underline">Add your first deck</button>
         </div>
       ) : (
         <div className="space-y-3">
@@ -265,25 +249,18 @@ export default function AdminDecksPage() {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-bold uppercase tracking-wide ${
-                        deck.type === "meta"
-                          ? "bg-yellow-500/20 text-yellow-300"
-                          : "bg-blue-500/20 text-blue-300"
-                      }`}
-                    >
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-bold uppercase tracking-wide ${deck.type === "meta" ? "bg-yellow-500/20 text-yellow-300" : "bg-blue-500/20 text-blue-300"}`}>
                       {deck.type}
                     </span>
                     <span className="font-semibold text-zinc-100">{deck.name}</span>
-                    {deck.price != null ? (
-                      <span className="text-sm font-medium text-green-400">${deck.price.toFixed(2)} (fixed)</span>
-                    ) : (
-                      <span className="text-sm text-zinc-500">Price: auto</span>
+                    <span className="text-sm text-zinc-500">Price: auto-calculated</span>
+                    {deck.discount > 0 && (
+                      <span className="rounded-full bg-green-900/40 px-2 py-0.5 text-xs font-semibold text-green-400">
+                        −${deck.discount.toFixed(2)} discount
+                      </span>
                     )}
                   </div>
-                  {deck.description && (
-                    <p className="mt-1 text-sm text-zinc-400">{deck.description}</p>
-                  )}
+                  {deck.description && <p className="mt-1 text-sm text-zinc-400">{deck.description}</p>}
                   <p className="mt-1 text-xs text-zinc-600">
                     {deck.cardList.split("\n").filter(Boolean).length} card line(s) · order {deck.sortOrder}
                   </p>
@@ -291,26 +268,12 @@ export default function AdminDecksPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => toggleActive(deck)}
-                    className={`rounded px-3 py-1 text-xs font-medium ${
-                      deck.active
-                        ? "border border-zinc-600 text-zinc-400 hover:border-zinc-400"
-                        : "border border-green-800 text-green-400 hover:border-green-500"
-                    }`}
+                    className={`rounded px-3 py-1 text-xs font-medium ${deck.active ? "border border-zinc-600 text-zinc-400 hover:border-zinc-400" : "border border-green-800 text-green-400 hover:border-green-500"}`}
                   >
                     {deck.active ? "Hide" : "Show"}
                   </button>
-                  <button
-                    onClick={() => startEdit(deck)}
-                    className="rounded border border-zinc-700 px-3 py-1 text-xs font-medium text-zinc-300 hover:border-purple-500 hover:text-purple-300"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(deck.id)}
-                    className="rounded border border-zinc-800 px-3 py-1 text-xs font-medium text-zinc-500 hover:border-red-800 hover:text-red-400"
-                  >
-                    Delete
-                  </button>
+                  <button onClick={() => startEdit(deck)} className="rounded border border-zinc-700 px-3 py-1 text-xs font-medium text-zinc-300 hover:border-purple-500 hover:text-purple-300">Edit</button>
+                  <button onClick={() => handleDelete(deck.id)} className="rounded border border-zinc-800 px-3 py-1 text-xs font-medium text-zinc-500 hover:border-red-800 hover:text-red-400">Delete</button>
                 </div>
               </div>
             </div>

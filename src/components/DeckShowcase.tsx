@@ -11,12 +11,14 @@ type FeaturedDeck = {
   type: string;
   description: string | null;
   price: number | null;
+  discount: number;
   cardList: string;
 };
 
 type ResolvedCard = { qty: number; name: string; image: string | null };
 
 type ResolvedDeck = FeaturedDeck & {
+  basePrice: number;
   resolvedPrice: number;
   previewImage: string | null;
   resolvedCards: ResolvedCard[];
@@ -50,9 +52,13 @@ function resolveDeck(deck: FeaturedDeck, catalog: Card[]): ResolvedDeck {
     resolvedCards.push({ qty: line.qty, name: line.name, image });
   }
 
+  const basePrice = (deck.price && deck.price > 0) ? deck.price : resolvedPrice;
+  const finalPrice = Math.max(0, basePrice - (deck.discount ?? 0));
+
   return {
     ...deck,
-    resolvedPrice: deck.price ?? resolvedPrice,
+    basePrice,
+    resolvedPrice: finalPrice,
     previewImage,
     resolvedCards,
   };
@@ -131,10 +137,16 @@ export default function DeckShowcase({ catalog }: { catalog: Card[] }) {
               </div>
 
               <div className="relative mt-8">
-                <p className="text-3xl font-extrabold text-green-400">${deck.resolvedPrice.toFixed(2)}</p>
-                <p className="mt-1 text-xs text-zinc-500">
-                  {deck.price != null ? "Fixed bundle price" : "Based on current card prices"}
-                </p>
+                <div className="flex items-baseline gap-3">
+                  <p className="text-3xl font-extrabold text-green-400">${deck.resolvedPrice.toFixed(2)}</p>
+                  {deck.discount > 0 && (
+                    <p className="text-lg text-zinc-500 line-through">${deck.basePrice.toFixed(2)}</p>
+                  )}
+                </div>
+                {deck.discount > 0 && (
+                  <p className="mt-1 text-xs font-semibold text-green-500">You save ${deck.discount.toFixed(2)}</p>
+                )}
+                <p className="mt-1 text-xs text-zinc-500">Based on current card prices</p>
                 <div className="mt-4 flex flex-wrap gap-3">
                   <Link
                     href={`/vibes/decks/${deck.id}`}

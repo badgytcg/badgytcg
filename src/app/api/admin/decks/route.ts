@@ -19,12 +19,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const body = await req.json();
-  const { name, type, description, price, cardList, active, sortOrder } = body;
-  if (!name || !type || price == null || !cardList) {
+  const { name, type, description, price, discount, cardList, active, sortOrder } = body;
+  if (!name || !type || !cardList) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
   const deck = await prisma.featuredDeck.create({
-    data: { name, type, description: description ?? null, price: Number(price), cardList, active: active ?? true, sortOrder: sortOrder ?? 0 },
+    data: {
+      name, type,
+      description: description ?? null,
+      price: price != null && Number(price) > 0 ? Number(price) : null,
+      discount: discount ? Number(discount) : 0,
+      cardList,
+      active: active ?? true,
+      sortOrder: sortOrder ?? 0,
+    },
   });
   return NextResponse.json({ deck });
 }
