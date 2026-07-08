@@ -2,9 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from "react";
 import Image from "next/image";
-import { useStore } from "@/context/StoreContext";
-import { matchDeckToInventory } from "@/lib/inventory";
-import { parseDeckCode } from "@/lib/deckParser";
+import Link from "next/link";
 import { Card } from "@/lib/types";
 
 type FeaturedDeck = {
@@ -57,10 +55,8 @@ function resolveDeck(deck: FeaturedDeck, catalog: Card[]): ResolvedDeck {
 }
 
 export default function DeckShowcase({ catalog }: { catalog: Card[] }) {
-  const { addManyToCart, addToWishlist } = useStore();
   const [decks, setDecks] = useState<FeaturedDeck[]>([]);
   const [index, setIndex] = useState(0);
-  const [added, setAdded] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     fetch("/api/decks")
@@ -84,21 +80,6 @@ export default function DeckShowcase({ catalog }: { catalog: Card[] }) {
   if (resolved.length === 0) return null;
 
   const deck = resolved[index];
-
-  function handleBuy() {
-    try {
-      const parsed = parseDeckCode(deck.cardList);
-      const result = matchDeckToInventory(parsed, deck.resolvedPrice, catalog);
-      addManyToCart(result.available.map((a) => ({ cardId: a.card.id, qty: a.qty })));
-      if (result.missing.length > 0) addToWishlist(result.missing);
-      setAdded((prev) => ({ ...prev, [deck.id]: true }));
-      setTimeout(() => setAdded((prev) => ({ ...prev, [deck.id]: false })), 2500);
-    } catch {
-      // parse error — nothing to add
-    }
-  }
-
-  const isBundlePrice = deck.price != null;
 
   return (
     <section className="bg-gradient-to-b from-zinc-950 to-purple-950/30 px-6 py-16">
@@ -149,29 +130,23 @@ export default function DeckShowcase({ catalog }: { catalog: Card[] }) {
               </div>
 
               <div className="relative mt-8">
-                <div className="flex items-baseline gap-2">
-                  <p className="text-3xl font-extrabold text-green-400">${deck.resolvedPrice.toFixed(2)}</p>
-                  {isBundlePrice && (
-                    <span className="rounded-full bg-purple-500/20 px-2 py-0.5 text-xs font-semibold text-purple-300">Bundle Deal</span>
-                  )}
-                </div>
+                <p className="text-3xl font-extrabold text-green-400">${deck.resolvedPrice.toFixed(2)}</p>
                 <p className="mt-1 text-xs text-zinc-500">
-                  {isBundlePrice ? "Fixed bundle price" : "Based on current card prices"} · in-stock cards added to cart, rest to wishlist
+                  {deck.price != null ? "Fixed bundle price" : "Based on current card prices"}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-3">
-                  <button
-                    onClick={handleBuy}
-                    disabled={!!added[deck.id]}
-                    className="rounded-full bg-purple-600 px-6 py-3 font-bold text-white shadow-lg shadow-purple-900/40 hover:bg-purple-500 disabled:bg-green-700 disabled:shadow-none"
+                  <Link
+                    href={`/vibes/decks/${deck.id}`}
+                    className="rounded-full bg-purple-600 px-6 py-3 font-bold text-white shadow-lg shadow-purple-900/40 hover:bg-purple-500"
                   >
-                    {added[deck.id] ? "Added to Cart!" : "Buy This Deck"}
-                  </button>
-                  <a
+                    View &amp; Buy This Deck
+                  </Link>
+                  <Link
                     href="/vibes/deck-import"
                     className="rounded-full border-2 border-zinc-700 px-6 py-3 font-bold text-zinc-300 hover:border-purple-500 hover:text-purple-300"
                   >
                     Import Custom Deck
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>
