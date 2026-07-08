@@ -2,12 +2,15 @@ import { ParsedDeck } from "@/lib/types";
 
 // Accepted plain-text line shapes (tried in order):
 //   "4 Card Name"        — quantity first (standard)
+//   "4x Card Name"       — quantity-x first
 //   "Card Name x4"       — name then x<n>
+//   "Card Name 4x"       — name then <n>x  ← "arches 7x" style
 //   "Card Name (4)"      — name then (n)
 //   "Card Name *4"       — name then *<n>
 //   "Card Name"          — no quantity → defaults to 1
-const QTY_FIRST   = /^(\d+)[x*]?\s+(.+)$/i;
-const QTY_SUFFIX_X = /^(.+?)\s+[x*](\d+)$/i;
+const QTY_FIRST    = /^(\d+)[x*]?\s+(.+)$/i;
+const QTY_SUFFIX_X = /^(.+?)\s+[x*](\d+)$/i;   // "Name x4" or "Name *4"
+const QTY_SUFFIX_NX = /^(.+?)\s+(\d+)[x*]$/i;  // "Name 4x" or "Name 4*"
 const QTY_SUFFIX_P = /^(.+?)\s+\((\d+)\)$/;
 
 /** Parse a single plain-text line into { name, qty } or null if unrecognisable. */
@@ -16,6 +19,9 @@ function parsePlainLine(line: string): { name: string; qty: number } | null {
 
   m = QTY_FIRST.exec(line);
   if (m) return { qty: Number(m[1]), name: m[2].trim() };
+
+  m = QTY_SUFFIX_NX.exec(line);
+  if (m) return { name: m[1].trim(), qty: Number(m[2]) };
 
   m = QTY_SUFFIX_X.exec(line);
   if (m) return { name: m[1].trim(), qty: Number(m[2]) };
