@@ -7,28 +7,60 @@ type FeaturedDeck = {
   name: string;
   type: string;
   description: string | null;
-  price: number;
+  price: number | null;
   cardList: string;
   active: boolean;
   sortOrder: number;
 };
 
-const EMPTY: Omit<FeaturedDeck, "id" | "createdAt"> = {
+const EMPTY: Omit<FeaturedDeck, "id"> = {
   name: "",
   type: "starter",
   description: "",
-  price: 0,
+  price: null,
   cardList: "",
   active: true,
   sortOrder: 0,
 };
+
+type FormState = {
+  name: string;
+  type: string;
+  description: string;
+  priceOverride: string; // empty string = auto
+  cardList: string;
+  active: boolean;
+  sortOrder: number;
+};
+
+const EMPTY_FORM: FormState = {
+  name: "",
+  type: "starter",
+  description: "",
+  priceOverride: "",
+  cardList: "",
+  active: true,
+  sortOrder: 0,
+};
+
+function deckToForm(deck: FeaturedDeck): FormState {
+  return {
+    name: deck.name,
+    type: deck.type,
+    description: deck.description ?? "",
+    priceOverride: deck.price != null ? String(deck.price) : "",
+    cardList: deck.cardList,
+    active: deck.active,
+    sortOrder: deck.sortOrder,
+  };
+}
 
 export default function AdminDecksPage() {
   const [decks, setDecks] = useState<FeaturedDeck[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState({ ...EMPTY });
+  const [form, setForm] = useState<FormState>({ ...EMPTY_FORM });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,22 +74,14 @@ export default function AdminDecksPage() {
   useEffect(() => { load(); }, []);
 
   function startNew() {
-    setForm({ ...EMPTY });
+    setForm({ ...EMPTY_FORM });
     setEditingId(null);
     setShowForm(true);
     setError(null);
   }
 
   function startEdit(deck: FeaturedDeck) {
-    setForm({
-      name: deck.name,
-      type: deck.type,
-      description: deck.description ?? "",
-      price: deck.price,
-      cardList: deck.cardList,
-      active: deck.active,
-      sortOrder: deck.sortOrder,
-    });
+    setForm(deckToForm(deck));
     setEditingId(deck.id);
     setShowForm(true);
     setError(null);
@@ -70,7 +94,16 @@ export default function AdminDecksPage() {
     }
     setSaving(true);
     setError(null);
-    const body = { ...form, price: Number(form.price), sortOrder: Number(form.sortOrder) };
+    const price = form.priceOverride.trim() !== "" ? Number(form.priceOverride) : null;
+    const body = {
+      name: form.name,
+      type: form.type,
+      description: form.description || null,
+      price,
+      cardList: form.cardList,
+      active: form.active,
+      sortOrder: Number(form.sortOrder),
+    };
     const url = editingId ? `/api/admin/decks/${editingId}` : "/api/admin/decks";
     const method = editingId ? "PATCH" : "POST";
     const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -139,14 +172,18 @@ export default function AdminDecksPage() {
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-zinc-400">Bundle Price ($) *</label>
+              <label className="mb-1 block text-xs font-medium text-zinc-400">
+                Bundle Price Override ($){" "}
+                <span className="text-zinc-600">— leave blank to auto-sum card prices</span>
+              </label>
               <input
                 type="number"
                 min="0"
                 step="0.01"
-                value={form.price}
-                onChange={(e) => setForm({ ...form, price: Number(e.target.value) })}
+                value={form.priceOverride}
+                onChange={(e) => setForm({ ...form, priceOverride: e.target.value })}
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100"
+                placeholder="Auto (sum of card prices)"
               />
             </div>
             <div>
@@ -161,7 +198,7 @@ export default function AdminDecksPage() {
             <div className="sm:col-span-2">
               <label className="mb-1 block text-xs font-medium text-zinc-400">Description</label>
               <input
-                value={form.description ?? ""}
+                value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100"
                 placeholder="A balanced starter deck for new players..."
@@ -238,7 +275,11 @@ export default function AdminDecksPage() {
                       {deck.type}
                     </span>
                     <span className="font-semibold text-zinc-100">{deck.name}</span>
-                    <span className="text-sm font-medium text-green-400">${deck.price.toFixed(2)}</span>
+                    {deck.price != null ? (
+                      <span className="text-sm font-medium text-green-400">${deck.price.toFixed(2)} (fixed)</span>
+                    ) : (
+                      <span className="text-sm text-zinc-500">Price: auto</span>
+                    )}
                   </div>
                   {deck.description && (
                     <p className="mt-1 text-sm text-zinc-400">{deck.description}</p>
