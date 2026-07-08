@@ -2,17 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getEffectiveCards } from "@/lib/catalog";
 import DeckShowcase from "@/components/DeckShowcase";
-
-const FAN_CARDS = [
-  "https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/RedWizardPenguin.png",
-  "https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/UmbrellaRod.png",
-  "/cards/baron-fishpockets.png",
-  "https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/StrikingSwordsmanPenguin.png",
-  "https://ocg-card-catalog.s3.us-west-2.amazonaws.com/Spoiler_Previews/ChubopolisUnleashed.png",
-];
-
-const FAN_ROTATIONS = ["-rotate-12", "-rotate-6", "rotate-0", "rotate-6", "rotate-12"];
-const FAN_OFFSETS = ["translate-y-3", "translate-y-1", "translate-y-0", "translate-y-1", "translate-y-3"];
+import CardFan from "@/components/CardFan";
 
 const RARITY_RANK: Record<string, number> = { Epic: 0, Rare: 1, Uncommon: 2, Common: 3 };
 
@@ -59,17 +49,7 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="relative mx-auto flex h-64 w-full max-w-sm items-center justify-center sm:h-80">
-            {FAN_CARDS.map((src, i) => (
-              <div
-                key={src}
-                className={`absolute h-56 w-40 overflow-hidden rounded-xl border-4 border-zinc-800 shadow-2xl shadow-purple-950/50 transition-transform sm:h-72 sm:w-52 ${FAN_ROTATIONS[i]} ${FAN_OFFSETS[i]}`}
-                style={{ left: `${i * 13}%` }}
-              >
-                <Image src={src} alt="" fill sizes="200px" className="object-cover" unoptimized />
-              </div>
-            ))}
-          </div>
+          <CardFan />
         </div>
       </section>
 
