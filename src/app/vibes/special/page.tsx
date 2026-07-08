@@ -40,8 +40,8 @@ export default function SpecialCardsPage() {
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {cards.map((card) => (
             <div key={card.id} className="flex flex-col rounded-xl border border-zinc-800 bg-zinc-900 ring-1 ring-purple-500/30 overflow-hidden">
-              <div className="relative w-full bg-zinc-800" style={{ aspectRatio: "3/4" }}>
-                <Image src={card.image} alt={card.name} fill sizes="300px" className="object-cover object-center" unoptimized />
+              <div className="relative w-full bg-zinc-900" style={{ aspectRatio: "3/4" }}>
+                <Image src={card.image} alt={card.name} fill sizes="300px" className="object-contain p-2" unoptimized />
               </div>
               <div className="flex flex-col flex-1 p-4">
               <h3 className="font-semibold text-zinc-100">{card.name}</h3>
