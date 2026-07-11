@@ -26,10 +26,148 @@ interface Consigner {
   name: string;
 }
 
+type OwnerSplitRow = { owner: string; qty: number };
+
+// Inline owner cell — supports single owner or split across consigners
+function OwnerCell({
+  cardId,
+  stock,
+  owner,
+  split,
+  consigners,
+  onSave,
+}: {
+  cardId: string;
+  stock: number;
+  owner: string;
+  split: OwnerSplitRow[] | null;
+  consigners: Consigner[];
+  onSave: (cardId: string, owner?: string, ownerSplit?: OwnerSplitRow[] | null) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  // rows during edit: array of {owner, qty as string}
+  const [rows, setRows] = useState<{ owner: string; qty: string }[]>([]);
+
+  function startEdit() {
+    if (split && split.length > 0) {
+      setRows(split.map((r) => ({ owner: r.owner, qty: String(r.qty) })));
+    } else {
+      setRows([{ owner, qty: String(stock) }]);
+    }
+    setEditing(true);
+  }
+
+  function cancel() { setEditing(false); }
+
+  function addRow() {
+    const firstOther = consigners.find((c) => !rows.some((r) => r.owner === c.slug));
+    setRows((prev) => [...prev, { owner: firstOther?.slug ?? consigners[0]?.slug ?? "badgy", qty: "0" }]);
+  }
+
+  function removeRow(i: number) {
+    setRows((prev) => prev.filter((_, idx) => idx !== i));
+  }
+
+  function save() {
+    const parsed = rows
+      .map((r) => ({ owner: r.owner, qty: Number(r.qty) }))
+      .filter((r) => r.qty > 0);
+    if (parsed.length === 0) return;
+    if (parsed.length === 1) {
+      // single owner — clear split
+      onSave(cardId, parsed[0].owner, null);
+    } else {
+      onSave(cardId, parsed[0].owner, parsed);
+    }
+    setEditing(false);
+  }
+
+  const total = rows.reduce((s, r) => s + (Number(r.qty) || 0), 0);
+  const totalOk = total === stock;
+
+  // Display
+  if (!editing) {
+    const displaySplit = split && split.length > 1 ? split : null;
+    return (
+      <div className="flex flex-col gap-1">
+        {displaySplit ? (
+          <div className="flex flex-wrap gap-1">
+            {displaySplit.map((s, i) => {
+              const name = consigners.find((c) => c.slug === s.owner)?.name ?? s.owner;
+              return (
+                <span key={i} className="rounded bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-300">
+                  {s.qty}× {name}
+                </span>
+              );
+            })}
+          </div>
+        ) : (
+          <select
+            value={owner}
+            onChange={(e) => onSave(cardId, e.target.value, null)}
+            className="rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs text-zinc-100"
+          >
+            {consigners.map((c) => (
+              <option key={c.slug} value={c.slug}>{c.name}</option>
+            ))}
+          </select>
+        )}
+        <button
+          onClick={startEdit}
+          className="text-left text-[10px] text-zinc-600 hover:text-purple-400"
+        >
+          {displaySplit ? "edit split" : "+ split ownership"}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5 min-w-[200px]">
+      {rows.map((row, i) => (
+        <div key={i} className="flex items-center gap-1">
+          <select
+            value={row.owner}
+            onChange={(e) => setRows((prev) => prev.map((r, idx) => idx === i ? { ...r, owner: e.target.value } : r))}
+            className="flex-1 rounded border border-zinc-700 bg-zinc-900 px-1.5 py-1 text-xs text-zinc-100"
+          >
+            {consigners.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
+          </select>
+          <input
+            type="number"
+            min={0}
+            value={row.qty}
+            onChange={(e) => setRows((prev) => prev.map((r, idx) => idx === i ? { ...r, qty: e.target.value } : r))}
+            className="w-12 rounded border border-zinc-700 bg-zinc-900 px-1.5 py-1 text-xs text-zinc-100"
+          />
+          {rows.length > 1 && (
+            <button onClick={() => removeRow(i)} className="text-zinc-600 hover:text-red-400 text-xs">✕</button>
+          )}
+        </div>
+      ))}
+      <div className="flex items-center gap-2 mt-0.5">
+        <button onClick={addRow} className="text-[10px] text-zinc-500 hover:text-purple-400">+ add row</button>
+        <span className={`ml-auto text-[10px] ${totalOk ? "text-green-500" : "text-yellow-500"}`}>
+          {total}/{stock}
+        </span>
+        <button
+          onClick={save}
+          disabled={!totalOk}
+          className="rounded bg-purple-600 px-2 py-0.5 text-[10px] text-white hover:bg-purple-500 disabled:bg-zinc-700"
+        >
+          Save
+        </button>
+        <button onClick={cancel} className="text-[10px] text-zinc-600 hover:text-zinc-300">Cancel</button>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminInventoryPage() {
   const [cards, setCards] = useState<Card[]>([]);
   const [consigners, setConsigners] = useState<Consigner[]>([]);
   const [ownerMap, setOwnerMap] = useState<Map<string, string>>(new Map());
+  const [splitMap, setSplitMap] = useState<Map<string, OwnerSplitRow[]>>(new Map());
   const [ownerFilter, setOwnerFilter] = useState("All");
   const [query, setQuery] = useState("");
   const [set, setSet] = useState("All");
@@ -66,7 +204,7 @@ export default function AdminInventoryPage() {
   const [bulkSearchResults, setBulkSearchResults] = useState<Card[] | null>(null);
   const [bulkSearchUnmatched, setBulkSearchUnmatched] = useState<string[]>([]);
   const [bulkSearchSaving, setBulkSearchSaving] = useState<string | null>(null);
-  const [bulkSearchEdits, setBulkSearchEdits] = useState<Record<string, { price: string; stock: string; owner?: string }>>({});
+  const [bulkSearchEdits, setBulkSearchEdits] = useState<Record<string, { price: string; stock: string }>>({});
 
   async function refreshMarketPrices() {
     setRefreshing(true);
@@ -89,19 +227,33 @@ export default function AdminInventoryPage() {
     ]).then(([cardsData, consData, ownersData]) => {
       setCards(cardsData.cards ?? []);
       setConsigners(consData.consigners ?? []);
-      const map = new Map<string, string>();
-      for (const row of ownersData.overrides ?? []) map.set(row.cardId, row.owner);
-      setOwnerMap(map);
+      const omap = new Map<string, string>();
+      const smap = new Map<string, OwnerSplitRow[]>();
+      for (const row of ownersData.overrides ?? []) {
+        omap.set(row.cardId, row.owner);
+        if (row.ownerSplit) {
+          try { smap.set(row.cardId, JSON.parse(row.ownerSplit)); } catch { /* ignore */ }
+        }
+      }
+      setOwnerMap(omap);
+      setSplitMap(smap);
       setLoading(false);
     });
   }, []);
 
-  async function setOwner(cardId: string, owner: string) {
-    setOwnerMap((prev) => new Map(prev).set(cardId, owner));
+  async function saveOwner(cardId: string, owner?: string, ownerSplit?: OwnerSplitRow[] | null) {
+    // Optimistic update
+    if (owner) setOwnerMap((prev) => new Map(prev).set(cardId, owner));
+    setSplitMap((prev) => {
+      const next = new Map(prev);
+      if (ownerSplit && ownerSplit.length > 1) next.set(cardId, ownerSplit);
+      else next.delete(cardId);
+      return next;
+    });
     await fetch("/api/admin/inventory/owner", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cardId, owner }),
+      body: JSON.stringify({ cardId, owner, ownerSplit: ownerSplit ?? null }),
     });
   }
 
@@ -233,10 +385,10 @@ export default function AdminInventoryPage() {
   }
 
   function getBulkSearchEdit(card: Card) {
-    return bulkSearchEdits[card.id] ?? { price: String(card.price), stock: String(card.stock), owner: ownerMap.get(card.id) ?? "badgy" };
+    return bulkSearchEdits[card.id] ?? { price: String(card.price), stock: String(card.stock) };
   }
 
-  function setBulkSearchEdit(cardId: string, field: "price" | "stock" | "owner", value: string) {
+  function setBulkSearchEdit(cardId: string, field: "price" | "stock", value: string) {
     const card = cards.find((c) => c.id === cardId)!;
     setBulkSearchEdits((prev) => ({
       ...prev,
@@ -250,24 +402,12 @@ export default function AdminInventoryPage() {
     const stock = Number(edit.stock);
     if (!Number.isFinite(price) || !Number.isFinite(stock) || price < 0 || stock < 0) return;
     setBulkSearchSaving(card.id);
-    const currentOwner = ownerMap.get(card.id) ?? "badgy";
-    const newOwner = edit.owner ?? currentOwner;
-    await Promise.all([
-      fetch("/api/admin/inventory", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cardId: card.id, price, stock }),
-      }),
-      newOwner !== currentOwner
-        ? fetch("/api/admin/inventory/owner", {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ cardId: card.id, owner: newOwner }),
-          })
-        : Promise.resolve(),
-    ]);
+    await fetch("/api/admin/inventory", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cardId: card.id, price, stock }),
+    });
     setCards((prev) => prev.map((c) => (c.id === card.id ? { ...c, price, stock } : c)));
-    if (newOwner !== currentOwner) setOwnerMap((prev) => new Map(prev).set(card.id, newOwner));
     setBulkSearchSaving(null);
   }
 
@@ -598,11 +738,7 @@ export default function AdminInventoryPage() {
                   <tbody className="divide-y divide-zinc-800">
                     {bulkSearchResults.map((card) => {
                       const edit = getBulkSearchEdit(card);
-                      const currentOwner = ownerMap.get(card.id) ?? "badgy";
-                      const dirty =
-                        edit.price !== String(card.price) ||
-                        edit.stock !== String(card.stock) ||
-                        (edit.owner ?? currentOwner) !== currentOwner;
+                      const dirty = edit.price !== String(card.price) || edit.stock !== String(card.stock);
                       return (
                         <tr key={card.id} className="bg-zinc-950">
                           <td className="px-4 py-2 font-medium text-zinc-200">{card.name}</td>
@@ -628,15 +764,14 @@ export default function AdminInventoryPage() {
                             />
                           </td>
                           <td className="px-4 py-2">
-                            <select
-                              value={edit.owner ?? currentOwner}
-                              onChange={(e) => setBulkSearchEdit(card.id, "owner", e.target.value)}
-                              className="rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs text-zinc-100"
-                            >
-                              {consigners.map((c) => (
-                                <option key={c.slug} value={c.slug}>{c.name}</option>
-                              ))}
-                            </select>
+                            <OwnerCell
+                              cardId={card.id}
+                              stock={Number(edit.stock) || card.stock}
+                              owner={ownerMap.get(card.id) ?? "badgy"}
+                              split={splitMap.get(card.id) ?? null}
+                              consigners={consigners}
+                              onSave={saveOwner}
+                            />
                           </td>
                           <td className="px-4 py-2">
                             <button
@@ -750,7 +885,6 @@ export default function AdminInventoryPage() {
             {filtered.slice(0, 200).map((card) => {
               const edit = getEdit(card);
               const dirty = edit.price !== String(card.price) || edit.stock !== String(card.stock);
-              const cardOwner = ownerMap.get(card.id) ?? "badgy";
               return (
                 <tr key={card.id} className="bg-zinc-950">
                   <td className="px-4 py-2 text-zinc-200">{card.name}</td>
@@ -775,15 +909,14 @@ export default function AdminInventoryPage() {
                     />
                   </td>
                   <td className="px-4 py-2">
-                    <select
-                      value={cardOwner}
-                      onChange={(e) => setOwner(card.id, e.target.value)}
-                      className="rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs text-zinc-100"
-                    >
-                      {consigners.map((c) => (
-                        <option key={c.slug} value={c.slug}>{c.name}</option>
-                      ))}
-                    </select>
+                    <OwnerCell
+                      cardId={card.id}
+                      stock={Number(edit.stock) || card.stock}
+                      owner={ownerMap.get(card.id) ?? "badgy"}
+                      split={splitMap.get(card.id) ?? null}
+                      consigners={consigners}
+                      onSave={saveOwner}
+                    />
                   </td>
                   <td className="px-4 py-2">
                     <button

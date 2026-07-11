@@ -119,11 +119,12 @@ model Consigner {
 // (e.g. "eth-getrekt"). Takes priority over the seed defaults in
 // src/data/overrides.json so admins can update inventory without a deploy.
 model CardOverride {
-  cardId    String   @id
-  price     Float
-  stock     Int
-  owner     String   @default("badgy") // which consigner owns this stock
-  updatedAt DateTime @updatedAt
+  cardId     String   @id
+  price      Float
+  stock      Int
+  owner      String   @default("badgy") // primary owner (used when no split)
+  ownerSplit String?  // JSON: [{owner:string,qty:number}] when stock is split across consigners
+  updatedAt  DateTime @updatedAt
 }
 
 // Cached prices scraped/pulled from other marketplaces, refreshed via the
