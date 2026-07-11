@@ -66,7 +66,7 @@ export default function AdminInventoryPage() {
   const [bulkSearchResults, setBulkSearchResults] = useState<Card[] | null>(null);
   const [bulkSearchUnmatched, setBulkSearchUnmatched] = useState<string[]>([]);
   const [bulkSearchSaving, setBulkSearchSaving] = useState<string | null>(null);
-  const [bulkSearchEdits, setBulkSearchEdits] = useState<Record<string, { price: string; stock: string }>>({});
+  const [bulkSearchEdits, setBulkSearchEdits] = useState<Record<string, { price: string; stock: string; owner?: string }>>({});
 
   async function refreshMarketPrices() {
     setRefreshing(true);
@@ -233,10 +233,10 @@ export default function AdminInventoryPage() {
   }
 
   function getBulkSearchEdit(card: Card) {
-    return bulkSearchEdits[card.id] ?? { price: String(card.price), stock: String(card.stock) };
+    return bulkSearchEdits[card.id] ?? { price: String(card.price), stock: String(card.stock), owner: ownerMap.get(card.id) ?? "badgy" };
   }
 
-  function setBulkSearchEdit(cardId: string, field: "price" | "stock", value: string) {
+  function setBulkSearchEdit(cardId: string, field: "price" | "stock" | "owner", value: string) {
     const card = cards.find((c) => c.id === cardId)!;
     setBulkSearchEdits((prev) => ({
       ...prev,
@@ -250,12 +250,24 @@ export default function AdminInventoryPage() {
     const stock = Number(edit.stock);
     if (!Number.isFinite(price) || !Number.isFinite(stock) || price < 0 || stock < 0) return;
     setBulkSearchSaving(card.id);
-    await fetch("/api/admin/inventory", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ cardId: card.id, price, stock }),
-    });
+    const currentOwner = ownerMap.get(card.id) ?? "badgy";
+    const newOwner = edit.owner ?? currentOwner;
+    await Promise.all([
+      fetch("/api/admin/inventory", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cardId: card.id, price, stock }),
+      }),
+      newOwner !== currentOwner
+        ? fetch("/api/admin/inventory/owner", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cardId: card.id, owner: newOwner }),
+          })
+        : Promise.resolve(),
+    ]);
     setCards((prev) => prev.map((c) => (c.id === card.id ? { ...c, price, stock } : c)));
+    if (newOwner !== currentOwner) setOwnerMap((prev) => new Map(prev).set(card.id, newOwner));
     setBulkSearchSaving(null);
   }
 
@@ -579,14 +591,18 @@ export default function AdminInventoryPage() {
                       <th className="px-4 py-3">Rarity</th>
                       <th className="px-4 py-3">Price</th>
                       <th className="px-4 py-3">Stock</th>
+                      <th className="px-4 py-3">Owner</th>
                       <th className="px-4 py-3"></th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-zinc-800">
                     {bulkSearchResults.map((card) => {
                       const edit = getBulkSearchEdit(card);
+                      const currentOwner = ownerMap.get(card.id) ?? "badgy";
                       const dirty =
-                        edit.price !== String(card.price) || edit.stock !== String(card.stock);
+                        edit.price !== String(card.price) ||
+                        edit.stock !== String(card.stock) ||
+                        (edit.owner ?? currentOwner) !== currentOwner;
                       return (
                         <tr key={card.id} className="bg-zinc-950">
                           <td className="px-4 py-2 font-medium text-zinc-200">{card.name}</td>
@@ -610,6 +626,17 @@ export default function AdminInventoryPage() {
                               onChange={(e) => setBulkSearchEdit(card.id, "stock", e.target.value)}
                               className="w-20 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-zinc-100"
                             />
+                          </td>
+                          <td className="px-4 py-2">
+                            <select
+                              value={edit.owner ?? currentOwner}
+                              onChange={(e) => setBulkSearchEdit(card.id, "owner", e.target.value)}
+                              className="rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs text-zinc-100"
+                            >
+                              {consigners.map((c) => (
+                                <option key={c.slug} value={c.slug}>{c.name}</option>
+                              ))}
+                            </select>
                           </td>
                           <td className="px-4 py-2">
                             <button

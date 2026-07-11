@@ -23,7 +23,11 @@ export async function PATCH(request: Request) {
   const { cardId, owner } = await request.json();
   if (!cardId || !owner) return NextResponse.json({ error: "cardId and owner required" }, { status: 400 });
 
-  await prisma.cardOverride.update({ where: { cardId }, data: { owner } });
+  await prisma.cardOverride.upsert({
+    where: { cardId },
+    create: { cardId, price: 0, stock: 0, owner },
+    update: { owner },
+  });
   await logAdminAction({
     adminEmail: session!.user!.email!,
     action: "inventory.set_owner",

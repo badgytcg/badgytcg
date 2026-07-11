@@ -1,7 +1,68 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "@/lib/types";
+
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function ImageUploadField({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      onChange(await fileToDataUrl(file));
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  }
+
+  const isFile = value.startsWith("data:");
+
+  return (
+    <div className="flex items-center gap-3 sm:col-span-2">
+      {value && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={value} alt="preview" className="h-16 w-12 shrink-0 rounded object-contain bg-zinc-800" />
+      )}
+      <div className="flex flex-1 flex-col gap-1.5">
+        <input
+          placeholder="Image URL (paste a link)"
+          value={isFile ? "" : value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100"
+        />
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            disabled={uploading}
+            className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-xs text-zinc-300 hover:border-purple-500 hover:text-purple-300 disabled:opacity-50"
+          >
+            {uploading ? "Uploading…" : isFile ? "✓ File loaded — replace" : "Upload image file"}
+          </button>
+          {value && (
+            <button type="button" onClick={() => onChange("")} className="text-xs text-zinc-600 hover:text-red-400">
+              Clear
+            </button>
+          )}
+        </div>
+      </div>
+      <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} className="hidden" />
+    </div>
+  );
+}
 
 interface SpecialCard {
   id: string;
@@ -182,7 +243,7 @@ export default function AdminSpecialPage() {
               </ul>
             )}
           </div>
-          <input placeholder="Image URL" value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100" />
+          <ImageUploadField value={form.imageUrl} onChange={(url) => setForm({ ...form, imageUrl: url })} />
           <input type="number" step="0.01" min={0} placeholder="Price" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100" />
           <input placeholder="Grade (e.g. PSA 9)" value={form.grade} onChange={(e) => setForm({ ...form, grade: e.target.value })} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100" />
           <input placeholder="Set (optional)" value={form.set} onChange={(e) => setForm({ ...form, set: e.target.value })} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100" />
@@ -215,7 +276,7 @@ export default function AdminSpecialPage() {
               <li key={card.id} className="rounded-xl border border-purple-700 bg-zinc-900 p-4">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <input placeholder="Name" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100" />
-                  <input placeholder="Image URL" value={editForm.imageUrl} onChange={(e) => setEditForm({ ...editForm, imageUrl: e.target.value })} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100" />
+                  <ImageUploadField value={editForm.imageUrl} onChange={(url) => setEditForm({ ...editForm, imageUrl: url })} />
                   <input type="number" step="0.01" min={0} placeholder="Price" value={editForm.price} onChange={(e) => setEditForm({ ...editForm, price: e.target.value })} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100" />
                   <input placeholder="Grade (e.g. PSA 9)" value={editForm.grade} onChange={(e) => setEditForm({ ...editForm, grade: e.target.value })} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100" />
                   <input placeholder="Set (optional)" value={editForm.set} onChange={(e) => setEditForm({ ...editForm, set: e.target.value })} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100" />
