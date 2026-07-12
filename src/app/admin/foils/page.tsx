@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/lib/types";
-import { variantCardId } from "@/lib/catalog";
+
+function variantCardId(baseId: string, kind: string) { return `${baseId}::${kind}`; }
 
 type VariantKind = "foil" | "altfoil";
 const VARIANT_LABEL: Record<VariantKind, string> = { foil: "Foil", altfoil: "Alt Foil" };
