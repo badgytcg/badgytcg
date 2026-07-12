@@ -58,25 +58,36 @@ export async function POST(request: Request) {
 
   const origin = request.headers.get("origin") ?? `https://${request.headers.get("host")}`;
 
-  // Standard TCG shipping tiers:
-  //  - Orders $50+: free tracked shipping
-  //  - Orders under $20: choice of PWE (untracked, cheap) or tracked bubble mailer
-  //  - Orders $20–$50: tracked bubble mailer only (no untracked option on
-  //    higher-value orders, protects against lost-mail disputes)
+  // Shipping is sized by both order value and physical card count:
+  //  - Subtotal $100+: free tracked shipping (we eat the cost)
+  //  - Over 100 cards: needs a small box, $8.99 tracked
+  //  - 13–100 cards (or $20+ subtotal): bubble mailer, $4.99 tracked
+  //  - ≤12 cards under $20: PWE option ($1.29, untracked) alongside tracked
   const subtotalCents = lineItems.reduce(
     (sum, li) => sum + li.price_data.unit_amount * li.quantity,
     0
   );
+  const totalCards = lineItems.reduce((sum, li) => sum + li.quantity, 0);
 
+  const trackedEstimate = {
+    minimum: { unit: "business_day" as const, value: 3 },
+    maximum: { unit: "business_day" as const, value: 7 },
+  };
+
+  const boxOption = {
+    shipping_rate_data: {
+      display_name: "USPS Ground Advantage — Small Box (tracked)",
+      type: "fixed_amount" as const,
+      fixed_amount: { amount: 899, currency: "usd" },
+      delivery_estimate: trackedEstimate,
+    },
+  };
   const trackedOption = {
     shipping_rate_data: {
-      display_name: "USPS Ground Advantage (tracked)",
+      display_name: "USPS Ground Advantage — Bubble Mailer (tracked)",
       type: "fixed_amount" as const,
       fixed_amount: { amount: 499, currency: "usd" },
-      delivery_estimate: {
-        minimum: { unit: "business_day" as const, value: 3 },
-        maximum: { unit: "business_day" as const, value: 7 },
-      },
+      delivery_estimate: trackedEstimate,
     },
   };
   const pweOption = {
@@ -92,22 +103,21 @@ export async function POST(request: Request) {
   };
   const freeOption = {
     shipping_rate_data: {
-      display_name: "Free shipping (orders $50+, tracked)",
+      display_name: "Free shipping (orders $100+, tracked)",
       type: "fixed_amount" as const,
       fixed_amount: { amount: 0, currency: "usd" },
-      delivery_estimate: {
-        minimum: { unit: "business_day" as const, value: 3 },
-        maximum: { unit: "business_day" as const, value: 7 },
-      },
+      delivery_estimate: trackedEstimate,
     },
   };
 
   const shippingOptions =
-    subtotalCents >= 5000
+    subtotalCents >= 10000
       ? [freeOption]
-      : subtotalCents < 2000
-        ? [pweOption, trackedOption]
-        : [trackedOption];
+      : totalCards > 100
+        ? [boxOption]
+        : totalCards <= 12 && subtotalCents < 2000
+          ? [pweOption, trackedOption]
+          : [trackedOption];
 
   const checkoutSession = await getStripe().checkout.sessions.create({
     mode: "payment",
