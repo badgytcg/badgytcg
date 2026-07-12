@@ -58,10 +58,11 @@ export async function POST(request: Request) {
 
   const origin = request.headers.get("origin") ?? `https://${request.headers.get("host")}`;
 
-  // Shipping is sized by both order value and physical card count:
-  //  - Subtotal $100+: free tracked shipping (we eat the cost)
-  //  - Over 100 cards: needs a small box, $8.99 tracked
-  //  - 13–100 cards (or $20+ subtotal): bubble mailer, $4.99 tracked
+  // Shipping is sized by card count first, order value second — a heavy
+  // order costs real postage no matter what it's worth:
+  //  - Over 50 cards: small box, flat $8.99 tracked (even on $100+ orders)
+  //  - Subtotal $100+ and ≤50 cards: free tracked shipping
+  //  - 13–50 cards (or $20+ subtotal): bubble mailer, $4.99 tracked
   //  - ≤12 cards under $20: PWE option ($1.29, untracked) alongside tracked
   const subtotalCents = lineItems.reduce(
     (sum, li) => sum + li.price_data.unit_amount * li.quantity,
@@ -111,10 +112,10 @@ export async function POST(request: Request) {
   };
 
   const shippingOptions =
-    subtotalCents >= 10000
-      ? [freeOption]
-      : totalCards > 100
-        ? [boxOption]
+    totalCards > 50
+      ? [boxOption]
+      : subtotalCents >= 10000
+        ? [freeOption]
         : totalCards <= 12 && subtotalCents < 2000
           ? [pweOption, trackedOption]
           : [trackedOption];
