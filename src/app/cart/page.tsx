@@ -46,9 +46,27 @@ export default function CartPage() {
     }
   }
 
+  // Faint card-art ambiance behind the page, same treatment as the Vibes
+  // layout — masked to a soft radial fade so it doesn't compete with content.
+  const artBackdrop = (
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center opacity-50"
+      style={{
+        backgroundImage: "url(/backgrounds/cart-cooking-penguin.webp)",
+        filter: "saturate(1.4) brightness(0.9)",
+        maskImage:
+          "radial-gradient(ellipse 80% 100% at 50% 0%, black 0%, rgba(0,0,0,0.6) 50%, transparent 100%)",
+        WebkitMaskImage:
+          "radial-gradient(ellipse 80% 100% at 50% 0%, black 0%, rgba(0,0,0,0.6) 50%, transparent 100%)",
+      }}
+    />
+  );
+
   if (cart.length === 0) {
     return (
-      <div className="mx-auto max-w-2xl px-6 py-16 text-center">
+      <div className="relative mx-auto max-w-2xl px-6 py-16 text-center">
+        {artBackdrop}
         <h1 className="text-2xl font-bold text-zinc-100">Your cart is empty</h1>
         <Link href="/vibes" className="mt-4 inline-block text-purple-400 hover:underline">
           Browse singles →
@@ -58,7 +76,8 @@ export default function CartPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-12">
+    <div className="relative mx-auto max-w-2xl px-6 py-12">
+      {artBackdrop}
       <h1 className="text-2xl font-bold text-zinc-100">Your Cart</h1>
       <ul className="mt-6 divide-y divide-zinc-800">
         {cart.map((line) => {
