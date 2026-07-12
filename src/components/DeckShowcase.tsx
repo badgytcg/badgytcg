@@ -81,6 +81,9 @@ function resolveDeck(deck: FeaturedDeck, catalog: Card[]): ResolvedDeck {
 export default function DeckShowcase({ catalog }: { catalog: Card[] }) {
   const [decks, setDecks] = useState<FeaturedDeck[]>([]);
   const [index, setIndex] = useState(0);
+  // Once the customer touches the arrows or dots, they're reading — stop
+  // the carousel from yanking the deck away before they can hit Buy.
+  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
     fetch("/api/decks")
@@ -90,14 +93,15 @@ export default function DeckShowcase({ catalog }: { catalog: Card[] }) {
 
   const resolved = useMemo(() => decks.map((d) => resolveDeck(d, catalog)), [decks, catalog]);
 
-  const prev = useCallback(() => setIndex((i) => (i - 1 + decks.length) % decks.length), [decks.length]);
-  const next = useCallback(() => setIndex((i) => (i + 1) % decks.length), [decks.length]);
+  const prev = useCallback(() => { setPaused(true); setIndex((i) => (i - 1 + decks.length) % decks.length); }, [decks.length]);
+  const next = useCallback(() => { setPaused(true); setIndex((i) => (i + 1) % decks.length); }, [decks.length]);
+  const goTo = useCallback((i: number) => { setPaused(true); setIndex(i); }, []);
 
   useEffect(() => {
-    if (decks.length <= 1) return;
-    const id = setInterval(next, 6000);
+    if (decks.length <= 1 || paused) return;
+    const id = setInterval(() => setIndex((i) => (i + 1) % decks.length), 10000);
     return () => clearInterval(id);
-  }, [decks.length, next]);
+  }, [decks.length, paused]);
 
   useEffect(() => { setIndex(0); }, [decks]);
 
@@ -225,7 +229,7 @@ export default function DeckShowcase({ catalog }: { catalog: Card[] }) {
             {resolved.map((d, i) => (
               <button
                 key={d.id}
-                onClick={() => setIndex(i)}
+                onClick={() => goTo(i)}
                 className={`h-2 rounded-full transition-all ${i === index ? "w-6 bg-purple-500" : "w-2 bg-zinc-700 hover:bg-zinc-500"}`}
                 aria-label={`Go to deck ${i + 1}`}
               />
