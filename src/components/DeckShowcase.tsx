@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/lib/types";
 import { findCardByAnyName } from "@/lib/inventory";
+import { parseDeckCode } from "@/lib/deckParser";
 
 type FeaturedDeck = {
   id: string;
@@ -25,26 +26,37 @@ type ResolvedDeck = FeaturedDeck & {
   resolvedCards: ResolvedCard[];
 };
 
+// Higher = rarer. Used to pick the deck's showcase card.
+const RARITY_RANK: Record<string, number> = { Common: 0, Uncommon: 1, Rare: 2, Epic: 3 };
+
 function resolveDeck(deck: FeaturedDeck, catalog: Card[]): ResolvedDeck {
-  const lines = deck.cardList
-    .split("\n")
-    .filter(Boolean)
-    .map((line) => {
-      const m = /^(\d+)\s+(.+)$/.exec(line.trim());
-      return m ? { qty: Number(m[1]), name: m[2].trim() } : null;
-    })
-    .filter((x): x is { qty: number; name: string } => x !== null);
+  // parseDeckCode handles both the JSON {deckName, counts} format and the
+  // plain "4 Card Name" line format admins may paste.
+  let entries: { name: string; qty: number }[] = [];
+  try {
+    entries = parseDeckCode(deck.cardList).entries;
+  } catch {
+    // Unparseable list — render the deck with no contents rather than crash.
+  }
 
   let resolvedPrice = 0;
-  let previewImage: string | null = null;
+  let heroCard: Card | null = null;
   const resolvedCards: ResolvedCard[] = [];
 
-  for (const line of lines) {
-    const match = findCardByAnyName(line.name, catalog);
-    const image = match?.image ?? null;
-    resolvedPrice += (match?.price ?? 0) * line.qty;
-    if (!previewImage && image) previewImage = image;
-    resolvedCards.push({ qty: line.qty, name: line.name, image });
+  for (const entry of entries) {
+    const match = findCardByAnyName(entry.name, catalog);
+    resolvedPrice += (match?.price ?? 0) * entry.qty;
+    // Showcase the rarest card in the deck (price breaks rarity ties).
+    if (match?.image) {
+      if (
+        !heroCard ||
+        (RARITY_RANK[match.rarity] ?? 0) > (RARITY_RANK[heroCard.rarity] ?? 0) ||
+        ((RARITY_RANK[match.rarity] ?? 0) === (RARITY_RANK[heroCard.rarity] ?? 0) && match.price > heroCard.price)
+      ) {
+        heroCard = match;
+      }
+    }
+    resolvedCards.push({ qty: entry.qty, name: match?.name ?? entry.name, image: match?.image ?? null });
   }
 
   const basePrice = (deck.price && deck.price > 0) ? deck.price : resolvedPrice;
@@ -54,7 +66,7 @@ function resolveDeck(deck: FeaturedDeck, catalog: Card[]): ResolvedDeck {
     ...deck,
     basePrice,
     resolvedPrice: finalPrice,
-    previewImage,
+    previewImage: heroCard?.image ?? null,
     resolvedCards,
   };
 }
