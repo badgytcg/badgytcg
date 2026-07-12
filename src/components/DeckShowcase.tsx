@@ -12,6 +12,7 @@ type FeaturedDeck = {
   name: string;
   type: string;
   description: string | null;
+  heroCard: string | null;
   price: number | null;
   discount: number;
   cardList: string;
@@ -57,6 +58,12 @@ function resolveDeck(deck: FeaturedDeck, catalog: Card[]): ResolvedDeck {
       }
     }
     resolvedCards.push({ qty: entry.qty, name: match?.name ?? entry.name, image: match?.image ?? null });
+  }
+
+  // Admin-picked showcase card wins over the rarity heuristic.
+  if (deck.heroCard) {
+    const picked = findCardByAnyName(deck.heroCard, catalog);
+    if (picked?.image) heroCard = picked;
   }
 
   const basePrice = (deck.price && deck.price > 0) ? deck.price : resolvedPrice;
@@ -122,16 +129,11 @@ export default function DeckShowcase({ catalog }: { catalog: Card[] }) {
 
             {/* Left: hero card + deck info */}
             <div className="relative flex flex-col justify-between p-8">
-              {deck.previewImage && (
-                <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-l-2xl opacity-20">
-                  <Image src={deck.previewImage} alt="" fill sizes="600px" className="scale-110 object-cover object-center blur-sm" unoptimized />
-                </div>
-              )}
               <div className="relative">
                 {deck.previewImage && (
                   <div className="mb-6 flex justify-center">
-                    <div className="relative h-52 w-36 overflow-hidden rounded-xl border-2 border-purple-500/40 shadow-2xl shadow-purple-950/60 sm:h-64 sm:w-44">
-                      <Image src={deck.previewImage} alt={deck.name} fill sizes="180px" className="object-cover" unoptimized />
+                    <div className="relative h-80 w-56 overflow-hidden rounded-xl border-2 border-purple-500/40 shadow-2xl shadow-purple-950/60 sm:h-96 sm:w-[17rem]">
+                      <Image src={deck.previewImage} alt={deck.name} fill sizes="280px" className="object-cover" unoptimized />
                     </div>
                   </div>
                 )}

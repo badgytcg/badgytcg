@@ -10,13 +10,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   }
   const { id } = await params;
   const body = await req.json();
-  const { name, type, description, price, discount, cardList, active, sortOrder } = body;
+  const { name, type, description, heroCard, price, discount, cardList, active, sortOrder } = body;
   const deck = await prisma.featuredDeck.update({
     where: { id },
     data: {
       ...(name !== undefined && { name }),
       ...(type !== undefined && { type }),
       ...(description !== undefined && { description }),
+      ...(heroCard !== undefined && { heroCard: heroCard || null }),
       ...(price !== undefined && { price: price != null && Number(price) > 0 ? Number(price) : null }),
       ...(discount !== undefined && { discount: Number(discount) }),
       ...(cardList !== undefined && { cardList }),

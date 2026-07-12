@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const body = await req.json();
-  const { name, type, description, price, discount, cardList, active, sortOrder } = body;
+  const { name, type, description, heroCard, price, discount, cardList, active, sortOrder } = body;
   if (!name || !type || !cardList) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
@@ -27,6 +27,7 @@ export async function POST(req: NextRequest) {
     data: {
       name, type,
       description: description ?? null,
+      heroCard: heroCard || null,
       price: price != null && Number(price) > 0 ? Number(price) : null,
       discount: discount ? Number(discount) : 0,
       cardList,

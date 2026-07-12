@@ -7,6 +7,7 @@ type FeaturedDeck = {
   name: string;
   type: string;
   description: string | null;
+  heroCard: string | null;
   price: number | null;
   discount: number;
   cardList: string;
@@ -18,6 +19,7 @@ type FormState = {
   name: string;
   type: string;
   description: string;
+  heroCard: string;
   discount: string;
   cardList: string;
   active: boolean;
@@ -28,6 +30,7 @@ const EMPTY_FORM: FormState = {
   name: "",
   type: "starter",
   description: "",
+  heroCard: "",
   discount: "",
   cardList: "",
   active: true,
@@ -39,6 +42,7 @@ function deckToForm(deck: FeaturedDeck): FormState {
     name: deck.name,
     type: deck.type,
     description: deck.description ?? "",
+    heroCard: deck.heroCard ?? "",
     discount: deck.discount > 0 ? String(deck.discount) : "",
     cardList: deck.cardList,
     active: deck.active,
@@ -90,6 +94,7 @@ export default function AdminDecksPage() {
       name: form.name,
       type: form.type,
       description: form.description || null,
+      heroCard: form.heroCard.trim() || null,
       price: null, // always auto-calculate
       discount,
       cardList: form.cardList,
@@ -188,6 +193,17 @@ export default function AdminDecksPage() {
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100"
                 placeholder="A balanced starter deck for new players..."
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="mb-1 block text-xs font-medium text-zinc-400">
+                Showcase Card <span className="text-zinc-600">— card name to feature as the big image; leave blank to auto-pick the rarest card</span>
+              </label>
+              <input
+                value={form.heroCard}
+                onChange={(e) => setForm({ ...form, heroCard: e.target.value })}
+                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100"
+                placeholder="e.g. Layer a Lasagna"
               />
             </div>
             <div className="sm:col-span-2">
