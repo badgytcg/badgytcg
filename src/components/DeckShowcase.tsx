@@ -127,25 +127,24 @@ export default function DeckShowcase({ catalog }: { catalog: Card[] }) {
         <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 shadow-2xl shadow-purple-950/30">
           <div className="grid lg:grid-cols-2">
 
-            {/* Left: hero card + deck info */}
-            <div className="relative flex flex-col justify-between p-8">
-              <div className="relative">
-                {deck.previewImage && (
-                  <div className="mb-6 flex justify-center">
-                    <div className="relative h-80 w-56 overflow-hidden rounded-xl border-2 border-purple-500/40 shadow-2xl shadow-purple-950/60 sm:h-96 sm:w-[17rem]">
-                      <Image src={deck.previewImage} alt={deck.name} fill sizes="280px" className="object-cover" unoptimized />
-                    </div>
+            {/* Left: hero card + deck info — centered as one compact block so
+                the panel doesn't leave a void when the card grid runs tall */}
+            <div className="relative flex flex-col justify-center p-8">
+              {deck.previewImage && (
+                <div className="mb-6 flex justify-center">
+                  <div className="relative h-80 w-56 overflow-hidden rounded-xl border-2 border-purple-500/40 shadow-2xl shadow-purple-950/60 sm:h-96 sm:w-[17rem]">
+                    <Image src={deck.previewImage} alt={deck.name} fill sizes="280px" className="object-cover" unoptimized />
                   </div>
-                )}
-                <div className="flex items-center gap-3">
-                  <span className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-widest ${deck.type === "meta" ? "bg-yellow-500/20 text-yellow-300 ring-1 ring-yellow-500/30" : "bg-blue-500/20 text-blue-300 ring-1 ring-blue-500/30"}`}>
-                    {deck.type === "meta" ? "Meta Deck" : "Starter Deck"}
-                  </span>
                 </div>
-                <h3 className="mt-3 text-2xl font-extrabold text-white sm:text-3xl">{deck.name}</h3>
+              )}
+              <div className="flex items-center gap-3">
+                <span className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-widest ${deck.type === "meta" ? "bg-yellow-500/20 text-yellow-300 ring-1 ring-yellow-500/30" : "bg-blue-500/20 text-blue-300 ring-1 ring-blue-500/30"}`}>
+                  {deck.type === "meta" ? "Meta Deck" : "Starter Deck"}
+                </span>
+                <h3 className="text-2xl font-extrabold text-white sm:text-3xl">{deck.name}</h3>
               </div>
 
-              <div className="relative mt-8">
+              <div className="mt-5">
                 <div className="flex items-baseline gap-3">
                   <p className="text-3xl font-extrabold text-green-400">${deck.resolvedPrice.toFixed(2)}</p>
                   {deck.discount > 0 && (
