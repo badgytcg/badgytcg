@@ -58,9 +58,62 @@ export async function POST(request: Request) {
 
   const origin = request.headers.get("origin") ?? `https://${request.headers.get("host")}`;
 
+  // Standard TCG shipping tiers:
+  //  - Orders $50+: free tracked shipping
+  //  - Orders under $20: choice of PWE (untracked, cheap) or tracked bubble mailer
+  //  - Orders $20–$50: tracked bubble mailer only (no untracked option on
+  //    higher-value orders, protects against lost-mail disputes)
+  const subtotalCents = lineItems.reduce(
+    (sum, li) => sum + li.price_data.unit_amount * li.quantity,
+    0
+  );
+
+  const trackedOption = {
+    shipping_rate_data: {
+      display_name: "USPS Ground Advantage (tracked)",
+      type: "fixed_amount" as const,
+      fixed_amount: { amount: 499, currency: "usd" },
+      delivery_estimate: {
+        minimum: { unit: "business_day" as const, value: 3 },
+        maximum: { unit: "business_day" as const, value: 7 },
+      },
+    },
+  };
+  const pweOption = {
+    shipping_rate_data: {
+      display_name: "Plain White Envelope (no tracking)",
+      type: "fixed_amount" as const,
+      fixed_amount: { amount: 129, currency: "usd" },
+      delivery_estimate: {
+        minimum: { unit: "business_day" as const, value: 4 },
+        maximum: { unit: "business_day" as const, value: 10 },
+      },
+    },
+  };
+  const freeOption = {
+    shipping_rate_data: {
+      display_name: "Free shipping (orders $50+, tracked)",
+      type: "fixed_amount" as const,
+      fixed_amount: { amount: 0, currency: "usd" },
+      delivery_estimate: {
+        minimum: { unit: "business_day" as const, value: 3 },
+        maximum: { unit: "business_day" as const, value: 7 },
+      },
+    },
+  };
+
+  const shippingOptions =
+    subtotalCents >= 5000
+      ? [freeOption]
+      : subtotalCents < 2000
+        ? [pweOption, trackedOption]
+        : [trackedOption];
+
   const checkoutSession = await getStripe().checkout.sessions.create({
     mode: "payment",
     line_items: lineItems,
+    shipping_address_collection: { allowed_countries: ["US"] },
+    shipping_options: shippingOptions,
     success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/cart`,
     client_reference_id: session?.user?.id,
