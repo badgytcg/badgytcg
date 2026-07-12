@@ -48,8 +48,12 @@ export default function AdminFoilsPage() {
   const [scgEdits, setScgEdits] = useState<Record<string, string>>({});
   const [scgSaving, setScgSaving] = useState<string | null>(null);
 
-  // Bulk floor apply
-  const [bulkFloorSource, setBulkFloorSource] = useState<"dyli" | "minmax" | "scg">("dyli");
+  // Bulk price update
+  const [bulkSet, setBulkSet] = useState("All");
+  const [bulkRarity, setBulkRarity] = useState("All");
+  const [bulkKind, setBulkKind] = useState<"All" | VariantKind>("All");
+  const [bulkMode, setBulkMode] = useState<"fixed" | "dyli" | "minmax" | "scg">("fixed");
+  const [bulkPrice, setBulkPrice] = useState("0.50");
   const [bulkApplying, setBulkApplying] = useState(false);
   const [bulkResult, setBulkResult] = useState<string | null>(null);
 
@@ -169,26 +173,53 @@ export default function AdminFoilsPage() {
     setRows((prev) => prev.filter((r) => !(r.cardId === cardId && r.kind === kind)));
   }
 
-  async function applyBulkFloor() {
-    let updated = 0;
-    let skipped = 0;
+  const sets = useMemo(() => Array.from(new Set(rows.map((r) => r.set))).sort(), [rows]);
+  const rarities = useMemo(() => Array.from(new Set(rows.map((r) => cards.find((c) => c.id === r.cardId)?.rarity).filter(Boolean) as string[])).sort(), [rows, cards]);
+
+  const bulkMatches = useMemo(() =>
+    rows.filter((r) => {
+      const card = cards.find((c) => c.id === r.cardId);
+      return (
+        (bulkSet === "All" || r.set === bulkSet) &&
+        (bulkRarity === "All" || card?.rarity === bulkRarity) &&
+        (bulkKind === "All" || r.kind === bulkKind)
+      );
+    }),
+    [rows, cards, bulkSet, bulkRarity, bulkKind]
+  );
+
+  async function applyBulkUpdate() {
+    if (bulkMatches.length === 0) return;
+    const fixedPrice = bulkMode === "fixed" ? Number(bulkPrice) : undefined;
+    if (bulkMode === "fixed" && (!Number.isFinite(fixedPrice) || fixedPrice! < 0)) return;
+
+    const modeLabel = bulkMode === "fixed" ? `$${fixedPrice!.toFixed(2)}` : `${SOURCE_LABEL[bulkMode]} floor`;
+    if (!window.confirm(`Set price to ${modeLabel} for ${bulkMatches.length} foil variant(s)?`)) return;
+
     setBulkApplying(true);
     setBulkResult(null);
+    let updated = 0;
+    let skipped = 0;
 
-    for (const row of rows) {
-      const p = getMarketPrice(row.cardId, row.kind, bulkFloorSource);
-      if (p == null) { skipped++; continue; }
-      const card = cards.find((c) => c.id === row.cardId);
-      if (!card) { skipped++; continue; }
+    for (const row of bulkMatches) {
+      let price: number;
+      if (bulkMode === "fixed") {
+        price = fixedPrice!;
+      } else {
+        const p = getMarketPrice(row.cardId, row.kind, bulkMode);
+        if (p == null) { skipped++; continue; }
+        price = p;
+      }
       await fetch("/api/admin/foil-inventory", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cardId: row.cardId, kind: row.kind, price: p, stock: row.stock }),
+        body: JSON.stringify({ cardId: row.cardId, kind: row.kind, price, stock: row.stock }),
       });
       updated++;
     }
 
-    setBulkResult(`Updated ${updated} variant(s), skipped ${skipped} (no ${SOURCE_LABEL[bulkFloorSource]} price).`);
+    const skipMsg = skipped > 0 ? `, skipped ${skipped} (no ${SOURCE_LABEL[bulkMode]} price)` : "";
+    setBulkResult(`Updated ${updated} variant(s)${skipMsg}.`);
     setBulkApplying(false);
     load();
   }
@@ -230,33 +261,71 @@ export default function AdminFoilsPage() {
         tile/page only shows the tiers that have a row here.
       </p>
 
-      {/* Bulk floor price */}
+      {/* Bulk price update */}
       <div className="mb-6 rounded-xl border border-zinc-800 bg-zinc-900 p-5">
-        <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-zinc-500">Apply Floor Price to All Foils</h2>
-        <p className="mb-3 text-xs text-zinc-500">
-          Set every stocked foil/alt-foil price to the chosen market floor. Variants with no price from that source are skipped.
+        <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-zinc-500">Bulk Price Update</h2>
+        <p className="mb-4 text-xs text-zinc-500">
+          Pick a set/rarity/variant, then apply a price to just those foils — everything outside the filter is untouched.
         </p>
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex rounded-full border border-zinc-700 p-0.5 text-sm">
-            {SOURCES.map((src) => (
-              <button
-                key={src}
-                onClick={() => setBulkFloorSource(src)}
-                className={`rounded-full px-3 py-1 ${bulkFloorSource === src ? "bg-purple-600 text-white" : "text-zinc-400"}`}
-              >
-                {SOURCE_LABEL[src]} floor
-              </button>
-            ))}
+        <div className="flex flex-wrap items-end gap-3">
+          <div>
+            <label className="mb-1 block text-xs text-zinc-500">Set</label>
+            <select value={bulkSet} onChange={(e) => setBulkSet(e.target.value)} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100">
+              <option value="All">All sets</option>
+              {sets.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
           </div>
+          <div>
+            <label className="mb-1 block text-xs text-zinc-500">Rarity</label>
+            <select value={bulkRarity} onChange={(e) => setBulkRarity(e.target.value)} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100">
+              <option value="All">All rarities</option>
+              {rarities.map((r) => <option key={r} value={r}>{r}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-zinc-500">Variant</label>
+            <select value={bulkKind} onChange={(e) => setBulkKind(e.target.value as "All" | VariantKind)} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100">
+              <option value="All">All variants</option>
+              <option value="foil">Foil</option>
+              <option value="altfoil">Alt Foil</option>
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-zinc-500">Set price to</label>
+            <div className="flex rounded-full border border-zinc-700 p-0.5 text-sm">
+              {(["fixed", "dyli", "minmax", "scg"] as const).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setBulkMode(mode)}
+                  className={`rounded-full px-3 py-1 ${bulkMode === mode ? "bg-purple-600 text-white" : "text-zinc-400"}`}
+                >
+                  {mode === "fixed" ? "Fixed amount" : `${SOURCE_LABEL[mode]} floor price`}
+                </button>
+              ))}
+            </div>
+          </div>
+          {bulkMode === "fixed" && (
+            <div>
+              <label className="mb-1 block text-xs text-zinc-500">Price</label>
+              <input
+                type="number"
+                step="0.01"
+                min={0}
+                value={bulkPrice}
+                onChange={(e) => setBulkPrice(e.target.value)}
+                className="w-24 rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100"
+              />
+            </div>
+          )}
           <button
-            onClick={applyBulkFloor}
-            disabled={bulkApplying || rows.length === 0}
+            onClick={applyBulkUpdate}
+            disabled={bulkApplying || bulkMatches.length === 0}
             className="rounded-lg bg-purple-600 px-5 py-2 text-sm font-medium text-white hover:bg-purple-500 disabled:bg-zinc-700 disabled:text-zinc-400"
           >
-            {bulkApplying ? "Applying…" : `Apply to ${rows.length} variant(s)`}
+            {bulkApplying ? "Applying…" : `Apply to ${bulkMatches.length} variant(s)`}
           </button>
         </div>
-        {bulkResult && <p className="mt-2 text-xs text-zinc-400">{bulkResult}</p>}
+        {bulkResult && <p className="mt-3 text-sm text-zinc-400">{bulkResult}</p>}
       </div>
 
       <section className="mb-10">
