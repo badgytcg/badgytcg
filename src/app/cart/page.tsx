@@ -51,9 +51,10 @@ export default function CartPage() {
   const artBackdrop = (
     <div
       aria-hidden
-      className="pointer-events-none fixed inset-0 -z-10 bg-cover bg-center opacity-50"
+      className="pointer-events-none fixed inset-0 -z-10 bg-cover opacity-50"
       style={{
         backgroundImage: "url(/backgrounds/cart-cooking-penguin.webp)",
+        backgroundPosition: "center 65%",
         filter: "saturate(1.4) brightness(0.9)",
         maskImage:
           "radial-gradient(ellipse 80% 100% at 50% 0%, black 0%, rgba(0,0,0,0.6) 50%, transparent 100%)",
