@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/lib/types";
+import { variantCardId } from "@/lib/catalog";
 
 type VariantKind = "foil" | "altfoil";
 const VARIANT_LABEL: Record<VariantKind, string> = { foil: "Foil", altfoil: "Alt Foil" };
@@ -21,14 +22,36 @@ interface VariantRow {
   stock: number;
 }
 
+interface MarketPriceEntry {
+  cardId: string;
+  source: string;
+  price: number;
+}
+
+// Market prices keyed by variantCardId → source → price
+type MarketMap = Map<string, Map<string, number>>;
+
+const SOURCES = ["dyli", "minmax", "scg"] as const;
+const SOURCE_LABEL: Record<string, string> = { dyli: "Dyli", minmax: "MinMax", scg: "SCG" };
+
 export default function AdminFoilsPage() {
   const [cards, setCards] = useState<Card[]>([]);
   const [rows, setRows] = useState<VariantRow[]>([]);
+  const [marketMap, setMarketMap] = useState<MarketMap>(new Map());
   const [query, setQuery] = useState("");
   const [addKind, setAddKind] = useState<VariantKind>("foil");
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [edits, setEdits] = useState<Record<string, { price: string; stock: string }>>({});
+
+  // SCG manual entry per row: key → price string being edited
+  const [scgEdits, setScgEdits] = useState<Record<string, string>>({});
+  const [scgSaving, setScgSaving] = useState<string | null>(null);
+
+  // Bulk floor apply
+  const [bulkFloorSource, setBulkFloorSource] = useState<"dyli" | "minmax" | "scg">("dyli");
+  const [bulkApplying, setBulkApplying] = useState(false);
+  const [bulkResult, setBulkResult] = useState<string | null>(null);
 
   const [bulkAddText, setBulkAddText] = useState("");
   const [bulkAdding, setBulkAdding] = useState(false);
@@ -42,9 +65,17 @@ export default function AdminFoilsPage() {
     Promise.all([
       fetch("/api/cards").then((r) => r.json()),
       fetch("/api/admin/foil-inventory").then((r) => r.json()),
-    ]).then(([cardsData, rowsData]) => {
+      fetch("/api/market-prices").then((r) => r.json()),
+    ]).then(([cardsData, rowsData, mktData]) => {
       setCards(cardsData.cards ?? []);
       setRows(rowsData.rows ?? []);
+
+      const map: MarketMap = new Map();
+      for (const mp of (mktData.prices ?? []) as MarketPriceEntry[]) {
+        if (!map.has(mp.cardId)) map.set(mp.cardId, new Map());
+        map.get(mp.cardId)!.set(mp.source, mp.price);
+      }
+      setMarketMap(map);
       setLoading(false);
     });
   }
@@ -76,6 +107,24 @@ export default function AdminFoilsPage() {
     setEdits((prev) => ({ ...prev, [editKey(cardId, kind)]: { ...getEdit(card, kind), [field]: value } }));
   }
 
+  function getMarketPrice(cardId: string, kind: VariantKind, source: string): number | null {
+    const vid = variantCardId(cardId, kind);
+    return marketMap.get(vid)?.get(source) ?? null;
+  }
+
+  function applyMarketPrice(card: Card, kind: VariantKind, source: string) {
+    const p = getMarketPrice(card.id, kind, source);
+    if (p == null) return;
+    setEdits((prev) => ({ ...prev, [editKey(card.id, kind)]: { ...getEdit(card, kind), price: p.toFixed(2) } }));
+  }
+
+  // Apply market price from a VariantRow (used in the stocked-variants table where card may or may not be loaded)
+  function applyMarketPriceFromRow(row: VariantRow, source: string) {
+    const card = cards.find((c) => c.id === row.cardId);
+    if (!card) return;
+    applyMarketPrice(card, row.kind, source);
+  }
+
   async function save(card: Card, kind: VariantKind) {
     const edit = getEdit(card, kind);
     const price = Number(edit.price);
@@ -92,9 +141,56 @@ export default function AdminFoilsPage() {
     setSavingId(null);
   }
 
+  async function saveScg(cardId: string, kind: VariantKind) {
+    const key = editKey(cardId, kind);
+    const raw = scgEdits[key];
+    const price = Number(raw);
+    if (!raw || !Number.isFinite(price) || price < 0) return;
+    setScgSaving(key);
+    const vid = variantCardId(cardId, kind);
+    await fetch("/api/admin/market-prices", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cardId: vid, source: "scg", price }),
+    });
+    // Update local marketMap optimistically
+    setMarketMap((prev) => {
+      const next = new Map(prev);
+      if (!next.has(vid)) next.set(vid, new Map());
+      next.get(vid)!.set("scg", price);
+      return next;
+    });
+    setScgEdits((prev) => { const n = { ...prev }; delete n[key]; return n; });
+    setScgSaving(null);
+  }
+
   async function removeVariant(cardId: string, kind: VariantKind) {
     await fetch(`/api/admin/foil-inventory/${cardId}?kind=${kind}`, { method: "DELETE" });
     setRows((prev) => prev.filter((r) => !(r.cardId === cardId && r.kind === kind)));
+  }
+
+  async function applyBulkFloor() {
+    let updated = 0;
+    let skipped = 0;
+    setBulkApplying(true);
+    setBulkResult(null);
+
+    for (const row of rows) {
+      const p = getMarketPrice(row.cardId, row.kind, bulkFloorSource);
+      if (p == null) { skipped++; continue; }
+      const card = cards.find((c) => c.id === row.cardId);
+      if (!card) { skipped++; continue; }
+      await fetch("/api/admin/foil-inventory", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cardId: row.cardId, kind: row.kind, price: p, stock: row.stock }),
+      });
+      updated++;
+    }
+
+    setBulkResult(`Updated ${updated} variant(s), skipped ${skipped} (no ${SOURCE_LABEL[bulkFloorSource]} price).`);
+    setBulkApplying(false);
+    load();
   }
 
   async function applyBulkAdd() {
@@ -127,12 +223,41 @@ export default function AdminFoilsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-10">
+    <div className="mx-auto max-w-6xl px-6 py-10">
       <h1 className="mb-2 text-2xl font-bold text-zinc-100">Foil &amp; Alt Foil Inventory</h1>
       <p className="mb-6 text-sm text-zinc-400">
         Each variant has its own separate stock/price from the regular card. The toggle on a card&apos;s
         tile/page only shows the tiers that have a row here.
       </p>
+
+      {/* Bulk floor price */}
+      <div className="mb-6 rounded-xl border border-zinc-800 bg-zinc-900 p-5">
+        <h2 className="mb-1 text-sm font-semibold uppercase tracking-wide text-zinc-500">Apply Floor Price to All Foils</h2>
+        <p className="mb-3 text-xs text-zinc-500">
+          Set every stocked foil/alt-foil price to the chosen market floor. Variants with no price from that source are skipped.
+        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex rounded-full border border-zinc-700 p-0.5 text-sm">
+            {SOURCES.map((src) => (
+              <button
+                key={src}
+                onClick={() => setBulkFloorSource(src)}
+                className={`rounded-full px-3 py-1 ${bulkFloorSource === src ? "bg-purple-600 text-white" : "text-zinc-400"}`}
+              >
+                {SOURCE_LABEL[src]} floor
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={applyBulkFloor}
+            disabled={bulkApplying || rows.length === 0}
+            className="rounded-lg bg-purple-600 px-5 py-2 text-sm font-medium text-white hover:bg-purple-500 disabled:bg-zinc-700 disabled:text-zinc-400"
+          >
+            {bulkApplying ? "Applying…" : `Apply to ${rows.length} variant(s)`}
+          </button>
+        </div>
+        {bulkResult && <p className="mt-2 text-xs text-zinc-400">{bulkResult}</p>}
+      </div>
 
       <section className="mb-10">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
@@ -150,6 +275,9 @@ export default function AdminFoilsPage() {
                   <th className="px-4 py-3">Variant</th>
                   <th className="px-4 py-3">Price</th>
                   <th className="px-4 py-3">Stock</th>
+                  <th className="px-4 py-3">Dyli</th>
+                  <th className="px-4 py-3">MinMax</th>
+                  <th className="px-4 py-3">SCG</th>
                   <th className="px-4 py-3">Actions</th>
                 </tr>
               </thead>
@@ -160,8 +288,13 @@ export default function AdminFoilsPage() {
                   const edit = card
                     ? getEdit(card, row.kind)
                     : edits[key] ?? { price: String(row.price), stock: String(row.stock) };
+                  const dyliP = getMarketPrice(row.cardId, row.kind, "dyli");
+                  const mmP = getMarketPrice(row.cardId, row.kind, "minmax");
+                  const scgP = getMarketPrice(row.cardId, row.kind, "scg");
+                  const scgEditVal = scgEdits[key];
+
                   return (
-                    <tr key={key} className="bg-zinc-950">
+                    <tr key={key} className="bg-zinc-950 align-top">
                       <td className="px-4 py-2 text-zinc-200">{row.name}</td>
                       <td className="px-4 py-2 text-zinc-500">{row.set}</td>
                       <td className="px-4 py-2 text-purple-300">{row.kindLabel}</td>
@@ -192,6 +325,76 @@ export default function AdminFoilsPage() {
                           className="w-20 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-zinc-100"
                         />
                       </td>
+
+                      {/* Dyli */}
+                      <td className="px-4 py-2">
+                        {dyliP != null ? (
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-zinc-300">${dyliP.toFixed(2)}</span>
+                            {card && (
+                              <button onClick={() => applyMarketPriceFromRow(row, "dyli")} className="text-[10px] text-purple-400 hover:text-purple-300">
+                                use →
+                              </button>
+                            )}
+                          </div>
+                        ) : <span className="text-zinc-700">—</span>}
+                      </td>
+
+                      {/* MinMax */}
+                      <td className="px-4 py-2">
+                        {mmP != null ? (
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-zinc-300">${mmP.toFixed(2)}</span>
+                            {card && (
+                              <button onClick={() => applyMarketPriceFromRow(row, "minmax")} className="text-[10px] text-purple-400 hover:text-purple-300">
+                                use →
+                              </button>
+                            )}
+                          </div>
+                        ) : <span className="text-zinc-700">—</span>}
+                      </td>
+
+                      {/* SCG — shows price + use button if exists, else manual entry */}
+                      <td className="px-4 py-2">
+                        {scgP != null && scgEditVal === undefined ? (
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-zinc-300">${scgP.toFixed(2)}</span>
+                            <div className="flex gap-2">
+                              {card && (
+                                <button onClick={() => applyMarketPriceFromRow(row, "scg")} className="text-[10px] text-purple-400 hover:text-purple-300">
+                                  use →
+                                </button>
+                              )}
+                              <button
+                                onClick={() => setScgEdits((prev) => ({ ...prev, [key]: scgP.toFixed(2) }))}
+                                className="text-[10px] text-zinc-600 hover:text-zinc-400"
+                              >
+                                edit
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="number"
+                              step="0.01"
+                              min={0}
+                              placeholder="0.00"
+                              value={scgEditVal ?? ""}
+                              onChange={(e) => setScgEdits((prev) => ({ ...prev, [key]: e.target.value }))}
+                              className="w-16 rounded border border-zinc-700 bg-zinc-900 px-1.5 py-1 text-xs text-zinc-100"
+                            />
+                            <button
+                              onClick={() => saveScg(row.cardId, row.kind)}
+                              disabled={scgSaving === key || !scgEditVal}
+                              className="rounded bg-purple-700 px-1.5 py-1 text-[10px] text-white hover:bg-purple-600 disabled:bg-zinc-700"
+                            >
+                              {scgSaving === key ? "…" : "Set"}
+                            </button>
+                          </div>
+                        )}
+                      </td>
+
                       <td className="px-4 py-2">
                         <div className="flex gap-2">
                           <button
@@ -302,14 +505,23 @@ export default function AdminFoilsPage() {
                   <th className="px-4 py-3">Card</th>
                   <th className="px-4 py-3">{VARIANT_LABEL[addKind]} Price</th>
                   <th className="px-4 py-3">{VARIANT_LABEL[addKind]} Stock</th>
+                  <th className="px-4 py-3">Dyli</th>
+                  <th className="px-4 py-3">MinMax</th>
+                  <th className="px-4 py-3">SCG</th>
                   <th className="px-4 py-3"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800">
                 {filtered.map((card) => {
                   const edit = getEdit(card, addKind);
+                  const key = editKey(card.id, addKind);
+                  const dyliP = getMarketPrice(card.id, addKind, "dyli");
+                  const mmP = getMarketPrice(card.id, addKind, "minmax");
+                  const scgP = getMarketPrice(card.id, addKind, "scg");
+                  const scgEditVal = scgEdits[key];
+
                   return (
-                    <tr key={card.id} className="bg-zinc-950">
+                    <tr key={card.id} className="bg-zinc-950 align-top">
                       <td className="px-4 py-2 text-zinc-200">{card.name}</td>
                       <td className="px-4 py-2">
                         <input
@@ -330,6 +542,70 @@ export default function AdminFoilsPage() {
                           className="w-20 rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-zinc-100"
                         />
                       </td>
+
+                      {/* Dyli */}
+                      <td className="px-4 py-2">
+                        {dyliP != null ? (
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-zinc-300">${dyliP.toFixed(2)}</span>
+                            <button onClick={() => applyMarketPrice(card, addKind, "dyli")} className="text-left text-[10px] text-purple-400 hover:text-purple-300">
+                              use →
+                            </button>
+                          </div>
+                        ) : <span className="text-zinc-700">—</span>}
+                      </td>
+
+                      {/* MinMax */}
+                      <td className="px-4 py-2">
+                        {mmP != null ? (
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-zinc-300">${mmP.toFixed(2)}</span>
+                            <button onClick={() => applyMarketPrice(card, addKind, "minmax")} className="text-left text-[10px] text-purple-400 hover:text-purple-300">
+                              use →
+                            </button>
+                          </div>
+                        ) : <span className="text-zinc-700">—</span>}
+                      </td>
+
+                      {/* SCG */}
+                      <td className="px-4 py-2">
+                        {scgP != null && scgEditVal === undefined ? (
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-zinc-300">${scgP.toFixed(2)}</span>
+                            <div className="flex gap-2">
+                              <button onClick={() => applyMarketPrice(card, addKind, "scg")} className="text-[10px] text-purple-400 hover:text-purple-300">
+                                use →
+                              </button>
+                              <button
+                                onClick={() => setScgEdits((prev) => ({ ...prev, [key]: scgP.toFixed(2) }))}
+                                className="text-[10px] text-zinc-600 hover:text-zinc-400"
+                              >
+                                edit
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="number"
+                              step="0.01"
+                              min={0}
+                              placeholder="0.00"
+                              value={scgEditVal ?? ""}
+                              onChange={(e) => setScgEdits((prev) => ({ ...prev, [key]: e.target.value }))}
+                              className="w-16 rounded border border-zinc-700 bg-zinc-900 px-1.5 py-1 text-xs text-zinc-100"
+                            />
+                            <button
+                              onClick={() => saveScg(card.id, addKind)}
+                              disabled={scgSaving === key || !scgEditVal}
+                              className="rounded bg-purple-700 px-1.5 py-1 text-[10px] text-white hover:bg-purple-600 disabled:bg-zinc-700"
+                            >
+                              {scgSaving === key ? "…" : "Set"}
+                            </button>
+                          </div>
+                        )}
+                      </td>
+
                       <td className="px-4 py-2">
                         <button
                           onClick={() => save(card, addKind)}
