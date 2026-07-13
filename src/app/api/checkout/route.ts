@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { getEffectiveCardById } from "@/lib/catalog";
 import { getStripe } from "@/lib/stripe";
+import { isRateLimited, clientKeyFor } from "@/lib/rateLimit";
 
 interface CheckoutLine {
   cardId: string;
@@ -14,6 +15,12 @@ export async function POST(request: Request) {
       { error: "Checkout isn't set up yet — payments are coming soon." },
       { status: 503 }
     );
+  }
+
+  // Anyone can hit checkout without signing in — cap session creation per IP
+  // so a bot can't spam Stripe checkout sessions.
+  if (isRateLimited(clientKeyFor(request, "checkout"), 10, 60_000)) {
+    return NextResponse.json({ error: "Too many checkout attempts — wait a minute and try again." }, { status: 429 });
   }
 
   const session = await auth();

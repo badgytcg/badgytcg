@@ -271,7 +271,19 @@ async function fetchScgPrices(): Promise<PriceRow[]> {
   return rows;
 }
 
-export async function refreshMarketPrices(): Promise<{ dyli: number; minmax: number; scg: number }> {
+// Only one refresh at a time — each run can launch a headless Chromium for
+// the SCG scrape, and concurrent runs would stack browser processes until
+// the container runs out of memory. Concurrent callers share the in-flight run.
+let inFlight: Promise<{ dyli: number; minmax: number; scg: number }> | null = null;
+
+export function refreshMarketPrices(): Promise<{ dyli: number; minmax: number; scg: number }> {
+  if (!inFlight) {
+    inFlight = doRefreshMarketPrices().finally(() => { inFlight = null; });
+  }
+  return inFlight;
+}
+
+async function doRefreshMarketPrices(): Promise<{ dyli: number; minmax: number; scg: number }> {
   // Drop the old two-row-per-card scheme (primary + secondary) now that we
   // only track the resale floor price under a single "dyli" source.
   await prisma.marketPrice.deleteMany({ where: { source: { in: ["dyli_primary", "dyli_secondary"] } } });
