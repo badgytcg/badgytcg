@@ -176,12 +176,15 @@
   <div class="copy">
     <span class="kicker">Deck Import</span>
     <h2>Paste your list.<br><span class="accent">Instant cart.</span></h2>
-    <p>Drop in any deck code — we match it to live stock and price the whole build.</p>
+    <p id="f4-sub">Drop in any deck code — plain text or JSON.</p>
   </div>
   <div class="browser"><div class="chrome">
       <div class="dot" style="background:#f87171"></div><div class="dot" style="background:#fbbf24"></div><div class="dot" style="background:#4ade80"></div>
       <div class="url">badgytcg.com/vibes/deck-import</div></div>
-    <div class="viewport"><img id="img-f4" src="assets/deck-import.png"></div>
+    <div class="viewport">
+      <img id="img-f4" src="assets/deck-import-paste.png">
+      <img id="img-f4b" src="assets/deck-import-result.png" style="position:absolute;inset:0;opacity:0;transition:opacity .5s ease">
+    </div>
   </div>
 </div>
 
@@ -245,7 +248,13 @@ function show(id) { $(id).classList.add("on"); }
 function hide(id) { $(id).classList.remove("on"); }
 
 // Ken Burns pans inside browser viewports: [startY, endY, startScale, endScale, durMs]
-const PANS = { "img-f1": [0, -300, 1.08, 1.0, 5400], "img-f2": [0, -180, 1.05, 1.12, 5400], "img-f3": [0, -140, 1.1, 1.0, 5000], "img-f4": [0, -160, 1.0, 1.1, 5000] };
+const PANS = {
+  "img-f1": [0, -300, 1.08, 1.0, 7300],
+  "img-f2": [0, -180, 1.05, 1.12, 7300],
+  "img-f3": [0, -140, 1.1, 1.0, 7300],
+  "img-f4": [0, -60, 1.0, 1.04, 3800],
+  "img-f4b": [-40, -420, 1.05, 1.0, 5400],
+};
 function startPan(id) {
   const [y0, y1, s0, s1, dur] = PANS[id];
   const img = $(id); const t0 = performance.now();
@@ -257,36 +266,43 @@ function startPan(id) {
   })(t0);
 }
 
-// ---------- the timeline ----------
-// hook words (fast beats)
+// ---------- the timeline (slower pacing for readability) ----------
+// hook words
 at(150,  () => $("fade").style.cssText += "transition:opacity .45s;opacity:0");
 at(300,  () => $("w1").classList.add("pop"));
-at(1050, () => { $("w1").classList.add("out"); });
-at(1200, () => $("w2").classList.add("pop"));
-at(1950, () => { $("w2").classList.add("out"); });
-at(2100, () => $("w3").classList.add("pop"));
-at(2950, () => { $("w3").classList.add("out"); });
-at(3150, () => $("w4").classList.add("pop"));
-at(4750, () => { $("w4").classList.add("out"); hide("s-hook"); });
+at(1500, () => { $("w1").classList.add("out"); });
+at(1700, () => $("w2").classList.add("pop"));
+at(2900, () => { $("w2").classList.add("out"); });
+at(3100, () => $("w3").classList.add("pop"));
+at(4400, () => { $("w3").classList.add("out"); });
+at(4650, () => $("w4").classList.add("pop"));
+at(7000, () => { $("w4").classList.add("out"); hide("s-hook"); });
 
-// logo
-at(4950, () => { show("s-logo"); $("burst").classList.add("prime"); });
-at(5050, () => { $("burst").classList.add("go"); $("logo-badge").classList.add("in"); $("logo-tag").classList.add("in"); });
-at(8300, () => hide("s-logo"));
+// logo — music drop hits here (7.4s)
+at(7200, () => { show("s-logo"); $("burst").classList.add("prime"); });
+at(7350, () => { $("burst").classList.add("go"); $("logo-badge").classList.add("in"); $("logo-tag").classList.add("in"); });
+at(11400, () => hide("s-logo"));
 
-// features
-at(8500,  () => { show("s-f1"); startPan("img-f1"); });
-at(13900, () => hide("s-f1"));
-at(14100, () => { show("s-f2"); startPan("img-f2"); });
-at(19500, () => hide("s-f2"));
-at(19700, () => { show("s-f3"); startPan("img-f3"); });
-at(24700, () => hide("s-f3"));
-at(24900, () => { show("s-f4"); startPan("img-f4"); });
-at(29900, () => hide("s-f4"));
+// features (7.5s each)
+at(11600, () => { show("s-f1"); startPan("img-f1"); });
+at(19100, () => hide("s-f1"));
+at(19300, () => { show("s-f2"); startPan("img-f2"); });
+at(26800, () => hide("s-f2"));
+at(27000, () => { show("s-f3"); startPan("img-f3"); });
+at(34500, () => hide("s-f3"));
+
+// deck import: paste phase → result phase (real BigBash deck code)
+at(34700, () => { show("s-f4"); startPan("img-f4"); });
+at(38700, () => {
+  $("img-f4b").style.opacity = "1";
+  startPan("img-f4b");
+  $("f4-sub").innerHTML = "52 / 52 in stock — <span style='color:#4ade80;font-weight:700'>full deck available, priced instantly.</span>";
+});
+at(44300, () => hide("s-f4"));
 
 // CTA
-at(30100, () => show("cta"));
-at(35300, () => { $("fade").style.cssText += ";transition:opacity .9s;opacity:1"; });
+at(44500, () => show("cta"));
+at(50800, () => { $("fade").style.cssText += ";transition:opacity .9s;opacity:1"; });
 
 // ---------- runner ----------
 window.__start = () => {
@@ -297,7 +313,7 @@ window.__start = () => {
     const t = now - t0;
     while (i < TL.length && TL[i].ms <= t) TL[i++].fn();
     driftCards(t);
-    if (t < 36500) requestAnimationFrame(tick); else window.__done = true;
+    if (t < 52200) requestAnimationFrame(tick); else window.__done = true;
   })(t0);
 };
 </script>
