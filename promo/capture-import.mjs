@@ -22,7 +22,9 @@ console.log("✓ deck-import-paste");
 
 await page.click('button:has-text("Check Deck")');
 await page.waitForTimeout(3000);
-await page.screenshot({ path: "promo/assets/deck-import-result.png" });
-console.log("✓ deck-import-result");
+// full-page shot so the promo can pan through the entire matched deck —
+// stats, card grid, in-stock list, price total, and buy buttons
+await page.screenshot({ path: "promo/assets/deck-import-result.png", fullPage: true });
+console.log("✓ deck-import-result (full page)");
 
 await browser.close();

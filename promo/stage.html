@@ -136,7 +136,7 @@
 <div class="scene feature" id="s-f1">
   <div class="copy">
     <span class="kicker">Browse Singles</span>
-    <h2>500+ singles.<br><span class="accent">Live market prices.</span></h2>
+    <h2>5000+ singles.<br><span class="accent">Live market prices.</span></h2>
     <p>Every card priced against Dyli, MinMax &amp; StarCityGames — updated daily.</p>
   </div>
   <div class="browser"><div class="chrome">
@@ -253,7 +253,8 @@ const PANS = {
   "img-f2": [0, -180, 1.05, 1.12, 7300],
   "img-f3": [0, -140, 1.1, 1.0, 7300],
   "img-f4": [0, -60, 1.0, 1.04, 3800],
-  "img-f4b": [-40, -420, 1.05, 1.0, 5400],
+  // full-page result (1920x1908 → ~1034px tall at browser width): pan top to bottom
+  "img-f4b": [0, -470, 1.0, 1.0, 5300],
 };
 function startPan(id) {
   const [y0, y1, s0, s1, dur] = PANS[id];
