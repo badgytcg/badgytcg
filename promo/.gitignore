@@ -1,0 +1,5 @@
+# generated artifacts — regenerate via capture.mjs / record.mjs / music.mjs
+assets/
+*.webm
+*.wav
+chk_*.png
