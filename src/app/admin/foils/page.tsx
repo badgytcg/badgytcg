@@ -32,8 +32,8 @@ interface MarketPriceEntry {
 // Market prices keyed by variantCardId → source → price
 type MarketMap = Map<string, Map<string, number>>;
 
-const SOURCES = ["dyli", "minmax", "scg"] as const;
-const SOURCE_LABEL: Record<string, string> = { dyli: "Dyli", minmax: "MinMax", scg: "SCG" };
+const SOURCES = ["dyli", "scg"] as const;
+const SOURCE_LABEL: Record<string, string> = { dyli: "Dyli", scg: "SCG" };
 
 export default function AdminFoilsPage() {
   const [cards, setCards] = useState<Card[]>([]);
@@ -53,7 +53,7 @@ export default function AdminFoilsPage() {
   const [bulkSet, setBulkSet] = useState("All");
   const [bulkRarity, setBulkRarity] = useState("All");
   const [bulkKind, setBulkKind] = useState<"All" | VariantKind>("All");
-  const [bulkMode, setBulkMode] = useState<"fixed" | "dyli" | "minmax" | "scg">("fixed");
+  const [bulkMode, setBulkMode] = useState<"fixed" | "dyli" | "scg">("fixed");
   const [bulkPrice, setBulkPrice] = useState("0.50");
   const [bulkApplying, setBulkApplying] = useState(false);
   const [bulkResult, setBulkResult] = useState<string | null>(null);
@@ -294,7 +294,7 @@ export default function AdminFoilsPage() {
           <div>
             <label className="mb-1 block text-xs text-zinc-500">Set price to</label>
             <div className="flex rounded-full border border-zinc-700 p-0.5 text-sm">
-              {(["fixed", "dyli", "minmax", "scg"] as const).map((mode) => (
+              {(["fixed", "dyli", "scg"] as const).map((mode) => (
                 <button
                   key={mode}
                   onClick={() => setBulkMode(mode)}
@@ -346,7 +346,6 @@ export default function AdminFoilsPage() {
                   <th className="px-4 py-3">Price</th>
                   <th className="px-4 py-3">Stock</th>
                   <th className="px-4 py-3">Dyli</th>
-                  <th className="px-4 py-3">MinMax</th>
                   <th className="px-4 py-3">SCG</th>
                   <th className="px-4 py-3">Actions</th>
                 </tr>
@@ -359,7 +358,6 @@ export default function AdminFoilsPage() {
                     ? getEdit(card, row.kind)
                     : edits[key] ?? { price: String(row.price), stock: String(row.stock) };
                   const dyliP = getMarketPrice(row.cardId, row.kind, "dyli");
-                  const mmP = getMarketPrice(row.cardId, row.kind, "minmax");
                   const scgP = getMarketPrice(row.cardId, row.kind, "scg");
                   const scgEditVal = scgEdits[key];
 
@@ -403,20 +401,6 @@ export default function AdminFoilsPage() {
                             <span className="text-zinc-300">${dyliP.toFixed(2)}</span>
                             {card && (
                               <button onClick={() => applyMarketPriceFromRow(row, "dyli")} className="text-[10px] text-purple-400 hover:text-purple-300">
-                                use →
-                              </button>
-                            )}
-                          </div>
-                        ) : <span className="text-zinc-700">—</span>}
-                      </td>
-
-                      {/* MinMax */}
-                      <td className="px-4 py-2">
-                        {mmP != null ? (
-                          <div className="flex flex-col gap-0.5">
-                            <span className="text-zinc-300">${mmP.toFixed(2)}</span>
-                            {card && (
-                              <button onClick={() => applyMarketPriceFromRow(row, "minmax")} className="text-[10px] text-purple-400 hover:text-purple-300">
                                 use →
                               </button>
                             )}
@@ -576,7 +560,6 @@ export default function AdminFoilsPage() {
                   <th className="px-4 py-3">{VARIANT_LABEL[addKind]} Price</th>
                   <th className="px-4 py-3">{VARIANT_LABEL[addKind]} Stock</th>
                   <th className="px-4 py-3">Dyli</th>
-                  <th className="px-4 py-3">MinMax</th>
                   <th className="px-4 py-3">SCG</th>
                   <th className="px-4 py-3"></th>
                 </tr>
@@ -586,7 +569,6 @@ export default function AdminFoilsPage() {
                   const edit = getEdit(card, addKind);
                   const key = editKey(card.id, addKind);
                   const dyliP = getMarketPrice(card.id, addKind, "dyli");
-                  const mmP = getMarketPrice(card.id, addKind, "minmax");
                   const scgP = getMarketPrice(card.id, addKind, "scg");
                   const scgEditVal = scgEdits[key];
 
@@ -619,18 +601,6 @@ export default function AdminFoilsPage() {
                           <div className="flex flex-col gap-0.5">
                             <span className="text-zinc-300">${dyliP.toFixed(2)}</span>
                             <button onClick={() => applyMarketPrice(card, addKind, "dyli")} className="text-left text-[10px] text-purple-400 hover:text-purple-300">
-                              use →
-                            </button>
-                          </div>
-                        ) : <span className="text-zinc-700">—</span>}
-                      </td>
-
-                      {/* MinMax */}
-                      <td className="px-4 py-2">
-                        {mmP != null ? (
-                          <div className="flex flex-col gap-0.5">
-                            <span className="text-zinc-300">${mmP.toFixed(2)}</span>
-                            <button onClick={() => applyMarketPrice(card, addKind, "minmax")} className="text-left text-[10px] text-purple-400 hover:text-purple-300">
                               use →
                             </button>
                           </div>

@@ -8,12 +8,12 @@ import { colorCategory } from "@/lib/colors";
 import { logAdminAction } from "@/lib/audit";
 import { isRateLimited, clientKeyFor } from "@/lib/rateLimit";
 
-const FLOOR_SOURCES = new Set(["dyli", "minmax", "scg"]);
-const SOURCE_LABEL: Record<string, string> = { dyli: "Dyli", minmax: "MinMax", scg: "StarCityGames" };
+const FLOOR_SOURCES = new Set(["dyli", "scg"]);
+const SOURCE_LABEL: Record<string, string> = { dyli: "Dyli", scg: "StarCityGames" };
 
 // Bulk price update scoped to a set/rarity filter — never touches cards
 // outside that filter. mode "fixed" applies a flat price to every match;
-// mode "<source>" (dyli/minmax/scg) sets each matched card's price to its
+// mode "<source>" (dyli/scg) sets each matched card's price to its
 // own current floor price from that market source (skipping any card that
 // doesn't have one), so two cards in the same batch can end up with
 // different prices.
@@ -31,12 +31,12 @@ export async function POST(request: Request) {
     set?: string | null;
     rarity?: string | null;
     color?: string | null;
-    mode: "fixed" | "dyli" | "minmax" | "scg";
+    mode: "fixed" | "dyli" | "scg";
     price?: number;
   };
 
   if (mode !== "fixed" && !FLOOR_SOURCES.has(mode)) {
-    return NextResponse.json({ error: "mode must be 'fixed', 'dyli', 'minmax', or 'scg'" }, { status: 400 });
+    return NextResponse.json({ error: "mode must be 'fixed', 'dyli', or 'scg'" }, { status: 400 });
   }
   if (mode === "fixed" && (typeof price !== "number" || price < 0)) {
     return NextResponse.json({ error: "price is required for mode 'fixed'" }, { status: 400 });

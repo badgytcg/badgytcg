@@ -41,7 +41,7 @@ interface Overview {
   budgetPicks: SimpleCard[];
 }
 
-const SOURCE_LABEL: Record<string, string> = { dyli: "Dyli", minmax: "MinMax", site: "BadgyTCG" };
+const SOURCE_LABEL: Record<string, string> = { dyli: "Dyli", scg: "StarCityGames", site: "BadgyTCG" };
 const RARITY_COLOR: Record<string, string> = {
   Common: "text-zinc-400",
   Uncommon: "text-blue-400",
@@ -198,7 +198,7 @@ export default function MarketOverviewPage() {
           </p>
           <p className="mt-1 text-xs text-zinc-500">
             {overview.hasEnoughHistory
-              ? "From accumulated Dyli & MinMax history"
+              ? "From accumulated Dyli & StarCityGames history"
               : "Building up — check back after a few price refreshes"}
           </p>
         </div>

@@ -24,14 +24,12 @@ const COL_LABEL: Record<ColKey, string> = { base: "Base", foil: "Foil", altfoil:
 
 const SOURCE_LOGO: Record<string, { src: string; width: number; height: number }> = {
   dyli: { src: "/logos/dyli-logo.png", width: 48, height: 18 },
-  minmax: { src: "/logos/minmax-logo.png", width: 44, height: 18 },
   scg: { src: "/logos/scg-logo.png", width: 48, height: 18 },
 };
 
 const SOURCE_LABEL: Record<string, string> = {
   site: "BadgyTCG",
   dyli: "Dyli",
-  minmax: "MinMax",
   scg: "StarCityGames",
 };
 
@@ -39,7 +37,6 @@ const DYLI_AFFILIATE = "https://www.dyli.io/?code=km7g2673";
 
 const SOURCE_ACCENT: Record<string, string> = {
   dyli: "bg-yellow-400",
-  minmax: "bg-purple-500",
   scg: "bg-blue-500",
 };
 
@@ -51,7 +48,6 @@ interface HistoryPoint {
 
 const CHART_COLOR: Record<string, string> = {
   dyli: "#facc15",
-  minmax: "#a855f7",
   scg: "#3b82f6",
   site: "#34d399",
 };

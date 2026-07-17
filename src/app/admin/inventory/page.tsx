@@ -14,10 +14,9 @@ const SET_ORDER = ["Enter the Huddle", "Legend of the Lils", "Birb & Pengu"];
 const RARITY_ORDER = ["Common", "Uncommon", "Rare", "Epic"];
 
 type SortKey = "name-asc" | "name-desc" | "price-asc" | "price-desc" | "stock-asc" | "stock-desc";
-type BulkMode = "fixed" | "dyli" | "minmax" | "scg";
+type BulkMode = "fixed" | "dyli" | "scg";
 const FLOOR_MODE_LABEL: Record<Exclude<BulkMode, "fixed">, string> = {
   dyli: "Dyli floor price",
-  minmax: "MinMax floor price",
   scg: "StarCity floor price",
 };
 
@@ -212,7 +211,7 @@ export default function AdminInventoryPage() {
     try {
       const res = await fetch("/api/admin/market-prices/refresh", { method: "POST" });
       const data = await res.json();
-      setRefreshResult(`Matched ${data.dyli} Dyli, ${data.minmax} MinMax, and ${data.scg} SCG price(s).`);
+      setRefreshResult(`Matched ${data.dyli} Dyli and ${data.scg} SCG price(s).`);
     } catch {
       setRefreshResult("Refresh failed — try again in a moment.");
     }
@@ -580,7 +579,7 @@ export default function AdminInventoryPage() {
               >
                 Fixed amount
               </button>
-              {(["dyli", "minmax", "scg"] as const).map((mode) => (
+              {(["dyli", "scg"] as const).map((mode) => (
                 <button
                   key={mode}
                   onClick={() => setBulkMode(mode)}

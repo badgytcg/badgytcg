@@ -40,11 +40,6 @@ const byNameAndSet = new Map(
 const bySetCodeAndNumber = new Map(
   cards.map((c) => [`${c.setCode.toLowerCase()}::${c.cardNumber}`, c])
 );
-const byNameOnly = new Map(cards.map((c) => [normalizeCardKey(c.name), c]));
-
-// MinMax's product-title tag (e.g. "(LOL88)") uses its own short codes,
-// which don't all match our setCode field 1:1.
-const MINMAX_SET_TAG_MAP: Record<string, string> = { eth: "eth", lol: "lotl", bap: "bap" };
 
 // SCG category pages we scrape (one per set) — these render their product
 // grid client-side via a "Hawk" search widget, so a plain fetch only gets an
@@ -100,58 +95,6 @@ async function fetchDyliPrices(): Promise<PriceRow[]> {
     }
 
     if (!data.pagination?.has_more) break;
-    page++;
-  }
-
-  return rows;
-}
-
-// --- MinMax Games: public Shopify storefront JSON feed, paginated. ---
-async function fetchMinMaxPrices(): Promise<PriceRow[]> {
-  const rows: PriceRow[] = [];
-  let page = 1;
-  const maxPages = 10; // ~684 products at limit 250 is ~3 pages
-
-  while (page <= maxPages) {
-    const res = await fetch(
-      `https://www.minmaxgamesfab.com/collections/vibes/products.json?limit=250&page=${page}`
-    );
-    if (!res.ok) break;
-    const data = await res.json();
-    const products = data.products ?? [];
-    if (products.length === 0) break;
-
-    for (const product of products) {
-      const title = (product.title as string).trim();
-      // Most base-printing titles end with a tag like "(ETH137)" or
-      // "(LOL88)", but plenty (especially Birb & Pengu) have none at all —
-      // fall back to a plain name match for those.
-      const tagMatch = title.match(/\(([A-Za-z]+)(\d+)\)/);
-      const remaining = tagMatch ? title.replace(tagMatch[0], "").trim() : title;
-
-      const { kind, cleaned, skip } = detectVariant(remaining);
-      if (skip) continue;
-
-      let card = tagMatch
-        ? bySetCodeAndNumber.get(`${MINMAX_SET_TAG_MAP[tagMatch[1].toLowerCase()] ?? ""}::${tagMatch[2]}`)
-        : undefined;
-      if (!card) card = byNameOnly.get(normalizeCardKey(cleaned));
-      if (!card) continue;
-      const cardId = kind ? variantCardId(card.id, kind) : card.id;
-
-      const price = Number(product.variants?.[0]?.price);
-      if (!Number.isFinite(price)) continue;
-
-      rows.push({
-        cardId,
-        source: "minmax",
-        label: "MinMax Games",
-        price,
-        currency: "USD",
-        url: `https://www.minmaxgamesfab.com/products/${product.handle}`,
-      });
-    }
-
     page++;
   }
 
@@ -262,7 +205,7 @@ async function fetchScgPrices(): Promise<PriceRow[]> {
   } catch {
     // Headless browser unavailable (e.g. chromium binary not installed in
     // this environment) — skip SCG for this refresh rather than failing
-    // the whole job; Dyli/MinMax still update normally.
+    // the whole job; Dyli still updates normally.
     return [];
   } finally {
     await browser?.close();
@@ -274,22 +217,24 @@ async function fetchScgPrices(): Promise<PriceRow[]> {
 // Only one refresh at a time — each run can launch a headless Chromium for
 // the SCG scrape, and concurrent runs would stack browser processes until
 // the container runs out of memory. Concurrent callers share the in-flight run.
-let inFlight: Promise<{ dyli: number; minmax: number; scg: number }> | null = null;
+let inFlight: Promise<{ dyli: number; scg: number }> | null = null;
 
-export function refreshMarketPrices(): Promise<{ dyli: number; minmax: number; scg: number }> {
+export function refreshMarketPrices(): Promise<{ dyli: number; scg: number }> {
   if (!inFlight) {
     inFlight = doRefreshMarketPrices().finally(() => { inFlight = null; });
   }
   return inFlight;
 }
 
-async function doRefreshMarketPrices(): Promise<{ dyli: number; minmax: number; scg: number }> {
+async function doRefreshMarketPrices(): Promise<{ dyli: number; scg: number }> {
   // Drop the old two-row-per-card scheme (primary + secondary) now that we
   // only track the resale floor price under a single "dyli" source.
   await prisma.marketPrice.deleteMany({ where: { source: { in: ["dyli_primary", "dyli_secondary"] } } });
+  // MinMax no longer sells Vibes TCG — stop refreshing/showing that source.
+  await prisma.marketPrice.deleteMany({ where: { source: "minmax" } });
 
-  const [dyliRows, minmaxRows, scgRows] = await Promise.all([fetchDyliPrices(), fetchMinMaxPrices(), fetchScgPrices()]);
-  const allRows = [...dyliRows, ...minmaxRows, ...scgRows];
+  const [dyliRows, scgRows] = await Promise.all([fetchDyliPrices(), fetchScgPrices()]);
+  const allRows = [...dyliRows, ...scgRows];
 
   // A card can match more than one listing on a given source (e.g. two
   // separate Dyli drops for the same printing) — keep only the cheapest.
@@ -329,16 +274,18 @@ async function doRefreshMarketPrices(): Promise<{ dyli: number; minmax: number; 
     data: siteCards.filter((c) => c.stock > 0).map((c) => ({ cardId: c.id, source: "site", price: c.price, currency: "USD" })),
   });
 
-  return { dyli: dyliRows.length, minmax: minmaxRows.length, scg: scgRows.length };
+  return { dyli: dyliRows.length, scg: scgRows.length };
 }
 
 export async function getMarketPrices(cardId: string) {
-  return prisma.marketPrice.findMany({ where: { cardId }, orderBy: { source: "asc" } });
+  // MinMax no longer sells Vibes TCG — excluded from the storefront.
+  return prisma.marketPrice.findMany({ where: { cardId, source: { not: "minmax" } }, orderBy: { source: "asc" } });
 }
 
 export async function getPriceHistory(cardId: string) {
+  // MinMax no longer sells Vibes TCG — excluded from the storefront.
   return prisma.marketPriceHistory.findMany({
-    where: { cardId },
+    where: { cardId, source: { not: "minmax" } },
     orderBy: { recordedAt: "asc" },
   });
 }

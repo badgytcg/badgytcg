@@ -73,9 +73,10 @@ export async function getMarketOverview(): Promise<MarketOverview> {
   const inStock = cards.filter((c) => c.stock > 0 && !c.id.startsWith("special::"));
   const totalCatalog = allSeedCards.length;
 
-  // Latest market price per (cardId, source)
+  // Latest market price per (cardId, source) — MinMax no longer sells
+  // Vibes TCG, so it's excluded from movers/deals here too.
   const history = await prisma.marketPriceHistory.findMany({
-    where: { source: { in: ["dyli", "minmax"] } },
+    where: { source: { in: ["dyli", "scg"] } },
     orderBy: { recordedAt: "asc" },
   });
 
@@ -134,13 +135,13 @@ export async function getMarketOverview(): Promise<MarketOverview> {
   for (const card of inStock) {
     if (card.price <= 0) continue;
     const dyliPrice = latestByKey.get(`${card.id}::dyli`);
-    const minmaxPrice = latestByKey.get(`${card.id}::minmax`);
-    const candidates = [dyliPrice, minmaxPrice].filter((p): p is number => p != null && p > 0);
+    const scgPrice = latestByKey.get(`${card.id}::scg`);
+    const candidates = [dyliPrice, scgPrice].filter((p): p is number => p != null && p > 0);
     if (candidates.length === 0) continue;
     const lowestMarket = Math.min(...candidates);
     const savingsPct = ((lowestMarket - card.price) / lowestMarket) * 100;
     if (savingsPct >= 5) {
-      const bestSource = dyliPrice === lowestMarket ? "dyli" : "minmax";
+      const bestSource = dyliPrice === lowestMarket ? "dyli" : "scg";
       deals.push({
         cardId: card.id,
         cardName: card.name,

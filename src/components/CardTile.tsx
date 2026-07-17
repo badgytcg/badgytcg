@@ -38,7 +38,6 @@ function ringFor(card: Card): string {
 
 const SOURCE_LOGO: Record<string, { src: string; width: number; height: number }> = {
   dyli: { src: "/logos/dyli-logo.png", width: 38, height: 14 },
-  minmax: { src: "/logos/minmax-logo.png", width: 36, height: 14 },
   scg: { src: "/logos/scg-logo.png", width: 38, height: 14 },
 };
 
