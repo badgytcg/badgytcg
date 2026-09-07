@@ -63,11 +63,15 @@ export default function AdminOrdersPage() {
     if (!subject.trim() || !message.trim()) return;
     setSending(true);
     setSendResult(null);
+    // Safety net: never let the button hang forever if the server stalls.
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 30000);
     try {
       const res = await fetch(`/api/admin/orders/${id}/message`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ subject, message }),
+        signal: controller.signal,
       });
       const data = await res.json();
       if (!res.ok) {
@@ -75,10 +79,16 @@ export default function AdminOrdersPage() {
       } else {
         setSendResult(`Sent to ${data.to}.`);
       }
-    } catch {
-      setSendResult("Couldn't reach the server. Try again.");
+    } catch (err) {
+      setSendResult(
+        err instanceof DOMException && err.name === "AbortError"
+          ? "Timed out waiting for Gmail. Try again — if it keeps timing out, the mail server may be unreachable."
+          : "Couldn't reach the server. Try again."
+      );
+    } finally {
+      clearTimeout(timer);
+      setSending(false);
     }
-    setSending(false);
   }
 
   if (loading) {

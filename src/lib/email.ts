@@ -10,8 +10,17 @@ function getTransport() {
   const pass = process.env.GMAIL_APP_PASSWORD;
   if (!user || !pass) return null;
   return nodemailer.createTransport({
-    service: "gmail",
+    // Explicit host/port (587 STARTTLS) is more reliable on hosts where the
+    // implicit-TLS 465 connection stalls. Timeouts ensure a blocked SMTP
+    // connection fails fast instead of hanging the request forever.
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    requireTLS: true,
     auth: { user, pass },
+    connectionTimeout: 15000, // ms to establish TCP
+    greetingTimeout: 10000, // ms to wait for SMTP greeting
+    socketTimeout: 20000, // ms of inactivity before aborting
   });
 }
 
@@ -43,7 +52,9 @@ export async function sendEmail(opts: {
     // Gmail auth failures look like "535-5.7.8 Username and Password not accepted"
     const friendly = /invalid login|username and password not accepted|535/i.test(raw)
       ? "Gmail rejected the login — check GMAIL_APP_PASSWORD (must be a 16-char App Password with no spaces) and that GMAIL_USER matches the account."
-      : `Gmail send failed: ${raw}`;
+      : /timeout|etimedout|econnrefused|econnreset|greeting/i.test(raw)
+        ? "Couldn't reach Gmail's mail server (connection timed out). This is usually the host blocking outbound SMTP — try again, and if it keeps happening the mail port may be blocked."
+        : `Gmail send failed: ${raw}`;
     console.error("[email] send failed:", raw);
     throw new Error(friendly);
   }
