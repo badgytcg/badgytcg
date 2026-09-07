@@ -61,7 +61,9 @@ export async function sendInventoryReport(): Promise<{ sent: boolean; detail: st
   const date = new Date().toLocaleDateString("en-US", { timeZone: "America/Los_Angeles" });
   const isoDate = new Date().toISOString().slice(0, 10);
 
-  const sent = await sendEmail({
+  let sent: boolean;
+  try {
+    sent = await sendEmail({
     to,
     subject: `[BadgyTCG] Daily Inventory Report — ${date}`,
     text: [
@@ -87,7 +89,11 @@ export async function sendInventoryReport(): Promise<{ sent: boolean; detail: st
         contentType: "text/csv",
       },
     ],
-  });
+    });
+  } catch (err) {
+    // Don't let a Gmail send failure crash the daily scheduler.
+    return { sent: false, detail: err instanceof Error ? err.message : "email send failed" };
+  }
 
   return { sent, detail: `${all.length} listings, $${totalValue.toFixed(2)} total value` };
 }

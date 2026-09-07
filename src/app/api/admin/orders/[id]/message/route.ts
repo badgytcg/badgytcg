@@ -35,7 +35,16 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: "This order has no customer email on file" }, { status: 400 });
   }
 
-  const sent = await sendEmail({ to, subject, text: message });
+  let sent: boolean;
+  try {
+    sent = await sendEmail({ to, subject, text: message });
+  } catch (err) {
+    // Credentials present but the send was rejected — relay the real reason.
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Gmail send failed" },
+      { status: 502 }
+    );
+  }
   if (!sent) {
     return NextResponse.json({ error: "Email isn't configured (GMAIL_USER/GMAIL_APP_PASSWORD missing)" }, { status: 503 });
   }

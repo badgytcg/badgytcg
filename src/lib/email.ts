@@ -26,14 +26,27 @@ export async function sendEmail(opts: {
     console.warn("[email] GMAIL_USER/GMAIL_APP_PASSWORD not set — skipping send:", opts.subject);
     return false;
   }
-  await transport.sendMail({
-    from: `BadgyTCG <${process.env.GMAIL_USER}>`,
-    to: opts.to,
-    subject: opts.subject,
-    text: opts.text,
-    attachments: opts.attachments,
-  });
-  return true;
+  try {
+    await transport.sendMail({
+      from: `BadgyTCG <${process.env.GMAIL_USER}>`,
+      to: opts.to,
+      subject: opts.subject,
+      text: opts.text,
+      attachments: opts.attachments,
+    });
+    return true;
+  } catch (err) {
+    // Credentials are set but Gmail rejected the send (bad App Password, 2FA
+    // off, "from" mismatch, etc.). Surface the real reason instead of letting
+    // the caller crash with an opaque 500.
+    const raw = err instanceof Error ? err.message : String(err);
+    // Gmail auth failures look like "535-5.7.8 Username and Password not accepted"
+    const friendly = /invalid login|username and password not accepted|535/i.test(raw)
+      ? "Gmail rejected the login — check GMAIL_APP_PASSWORD (must be a 16-char App Password with no spaces) and that GMAIL_USER matches the account."
+      : `Gmail send failed: ${raw}`;
+    console.error("[email] send failed:", raw);
+    throw new Error(friendly);
+  }
 }
 
 // Where order-placed alerts go — defaults to the first admin email so no
