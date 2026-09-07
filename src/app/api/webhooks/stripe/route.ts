@@ -72,6 +72,15 @@ export async function POST(request: Request) {
     await decrementStockAfterPurchase(item.cardId, item.qty);
   }
 
+  // If this checkout was paying off a private bill, mark it paid.
+  const billId = session.metadata?.billId;
+  if (billId) {
+    await prisma.bill.updateMany({
+      where: { id: billId, status: "open" },
+      data: { status: "paid", paidAt: new Date() },
+    });
+  }
+
   const alertTo = adminAlertEmail();
   if (alertTo) {
     const buyerEmail = order.guestEmail ?? session.customer_details?.email ?? "(signed-in user)";

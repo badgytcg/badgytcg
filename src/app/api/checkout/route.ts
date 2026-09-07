@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { getEffectiveCardById } from "@/lib/catalog";
 import { getStripe } from "@/lib/stripe";
 import { isRateLimited, clientKeyFor } from "@/lib/rateLimit";
+import { buildShippingOptions } from "@/lib/shipping";
 
 interface CheckoutLine {
   cardId: string;
@@ -65,62 +66,17 @@ export async function POST(request: Request) {
 
   const origin = request.headers.get("origin") ?? `https://${request.headers.get("host")}`;
 
-  // Shipping is sized by card count — a heavy order costs real postage no
-  // matter what it's worth. No free-shipping tier: orders can ship from two
-  // different consigners, so we always charge postage.
-  //  - Over 50 cards: small box, flat $8.99 tracked
-  //  - 13–50 cards (or $20+ subtotal): bubble mailer, $4.99 tracked
-  //  - ≤12 cards under $20: PWE option ($1.29, untracked) alongside tracked
   const subtotalCents = lineItems.reduce(
     (sum, li) => sum + li.price_data.unit_amount * li.quantity,
     0
   );
   const totalCards = lineItems.reduce((sum, li) => sum + li.quantity, 0);
 
-  const trackedEstimate = {
-    minimum: { unit: "business_day" as const, value: 3 },
-    maximum: { unit: "business_day" as const, value: 7 },
-  };
-
-  const boxOption = {
-    shipping_rate_data: {
-      display_name: "USPS Ground Advantage — Small Box (tracked)",
-      type: "fixed_amount" as const,
-      fixed_amount: { amount: 899, currency: "usd" },
-      delivery_estimate: trackedEstimate,
-    },
-  };
-  const trackedOption = {
-    shipping_rate_data: {
-      display_name: "USPS Ground Advantage — Bubble Mailer (tracked)",
-      type: "fixed_amount" as const,
-      fixed_amount: { amount: 499, currency: "usd" },
-      delivery_estimate: trackedEstimate,
-    },
-  };
-  const pweOption = {
-    shipping_rate_data: {
-      display_name: "Plain White Envelope (no tracking)",
-      type: "fixed_amount" as const,
-      fixed_amount: { amount: 129, currency: "usd" },
-      delivery_estimate: {
-        minimum: { unit: "business_day" as const, value: 4 },
-        maximum: { unit: "business_day" as const, value: 10 },
-      },
-    },
-  };
-  const shippingOptions =
-    totalCards > 50
-      ? [boxOption]
-      : totalCards <= 12 && subtotalCents < 2000
-        ? [pweOption, trackedOption]
-        : [trackedOption];
-
   const checkoutSession = await getStripe().checkout.sessions.create({
     mode: "payment",
     line_items: lineItems,
     shipping_address_collection: { allowed_countries: ["US"] },
-    shipping_options: shippingOptions,
+    shipping_options: buildShippingOptions(subtotalCents, totalCards),
     success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/cart`,
     client_reference_id: session?.user?.id,

@@ -24,8 +24,37 @@ model User {
   sessions      Session[]
   wishlistItems WishlistItem[]
   orders        Order[]
+  bills         Bill[]
 
   createdAt DateTime @default(now())
+}
+
+// An admin-created private invoice: cards we've sourced for a specific
+// customer, offered at the store price for them to pay (Stripe) or add to
+// cart. Shows on the customer's account page.
+model Bill {
+  id              String     @id @default(cuid())
+  userId          String
+  status          String     @default("open") // open | paid | cancelled
+  note            String?
+  totalCents      Int
+  stripeSessionId String?
+  createdAt       DateTime   @default(now())
+  paidAt          DateTime?
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items BillItem[]
+}
+
+model BillItem {
+  id         String @id @default(cuid())
+  billId     String
+  cardId     String
+  cardName   String
+  qty        Int
+  priceCents Int
+
+  bill Bill @relation(fields: [billId], references: [id], onDelete: Cascade)
 }
 
 model Account {

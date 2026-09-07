@@ -9,7 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import { cards as staticCards, getCardById as getStaticCardById } from "@/data/cards";
 import { Card, CartLine, WishlistLine } from "@/lib/types";
 
@@ -73,6 +73,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   // the base catalog, so fetch+cache them individually as they show up.
   const [extraCards, setExtraCards] = useState<Record<string, Card>>({});
   const [hydrated, setHydrated] = useState(false);
+  // Guests must sign in for a request to reach us (otherwise it only lives in
+  // their browser and we never see it). Holds the pending request while the
+  // sign-in prompt is shown.
+  const [authPromptLines, setAuthPromptLines] = useState<WishlistLine[] | null>(null);
 
   // Cart stays local-only for now (no checkout yet to attach it to an account).
   useEffect(() => {
@@ -193,8 +197,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       });
       await refetchWishlist();
     } else {
-      setWishlist((prev) => [...prev, ...lines]);
+      // Guest — prompt sign-in. The request is stashed only if they proceed,
+      // so nothing gets silently saved to a browser we can't see.
+      setAuthPromptLines(lines);
     }
+  }
+
+  function confirmAuthPrompt() {
+    if (!authPromptLines) return;
+    // Stash into the guest wishlist key so the sign-in migration effect
+    // (above) pushes it to the account right after the OAuth round-trip.
+    const existing = load<WishlistLine[]>(WISHLIST_KEY, []);
+    try {
+      window.localStorage.setItem(WISHLIST_KEY, JSON.stringify([...existing, ...authPromptLines]));
+    } catch { /* ignore quota/private-mode */ }
+    setAuthPromptLines(null);
+    signIn("google", { callbackUrl: typeof window !== "undefined" ? window.location.href : "/" });
   }
 
   async function removeFromWishlist(index: number) {
@@ -252,6 +270,28 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
+      {authPromptLines && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={() => setAuthPromptLines(null)}>
+          <div className="w-full max-w-sm rounded-2xl border border-zinc-700 bg-zinc-900 p-6 text-center shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-bold text-zinc-100">Sign in to send your request</h2>
+            <p className="mt-2 text-sm text-zinc-400">
+              Card &amp; deck requests are saved to your BadgyTCG profile so we can source them and message you when they&apos;re ready. Create a free profile (or sign in) to continue.
+            </p>
+            <button
+              onClick={confirmAuthPrompt}
+              className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-purple-600 py-2.5 text-sm font-semibold text-white hover:bg-purple-500"
+            >
+              Continue with Google
+            </button>
+            <button
+              onClick={() => setAuthPromptLines(null)}
+              className="mt-2 w-full rounded-lg border border-zinc-700 py-2 text-sm text-zinc-400 hover:text-zinc-200"
+            >
+              Not now
+            </button>
+          </div>
+        </div>
+      )}
     </StoreContext.Provider>
   );
 }

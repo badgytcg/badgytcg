@@ -11,6 +11,7 @@ const TABS = [
   { name: "Graded & Promos", href: "/admin/special" },
   { name: "Scan", href: "/admin/scan" },
   { name: "Orders", href: "/admin/orders" },
+  { name: "Bills", href: "/admin/bills" },
   { name: "Consigners", href: "/admin/consigners" },
   { name: "Sales Report", href: "/admin/consigner-report" },
   { name: "Featured Decks", href: "/admin/decks" },
