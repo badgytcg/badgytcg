@@ -80,15 +80,35 @@ async function fetchDyliPrices(): Promise<PriceRow[]> {
       if (!card) continue;
       const cardId = kind ? variantCardId(card.id, kind) : card.id;
 
-      // Only the resale floor price — that's the actual "what would I pay a
-      // collector for this" market price, vs. Dyli's own primary listing.
-      if (item.pricing?.secondary?.floor_price) {
+      // Price priority:
+      //  1. secondary.floor_price — the resale/collector market ("what would I
+      //     pay another collector"). Best signal when it exists.
+      //  2. primary.floor_price / primary.price — Dyli's own direct single
+      //     listing. Many cards (esp. Holo variants) only exist here, so
+      //     without this fallback they'd show no Dyli price at all.
+      // Dyli exposes no "last sale" field, so anything with neither is left
+      // with no row (null) rather than invented.
+      const pricing = item.pricing ?? {};
+      const secondaryFloor = pricing.secondary?.floor_price;
+      // "Fair Drop Entry" gacha listings aren't real card prices — they're a
+      // flat entry fee with an absurd quantity_available (~99,999,999). Skip
+      // those so the primary fallback only uses genuine single listings.
+      const isDropEntry =
+        /fair drop|drop entry/i.test(item.name as string) ||
+        Number(pricing.primary?.quantity_available) > 10000;
+      const primaryPrice = isDropEntry ? undefined : (pricing.primary?.floor_price ?? pricing.primary?.price);
+
+      const price = secondaryFloor ?? primaryPrice;
+      if (price) {
+        const currency = secondaryFloor
+          ? pricing.secondary?.currency ?? "USDC.e"
+          : pricing.primary?.currency ?? "USD";
         rows.push({
           cardId,
           source: "dyli",
           label: "Dyli",
-          price: item.pricing.secondary.floor_price,
-          currency: item.pricing.secondary.currency ?? "USDC.e",
+          price,
+          currency,
           url: item.marketplace_url ?? null,
         });
       }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/lib/types";
@@ -49,15 +49,29 @@ export default function CardTile({
   onAdd,
   getMarketPrices,
   variants = {},
+  preferredVariant = null,
 }: {
   card: Card;
   getQtyInDeck: (id: string) => number;
   onAdd: (cardId: string) => void;
   getMarketPrices: (id: string) => MarketPrice[];
   variants?: Partial<Record<VariantKind, VariantInfo>>;
+  preferredVariant?: VariantKind | null;
 }) {
-  const [selected, setSelected] = useState<"base" | VariantKind>("base");
   const available = (Object.keys(variants) as VariantKind[]).filter((k) => variants[k]);
+  // When a variant filter (e.g. Foil) is active, default this tile to that
+  // variant if the card has it — so the grid shows Holo/Foil prices without
+  // the shopper toggling each card by hand.
+  const initialSelected: "base" | VariantKind =
+    preferredVariant && variants[preferredVariant] ? preferredVariant : "base";
+  const [selected, setSelected] = useState<"base" | VariantKind>(initialSelected);
+
+  // Follow the filter when it changes: switch to the preferred variant if this
+  // card has it, or back to base when the filter clears.
+  useEffect(() => {
+    setSelected(preferredVariant && variants[preferredVariant] ? preferredVariant : "base");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preferredVariant, card.id]);
 
   const activeVariant = selected !== "base" ? variants[selected] : undefined;
   const showingVariant = selected !== "base" && !!activeVariant;

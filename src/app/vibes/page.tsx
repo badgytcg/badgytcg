@@ -401,6 +401,17 @@ export default function VibesBrowsePage() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const paged = filtered.slice((page - 1) * pageSize, page * pageSize);
 
+  // When the shopper filters to a variant (Foil/Alt Foil), tiles default to
+  // that variant's price/art. "Basic" wins if it's also checked. Foil before
+  // Alt Foil when both are chosen.
+  const preferredVariant: "foil" | "altfoil" | null = variantFilter.includes("Basic")
+    ? null
+    : variantFilter.includes("Foil")
+      ? "foil"
+      : variantFilter.includes("Alt Foil")
+        ? "altfoil"
+        : null;
+
   function clearFilters() {
     setQuery("");
     setSets([]);
@@ -627,6 +638,7 @@ export default function VibesBrowsePage() {
                     onAdd={addOneToDeck}
                     getMarketPrices={(id) => marketPricesByCard[id] ?? []}
                     variants={variantsByCardId[card.id]}
+                    preferredVariant={preferredVariant}
                   />
                 ))}
               </div>
