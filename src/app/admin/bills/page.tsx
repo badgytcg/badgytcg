@@ -36,6 +36,28 @@ export default function AdminBillsPage() {
     fetch("/api/cards").then((r) => r.json()).then((d) => setCatalog(d.cards ?? []));
   }, []);
 
+  // If we arrived here from the Requests tab's "Edit in Bills tab", prefill
+  // the customer + cards once the catalog is loaded (needs names/prices).
+  useEffect(() => {
+    if (catalog.length === 0) return;
+    let prefill: { userId: string; items: { cardId: string; qty: number }[] } | null = null;
+    try {
+      const raw = sessionStorage.getItem("bill-prefill");
+      if (raw) prefill = JSON.parse(raw);
+      sessionStorage.removeItem("bill-prefill");
+    } catch { /* ignore */ }
+    if (!prefill) return;
+    setUserId(prefill.userId);
+    setDraft(
+      prefill.items
+        .map((it) => {
+          const card = catalog.find((c) => c.id === it.cardId);
+          return card ? { cardId: card.id, name: card.name, price: card.price, qty: it.qty } : null;
+        })
+        .filter((l): l is DraftLine => l !== null)
+    );
+  }, [catalog]);
+
   const suggestions = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
