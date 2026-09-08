@@ -4,7 +4,7 @@ import { isAdminEmail } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { logAdminAction } from "@/lib/audit";
 
-const VALID_STATUSES = ["pending", "paid", "fulfilled", "cancelled"];
+const VALID_STATUSES = ["pending", "paid", "fulfilled", "cancelled", "refunded"];
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();

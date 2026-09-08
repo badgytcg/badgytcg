@@ -19,7 +19,7 @@ interface AdminOrder {
   user: { name: string | null; email: string | null } | null;
 }
 
-const STATUSES = ["pending", "paid", "fulfilled", "cancelled"];
+const STATUSES = ["pending", "paid", "fulfilled", "cancelled", "refunded"];
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
@@ -29,6 +29,24 @@ export default function AdminOrdersPage() {
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [sendResult, setSendResult] = useState<string | null>(null);
+  const [refundingId, setRefundingId] = useState<string | null>(null);
+
+  async function refundOrder(order: AdminOrder) {
+    if (!confirm(`Refund $${(order.totalCents / 100).toFixed(2)} to the customer through Stripe? This can't be undone.`)) return;
+    setRefundingId(order.id);
+    try {
+      const res = await fetch(`/api/admin/orders/${order.id}/refund`, { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+        setOrders((prev) => prev.map((o) => (o.id === order.id ? { ...o, status: "refunded" } : o)));
+      } else {
+        alert(data.error ?? "Refund failed.");
+      }
+    } catch {
+      alert("Couldn't reach the server. Try again.");
+    }
+    setRefundingId(null);
+  }
 
   useEffect(() => {
     fetch("/api/admin/orders")
@@ -133,6 +151,16 @@ export default function AdminOrdersPage() {
                     >
                       Message
                     </button>
+                    {(order.status === "paid" || order.status === "fulfilled") && (
+                      <button
+                        onClick={() => refundOrder(order)}
+                        disabled={refundingId === order.id}
+                        title="Refund this payment through Stripe"
+                        className="rounded-lg border border-zinc-700 px-3 py-1 text-sm text-zinc-300 hover:border-red-500 hover:text-red-400 disabled:opacity-40"
+                      >
+                        {refundingId === order.id ? "Refunding…" : "Refund"}
+                      </button>
+                    )}
                   </div>
                 </div>
                 <ul className="mt-3 text-xs text-zinc-500">
