@@ -30,20 +30,23 @@ export default function AdminOrdersPage() {
   const [sending, setSending] = useState(false);
   const [sendResult, setSendResult] = useState<string | null>(null);
   const [refundingId, setRefundingId] = useState<string | null>(null);
+  const [refundMsg, setRefundMsg] = useState<Record<string, string>>({});
 
   async function refundOrder(order: AdminOrder) {
     if (!confirm(`Refund $${(order.totalCents / 100).toFixed(2)} to the customer through Stripe? This can't be undone.`)) return;
     setRefundingId(order.id);
+    setRefundMsg((p) => ({ ...p, [order.id]: "" }));
     try {
       const res = await fetch(`/api/admin/orders/${order.id}/refund`, { method: "POST" });
       const data = await res.json();
       if (res.ok) {
         setOrders((prev) => prev.map((o) => (o.id === order.id ? { ...o, status: "refunded" } : o)));
+        setRefundMsg((p) => ({ ...p, [order.id]: `✓ Refunded $${(order.totalCents / 100).toFixed(2)} — Stripe is returning it to the customer.` }));
       } else {
-        alert(data.error ?? "Refund failed.");
+        setRefundMsg((p) => ({ ...p, [order.id]: `✗ ${data.error ?? "Refund failed."}` }));
       }
     } catch {
-      alert("Couldn't reach the server. Try again.");
+      setRefundMsg((p) => ({ ...p, [order.id]: "✗ Couldn't reach the server. Try again." }));
     }
     setRefundingId(null);
   }
@@ -168,6 +171,12 @@ export default function AdminOrdersPage() {
                     <li key={item.id}>{item.qty}x {item.cardName} — ${(item.priceCents / 100).toFixed(2)} ea</li>
                   ))}
                 </ul>
+
+                {refundMsg[order.id] && (
+                  <p className={`mt-2 text-sm ${refundMsg[order.id].startsWith("✓") ? "text-green-400" : "text-red-400"}`}>
+                    {refundMsg[order.id]}
+                  </p>
+                )}
 
                 {messaging && (
                   <div className="mt-4 rounded-lg border border-zinc-800 bg-zinc-950 p-3">
