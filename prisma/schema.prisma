@@ -115,9 +115,20 @@ model Order {
   userId          String?
   guestEmail      String?
   stripeSessionId String      @unique
-  status          String      @default("pending") // pending | paid | fulfilled | cancelled
+  status          String      @default("pending") // pending | paid | fulfilled | cancelled | refunded
   totalCents      Int
   createdAt       DateTime    @default(now())
+
+  // Shipping address collected by Stripe Checkout (US only). Nullable so old
+  // orders and any non-shipping flow don't break.
+  shipName    String?
+  shipLine1   String?
+  shipLine2   String?
+  shipCity    String?
+  shipState   String?
+  shipPostal  String?
+  shipCountry String?
+  shipPhone   String?
 
   user  User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
   items OrderItem[]

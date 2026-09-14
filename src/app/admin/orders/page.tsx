@@ -17,6 +17,14 @@ interface AdminOrder {
   guestEmail: string | null;
   items: OrderItem[];
   user: { name: string | null; email: string | null } | null;
+  shipName: string | null;
+  shipLine1: string | null;
+  shipLine2: string | null;
+  shipCity: string | null;
+  shipState: string | null;
+  shipPostal: string | null;
+  shipCountry: string | null;
+  shipPhone: string | null;
 }
 
 const STATUSES = ["pending", "paid", "fulfilled", "cancelled", "refunded"];
@@ -31,6 +39,21 @@ export default function AdminOrdersPage() {
   const [sendResult, setSendResult] = useState<string | null>(null);
   const [refundingId, setRefundingId] = useState<string | null>(null);
   const [refundMsg, setRefundMsg] = useState<Record<string, string>>({});
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  function copyAddress(order: AdminOrder) {
+    const lines = [
+      order.shipName,
+      order.shipLine1,
+      order.shipLine2,
+      `${order.shipCity ?? ""}, ${order.shipState ?? ""} ${order.shipPostal ?? ""}`.trim(),
+      order.shipCountry && order.shipCountry !== "US" ? order.shipCountry : null,
+      order.shipPhone,
+    ].filter(Boolean);
+    navigator.clipboard?.writeText(lines.join("\n"));
+    setCopiedId(order.id);
+    setTimeout(() => setCopiedId(null), 1500);
+  }
 
   async function refundOrder(order: AdminOrder) {
     if (!confirm(`Refund $${(order.totalCents / 100).toFixed(2)} to the customer through Stripe? This can't be undone.`)) return;
@@ -171,6 +194,32 @@ export default function AdminOrdersPage() {
                     <li key={item.id}>{item.qty}x {item.cardName} — ${(item.priceCents / 100).toFixed(2)} ea</li>
                   ))}
                 </ul>
+
+                {order.shipLine1 ? (
+                  <div className="mt-3 rounded-lg border border-zinc-800 bg-zinc-950 p-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Ship to</p>
+                      <button
+                        onClick={() => copyAddress(order)}
+                        className="text-xs text-purple-400 hover:text-purple-300"
+                      >
+                        {copiedId === order.id ? "Copied!" : "Copy"}
+                      </button>
+                    </div>
+                    <p className="mt-1 text-sm text-zinc-200">{order.shipName}</p>
+                    <p className="text-sm text-zinc-400">{order.shipLine1}</p>
+                    {order.shipLine2 && <p className="text-sm text-zinc-400">{order.shipLine2}</p>}
+                    <p className="text-sm text-zinc-400">
+                      {order.shipCity}, {order.shipState} {order.shipPostal}
+                      {order.shipCountry && order.shipCountry !== "US" ? ` · ${order.shipCountry}` : ""}
+                    </p>
+                    {order.shipPhone && <p className="text-sm text-zinc-500">{order.shipPhone}</p>}
+                  </div>
+                ) : (
+                  <p className="mt-3 text-xs text-zinc-600">
+                    No address stored — check this order in your Stripe dashboard, or it predates address capture.
+                  </p>
+                )}
 
                 {refundMsg[order.id] && (
                   <p className={`mt-2 text-sm ${refundMsg[order.id].startsWith("✓") ? "text-green-400" : "text-red-400"}`}>

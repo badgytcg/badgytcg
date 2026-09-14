@@ -3,6 +3,7 @@ import { getStripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { decrementStockAfterPurchase } from "@/lib/catalog";
 import { sendEmail, adminAlertEmail } from "@/lib/email";
+import { extractShipping } from "@/lib/shipping";
 import type Stripe from "stripe";
 
 // Stripe needs the raw, unparsed request body to verify the signature.
@@ -56,6 +57,8 @@ export async function POST(request: Request) {
     };
   });
 
+  const ship = extractShipping(session);
+
   const order = await prisma.order.create({
     data: {
       userId: session.client_reference_id || null,
@@ -63,6 +66,7 @@ export async function POST(request: Request) {
       stripeSessionId: session.id,
       status: "paid",
       totalCents: session.amount_total ?? 0,
+      ...ship,
       items: { create: orderItems },
     },
   });
