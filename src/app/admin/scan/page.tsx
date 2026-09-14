@@ -69,21 +69,63 @@ export default function AdminScanPage() {
 
   const startCamera = useCallback(async () => {
     setCameraError(null);
+
+    // Preflight: these are the two silent killers of getUserMedia.
+    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+      setCameraError("This browser doesn't support camera access. Try Chrome, Edge, or Safari.");
+      return;
+    }
+    if (!window.isSecureContext) {
+      setCameraError("Camera needs a secure (https) connection. Open the site at https://badgytcg.com and try again.");
+      return;
+    }
+
+    // Try richest constraints first, fall back to plainer ones. Some devices
+    // (esp. laptops with only a front camera) reject strict constraints.
+    const attempts: MediaStreamConstraints[] = [
+      { video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } } },
+      { video: { facingMode: "environment" } },
+      { video: true },
+    ];
+
+    let stream: MediaStream | null = null;
+    let lastErr: unknown = null;
+    for (const constraints of attempts) {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+        break;
+      } catch (err) {
+        lastErr = err;
+        const name = err instanceof DOMException ? err.name : "";
+        // These won't be fixed by loosening constraints — stop retrying.
+        if (name === "NotAllowedError" || name === "NotFoundError" || name === "NotReadableError") break;
+      }
+    }
+
+    if (!stream) {
+      const name = lastErr instanceof DOMException ? lastErr.name : "";
+      const msg = lastErr instanceof Error ? lastErr.message : "";
+      setCameraError(
+        name === "NotAllowedError"
+          ? "Camera permission is blocked. Tap the camera/lock icon in your browser's address bar → Allow camera for this site, then tap Start Camera again."
+          : name === "NotFoundError"
+            ? "No camera was found on this device."
+            : name === "NotReadableError"
+              ? "The camera is being used by another app or tab. Close anything else using it (Zoom, Meet, another tab), then try again."
+              : `Couldn't start the camera${name ? ` (${name})` : ""}. ${msg}`.trim()
+      );
+      return;
+    }
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: { ideal: "environment" },
-          width: { ideal: 1920 },
-          height: { ideal: 1080 },
-        },
-      });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        await videoRef.current.play();
+        // Some browsers reject play() outside a gesture chain — it's fine,
+        // the stream still shows, so don't fail the whole flow on it.
+        await videoRef.current.play().catch(() => {});
       }
       const track = stream.getVideoTracks()[0];
       trackRef.current = track;
-      // Best-effort continuous autofocus + torch capability detection.
       try {
         const caps = track.getCapabilities?.() as MediaTrackCapabilities & { focusMode?: string[]; torch?: boolean };
         if (caps?.focusMode?.includes("continuous")) {
@@ -92,8 +134,9 @@ export default function AdminScanPage() {
         setTorchSupported(!!caps?.torch);
       } catch { /* capability probing varies by device — ignore */ }
       setCameraOn(true);
-    } catch {
-      setCameraError("Couldn't access the camera. Check your browser's camera permission for this site.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      setCameraError(`Camera opened but couldn't display the video. ${msg}`.trim());
     }
   }, []);
 
