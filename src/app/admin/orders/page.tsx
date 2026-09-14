@@ -73,6 +73,7 @@ export default function AdminOrdersPage() {
   // Draft tracking edits per order: { number, carrier }
   const [trackDraft, setTrackDraft] = useState<Record<string, { number: string; carrier: string }>>({});
   const [savingTrackId, setSavingTrackId] = useState<string | null>(null);
+  const [trackErr, setTrackErr] = useState<Record<string, string>>({});
   const [openGroups, setOpenGroups] = useState<Set<string>>(new Set());
 
   function toggleGroup(key: string) {
@@ -93,6 +94,7 @@ export default function AdminOrdersPage() {
   async function saveTracking(order: AdminOrder) {
     const { number, carrier } = trackFields(order);
     setSavingTrackId(order.id);
+    setTrackErr((p) => ({ ...p, [order.id]: "" }));
     const res = await fetch(`/api/admin/orders/${order.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -105,7 +107,8 @@ export default function AdminOrdersPage() {
         : o));
       setTrackDraft((prev) => { const n = { ...prev }; delete n[order.id]; return n; });
     } else {
-      alert("Couldn't save tracking.");
+      const data = await res.json().catch(() => ({}));
+      setTrackErr((p) => ({ ...p, [order.id]: data.error ?? "Couldn't save tracking." }));
     }
     setSavingTrackId(null);
   }
@@ -332,6 +335,7 @@ export default function AdminOrdersPage() {
                         {savingTrackId === order.id ? "Saving…" : "Save tracking"}
                       </button>
                     </div>
+                    {trackErr[order.id] && <p className="mt-2 text-sm text-red-400">{trackErr[order.id]}</p>}
                     {order.trackingNumber && (
                       <p className="mt-2 text-sm text-zinc-400">
                         Saved:{" "}

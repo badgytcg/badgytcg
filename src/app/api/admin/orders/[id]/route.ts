@@ -4,6 +4,7 @@ import { isAdminEmail } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { logAdminAction } from "@/lib/audit";
 import { sendShippedEmail } from "@/lib/orderEmails";
+import { validateTracking } from "@/lib/tracking";
 
 const VALID_STATUSES = ["pending", "paid", "fulfilled", "cancelled", "refunded"];
 const VALID_CARRIERS = ["usps", "ups", "fedex", "other"];
@@ -39,6 +40,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (trackingNumber !== undefined) {
     const num = trackingNumber?.trim() || null;
     const carrier = num ? (trackingCarrier && VALID_CARRIERS.includes(trackingCarrier) ? trackingCarrier : "usps") : null;
+    // Validate the format so a typo can't be saved or emailed to the customer.
+    if (num) {
+      const check = validateTracking(carrier, num);
+      if (!check.ok) return NextResponse.json({ error: check.error }, { status: 400 });
+    }
     data.trackingNumber = num;
     data.trackingCarrier = carrier;
     details.push(num ? `tracking ${carrier}:${num}` : "tracking cleared");
