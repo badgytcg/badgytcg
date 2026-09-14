@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { isAdminEmail } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { logAdminAction } from "@/lib/audit";
+import { sendShippedEmail } from "@/lib/orderEmails";
 
 const VALID_STATUSES = ["pending", "paid", "fulfilled", "cancelled", "refunded"];
 const VALID_CARRIERS = ["usps", "ups", "fedex", "other"];
@@ -48,12 +49,35 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "Nothing to update" }, { status: 400 });
   }
 
-  const order = await prisma.order.update({ where: { id }, data });
+  const order = await prisma.order.update({
+    where: { id },
+    data,
+    include: { items: true, user: { select: { email: true, name: true } } },
+  });
   await logAdminAction({
     adminEmail: session!.user!.email!,
     action: "orders.update",
     detail: `Order ${id}: ${details.join(", ")}`,
     request,
   });
+
+  // If a tracking number was just added, email the customer "your order shipped".
+  if (data.trackingNumber && typeof data.trackingNumber === "string") {
+    const to = order.user?.email ?? order.guestEmail;
+    if (to) {
+      try {
+        await sendShippedEmail({
+          to,
+          name: order.shipName ?? order.user?.name ?? null,
+          items: order.items.map((i) => ({ cardName: i.cardName, qty: i.qty })),
+          trackingNumber: order.trackingNumber!,
+          trackingCarrier: order.trackingCarrier,
+        });
+      } catch (err) {
+        console.error("[shipped email] failed:", err);
+      }
+    }
+  }
+
   return NextResponse.json({ order });
 }

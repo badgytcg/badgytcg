@@ -3,6 +3,7 @@ import { getStripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { decrementStockAfterPurchase } from "@/lib/catalog";
 import { sendEmail, adminAlertEmail } from "@/lib/email";
+import { sendOrderConfirmation } from "@/lib/orderEmails";
 import { extractShipping } from "@/lib/shipping";
 import type Stripe from "stripe";
 
@@ -105,6 +106,25 @@ export async function POST(request: Request) {
       });
     } catch (err) {
       console.error("[order alert email] failed:", err);
+    }
+  }
+
+  // Auto order-confirmation to the customer.
+  const customerEmail = session.customer_details?.email ?? order.guestEmail;
+  if (customerEmail) {
+    try {
+      await sendOrderConfirmation({
+        to: customerEmail,
+        name: ship.shipName ?? session.customer_details?.name ?? null,
+        orderId: order.id,
+        items: orderItems.map((i) => ({ cardName: i.cardName, qty: i.qty })),
+        totalCents: order.totalCents,
+        shipCity: ship.shipCity,
+        shipState: ship.shipState,
+        shipPostal: ship.shipPostal,
+      });
+    } catch (err) {
+      console.error("[order confirmation email] failed:", err);
     }
   }
 
