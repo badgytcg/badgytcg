@@ -141,6 +141,8 @@ For selling requested cards directly to a customer.
 All outbound email goes through **Resend** over HTTPS (Railway blocks SMTP, so Gmail/SMTP times out there). `src/lib/email.ts` uses Resend when `RESEND_API_KEY` is set, else falls back to Gmail SMTP (local dev only).
 
 **What sends email:**
+- **Order confirmation** (to customer, automatic on payment — "hype" tone, `src/lib/orderEmails.ts`)
+- **Shipped notification** with clickable tracking link (to customer, when admin adds a tracking number)
 - Order messages (admin → customer, from the Orders tab)
 - Bill notifications (customer)
 - New-order alerts (to admin)
@@ -189,6 +191,9 @@ A full motion-graphics promo pipeline lives in `promo/` with a `/promo-video` sk
 
 ## 13. What was built (session changelog, most recent first)
 
+- **Order confirmation + shipped emails** — auto-confirmation on payment; shipped email with tracking link when tracking is added.
+- **Order tracking numbers** — admin adds tracking + carrier (USPS/UPS/FedEx/Other); customer sees a clickable "track package" link; adding tracking auto-marks fulfilled.
+- **Admin orders grouped by customer** — collapsible dropdowns with per-customer order count + total.
 - **Shipping addresses on orders** — captured from Stripe, stored, shown with Copy button; existing orders backfilled.
 - **Public pricing API** (`/api/public/prices`) — CORS feed for partner sites.
 - **In-site Stripe refunds** — Refund button on the Orders page with clear confirmation.
