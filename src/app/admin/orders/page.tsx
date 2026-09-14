@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CARRIERS, trackingUrl } from "@/lib/tracking";
 
 interface OrderItem {
   id: string;
@@ -25,9 +26,38 @@ interface AdminOrder {
   shipPostal: string | null;
   shipCountry: string | null;
   shipPhone: string | null;
+  trackingNumber: string | null;
+  trackingCarrier: string | null;
 }
 
 const STATUSES = ["pending", "paid", "fulfilled", "cancelled", "refunded"];
+
+interface OrderGroup {
+  key: string;
+  label: string;
+  email: string | null;
+  orders: AdminOrder[];
+  totalCents: number;
+}
+
+// Group orders by customer (account email, else guest email). Orders arrive
+// newest-first, so each group's first order is its most recent.
+function groupOrders(orders: AdminOrder[]): OrderGroup[] {
+  const map = new Map<string, OrderGroup>();
+  for (const o of orders) {
+    const email = o.user?.email ?? o.guestEmail ?? null;
+    const key = email ?? `guest:${o.id}`;
+    if (!map.has(key)) {
+      map.set(key, { key, label: o.user?.name ?? email ?? "Guest (no account)", email, orders: [], totalCents: 0 });
+    }
+    const g = map.get(key)!;
+    g.orders.push(o);
+    g.totalCents += o.totalCents;
+  }
+  return [...map.values()].sort(
+    (a, b) => new Date(b.orders[0].createdAt).getTime() - new Date(a.orders[0].createdAt).getTime()
+  );
+}
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
@@ -40,6 +70,45 @@ export default function AdminOrdersPage() {
   const [refundingId, setRefundingId] = useState<string | null>(null);
   const [refundMsg, setRefundMsg] = useState<Record<string, string>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  // Draft tracking edits per order: { number, carrier }
+  const [trackDraft, setTrackDraft] = useState<Record<string, { number: string; carrier: string }>>({});
+  const [savingTrackId, setSavingTrackId] = useState<string | null>(null);
+  const [openGroups, setOpenGroups] = useState<Set<string>>(new Set());
+
+  function toggleGroup(key: string) {
+    setOpenGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
+      return next;
+    });
+  }
+
+  function trackFields(order: AdminOrder) {
+    return trackDraft[order.id] ?? { number: order.trackingNumber ?? "", carrier: order.trackingCarrier ?? "usps" };
+  }
+  function setTrackField(id: string, field: "number" | "carrier", value: string) {
+    setTrackDraft((prev) => ({ ...prev, [id]: { ...trackFields(orders.find((o) => o.id === id)!), [field]: value } }));
+  }
+
+  async function saveTracking(order: AdminOrder) {
+    const { number, carrier } = trackFields(order);
+    setSavingTrackId(order.id);
+    const res = await fetch(`/api/admin/orders/${order.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ trackingNumber: number.trim() || null, trackingCarrier: carrier }),
+    });
+    if (res.ok) {
+      const gotTracking = !!number.trim();
+      setOrders((prev) => prev.map((o) => o.id === order.id
+        ? { ...o, trackingNumber: number.trim() || null, trackingCarrier: gotTracking ? carrier : null, status: gotTracking && o.status === "paid" ? "fulfilled" : o.status }
+        : o));
+      setTrackDraft((prev) => { const n = { ...prev }; delete n[order.id]; return n; });
+    } else {
+      alert("Couldn't save tracking.");
+    }
+    setSavingTrackId(null);
+  }
 
   function copyAddress(order: AdminOrder) {
     const lines = [
@@ -147,16 +216,33 @@ export default function AdminOrdersPage() {
           No orders yet — this fills up once checkout is built and customers start paying.
         </p>
       ) : (
-        <ul className="space-y-4">
-          {orders.map((order) => {
+        <div className="space-y-4">
+          {groupOrders(orders).map((group) => {
+            const open = openGroups.has(group.key);
+            return (
+            <div key={group.key} className="overflow-hidden rounded-xl border border-zinc-800">
+              <button
+                onClick={() => toggleGroup(group.key)}
+                className="flex w-full items-center justify-between gap-3 bg-zinc-900 px-4 py-3 text-left hover:bg-zinc-800/60"
+              >
+                <div>
+                  <p className="font-medium text-zinc-100">{group.label}</p>
+                  <p className="text-xs text-zinc-500">
+                    {group.email ?? "guest checkout"} · {group.orders.length} order{group.orders.length > 1 ? "s" : ""} · ${(group.totalCents / 100).toFixed(2)} total
+                  </p>
+                </div>
+                <span className="text-lg text-zinc-400">{open ? "▾" : "▸"}</span>
+              </button>
+              {open && (
+              <ul className="divide-y divide-zinc-800 border-t border-zinc-800">
+          {group.orders.map((order) => {
             const email = emailFor(order);
             const messaging = messagingId === order.id;
             return (
-              <li key={order.id} className="rounded-xl border border-zinc-800 p-4">
+              <li key={order.id} className="p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
-                    <p className="text-sm text-zinc-200">{order.user?.name ?? email ?? "Guest"}</p>
-                    <p className="text-xs text-zinc-500">{new Date(order.createdAt).toLocaleString()}</p>
+                    <p className="text-xs text-zinc-500">{new Date(order.createdAt).toLocaleString()} · #{order.id.slice(-6)}</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="font-medium text-purple-300">${(order.totalCents / 100).toFixed(2)}</span>
@@ -221,6 +307,47 @@ export default function AdminOrdersPage() {
                   </p>
                 )}
 
+                {order.status !== "cancelled" && order.status !== "refunded" && (
+                  <div className="mt-3 rounded-lg border border-zinc-800 bg-zinc-950 p-3">
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500">Tracking</p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <input
+                        value={trackFields(order).number}
+                        onChange={(e) => setTrackField(order.id, "number", e.target.value)}
+                        placeholder="Tracking number"
+                        className="flex-1 min-w-[160px] rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-sm text-zinc-100 placeholder:text-zinc-600"
+                      />
+                      <select
+                        value={trackFields(order).carrier}
+                        onChange={(e) => setTrackField(order.id, "carrier", e.target.value)}
+                        className="rounded-lg border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-100"
+                      >
+                        {CARRIERS.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+                      </select>
+                      <button
+                        onClick={() => saveTracking(order)}
+                        disabled={savingTrackId === order.id}
+                        className="rounded-lg bg-purple-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-purple-500 disabled:bg-zinc-700"
+                      >
+                        {savingTrackId === order.id ? "Saving…" : "Save tracking"}
+                      </button>
+                    </div>
+                    {order.trackingNumber && (
+                      <p className="mt-2 text-sm text-zinc-400">
+                        Saved:{" "}
+                        {trackingUrl(order.trackingCarrier, order.trackingNumber) ? (
+                          <a href={trackingUrl(order.trackingCarrier, order.trackingNumber)!} target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:underline">
+                            {order.trackingNumber}
+                          </a>
+                        ) : (
+                          <span className="text-zinc-300">{order.trackingNumber}</span>
+                        )}
+                        {" "}— the customer can see &amp; track this on their account.
+                      </p>
+                    )}
+                  </div>
+                )}
+
                 {refundMsg[order.id] && (
                   <p className={`mt-2 text-sm ${refundMsg[order.id].startsWith("✓") ? "text-green-400" : "text-red-400"}`}>
                     {refundMsg[order.id]}
@@ -264,7 +391,12 @@ export default function AdminOrdersPage() {
               </li>
             );
           })}
-        </ul>
+              </ul>
+              )}
+            </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );

@@ -130,6 +130,10 @@ model Order {
   shipCountry String?
   shipPhone   String?
 
+  // Shipment tracking, set by admin once the package is on its way.
+  trackingNumber  String?
+  trackingCarrier String? // "usps" | "ups" | "fedex" | "other"
+
   user  User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
   items OrderItem[]
 }

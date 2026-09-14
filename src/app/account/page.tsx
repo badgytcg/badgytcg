@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useStore } from "@/context/StoreContext";
+import { carrierLabel, trackingUrl } from "@/lib/tracking";
 
 const DECK_REQUEST_PREFIX = "Deck request:";
 const DECK_IMPORT_PREFIX = "from deck import:";
@@ -23,6 +24,8 @@ interface Order {
   totalCents: number;
   createdAt: string;
   items: OrderItem[];
+  trackingNumber: string | null;
+  trackingCarrier: string | null;
 }
 
 interface BillItem { id: string; cardId: string; cardName: string; qty: number; priceCents: number; }
@@ -183,6 +186,23 @@ export default function AccountPage() {
                     <li key={item.id}>{item.qty}x {item.cardName}</li>
                   ))}
                 </ul>
+                {order.trackingNumber && (
+                  <p className="mt-2 text-sm text-zinc-300">
+                    📦 {carrierLabel(order.trackingCarrier)} tracking:{" "}
+                    {trackingUrl(order.trackingCarrier, order.trackingNumber) ? (
+                      <a
+                        href={trackingUrl(order.trackingCarrier, order.trackingNumber)!}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-purple-400 hover:underline"
+                      >
+                        {order.trackingNumber} — track package →
+                      </a>
+                    ) : (
+                      <span className="font-medium text-zinc-200">{order.trackingNumber}</span>
+                    )}
+                  </p>
+                )}
               </li>
             ))}
           </ul>
