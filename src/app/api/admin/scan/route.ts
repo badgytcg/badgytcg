@@ -35,9 +35,10 @@ export async function POST(request: Request) {
           {
             type: "text",
             text:
-              "This is a photo of a Vibes TCG trading card. Read the card's name exactly as printed " +
-              "in the title bar near the top. Respond with ONLY the card name text, nothing else — " +
-              "no quotes, no explanation. If you can't read a name at all, respond with exactly: UNKNOWN",
+              "This image is cropped to a single Vibes TCG trading card. Read the card's name exactly " +
+              "as printed in the title bar near the top of the card. Respond with ONLY the card name " +
+              "text — no quotes, no punctuation you don't see, no explanation. If the card is blurry, " +
+              "cut off, or you can't clearly read the title, respond with exactly: UNKNOWN",
           },
         ],
       },
