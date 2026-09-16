@@ -107,7 +107,7 @@ export default function AdminScanPage() {
       const msg = lastErr instanceof Error ? lastErr.message : "";
       setCameraError(
         name === "NotAllowedError"
-          ? "Camera permission is blocked. Tap the camera/lock icon in your browser's address bar → Allow camera for this site, then tap Start Camera again."
+          ? "Camera access was denied. If the site is already set to Allow: on a phone, tap Start Camera and hit Allow on the popup (scanning works best on a phone). On a Windows PC, also turn on Windows Settings → Privacy & security → Camera → 'Let desktop apps access your camera', then reopen the browser. Embedded/in-app browsers often block the camera — open badgytcg.com directly in Chrome or Safari."
           : name === "NotFoundError"
             ? "No camera was found on this device."
             : name === "NotReadableError"
