@@ -31,8 +31,10 @@ const nextConfig: NextConfig = {
           // has seen this once — protects the Google OAuth + session
           // cookie flow from being downgraded to plain HTTP.
           { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
-          // Disable browser features this site never uses.
-          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+          // Allow the camera for our own pages (the /admin/scan card scanner
+          // needs it — the browser still shows its own permission prompt).
+          // Microphone and geolocation stay disabled site-wide.
+          { key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=()" },
         ],
       },
     ];
