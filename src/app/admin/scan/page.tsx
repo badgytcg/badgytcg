@@ -11,10 +11,21 @@ const OUTPUT_H = 1000;
 const SESSION_KEY = "badgy-scan-session";
 
 type Flash = "none" | "success";
+type ScanKind = "base" | "foil" | "altfoil";
+const KINDS: { value: ScanKind; label: string }[] = [
+  { value: "base", label: "Normal" },
+  { value: "foil", label: "Foil" },
+  { value: "altfoil", label: "Alt Foil" },
+];
+const KIND_LABEL: Record<ScanKind, string> = { base: "Normal", foil: "Foil", altfoil: "Alt Foil" };
+
 interface SessionLine {
   card: Card;
+  kind: ScanKind;
   qty: number;
 }
+
+const lineKey = (cardId: string, kind: ScanKind) => `${cardId}::${kind}`;
 
 function playDing() {
   try {
@@ -66,6 +77,11 @@ export default function AdminScanPage() {
   const [hydrated, setHydrated] = useState(false);
   const [committing, setCommitting] = useState(false);
   const [commitResult, setCommitResult] = useState<string | null>(null);
+  const [scanKind, setScanKind] = useState<ScanKind>("base");
+  // captureAndScan closes over scanKind via a ref so the interval always sees
+  // the current toggle without restarting.
+  const scanKindRef = useRef<ScanKind>("base");
+  useEffect(() => { scanKindRef.current = scanKind; }, [scanKind]);
 
   // Load + persist the session so scanning survives reloads until committed.
   useEffect(() => {
@@ -161,17 +177,18 @@ export default function AdminScanPage() {
 
   useEffect(() => () => stopCamera(), [stopCamera]);
 
-  function addScannedCard(card: Card) {
+  function addScannedCard(card: Card, kind: ScanKind) {
+    const suffix = kind === "base" ? "" : ` [${KIND_LABEL[kind]}]`;
     setSession((prev) => {
-      const idx = prev.findIndex((l) => l.card.id === card.id);
+      const idx = prev.findIndex((l) => l.card.id === card.id && l.kind === kind);
       if (idx >= 0) {
         const next = [...prev];
         next[idx] = { ...next[idx], qty: next[idx].qty + 1 };
-        setLastScan(`＋ ${card.name} (×${next[idx].qty})`);
+        setLastScan(`＋ ${card.name}${suffix} (×${next[idx].qty})`);
         return next;
       }
-      setLastScan(`＋ ${card.name}`);
-      return [{ card, qty: 1 }, ...prev];
+      setLastScan(`＋ ${card.name}${suffix}`);
+      return [{ card, kind, qty: 1 }, ...prev];
     });
   }
 
@@ -209,7 +226,7 @@ export default function AdminScanPage() {
       if (res.ok && result.card) {
         playDing();
         setFlash("success");
-        addScannedCard(result.card);
+        addScannedCard(result.card, scanKindRef.current);
         // Brief cooldown so the same physical card isn't counted repeatedly.
         cooldownRef.current = true;
         setTimeout(() => { cooldownRef.current = false; setFlash("none"); }, COOLDOWN_MS);
@@ -228,11 +245,11 @@ export default function AdminScanPage() {
     return () => clearInterval(id);
   }, [cameraOn, captureAndScan]);
 
-  function setQty(cardId: string, qty: number) {
+  function setQty(cardId: string, kind: ScanKind, qty: number) {
     setSession((prev) =>
       qty <= 0
-        ? prev.filter((l) => l.card.id !== cardId)
-        : prev.map((l) => (l.card.id === cardId ? { ...l, qty } : l))
+        ? prev.filter((l) => !(l.card.id === cardId && l.kind === kind))
+        : prev.map((l) => (l.card.id === cardId && l.kind === kind ? { ...l, qty } : l))
     );
   }
 
@@ -247,7 +264,7 @@ export default function AdminScanPage() {
       const res = await fetch("/api/admin/inventory/scan-commit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: session.map((l) => ({ cardId: l.card.id, qty: l.qty })) }),
+        body: JSON.stringify({ items: session.map((l) => ({ cardId: l.card.id, qty: l.qty, kind: l.kind })) }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -276,9 +293,29 @@ export default function AdminScanPage() {
         scanning; nothing hits your inventory until you tap <span className="text-zinc-200">Add all to inventory</span>.
       </p>
 
+      {/* What you're scanning into — flip to Foil to batch foils together */}
+      <div className="mb-3">
+        <div className="flex rounded-full border border-zinc-700 p-0.5 text-sm">
+          {KINDS.map((k) => (
+            <button
+              key={k.value}
+              onClick={() => setScanKind(k.value)}
+              className={`flex-1 rounded-full py-1.5 ${scanKind === k.value ? "bg-purple-600 font-medium text-white" : "text-zinc-400 hover:text-zinc-200"}`}
+            >
+              {k.label}
+            </button>
+          ))}
+        </div>
+        {scanKind !== "base" && (
+          <p className="mt-1.5 text-center text-xs text-yellow-400">
+            ✨ Scanning as {KIND_LABEL[scanKind]} — these go to your foil stock.
+          </p>
+        )}
+      </div>
+
       <div
         className={`relative mb-3 aspect-square overflow-hidden rounded-xl border-4 bg-zinc-900 transition-colors ${
-          flash === "success" ? "border-green-500" : "border-zinc-800"
+          flash === "success" ? "border-green-500" : scanKind !== "base" ? "border-yellow-500/60" : "border-zinc-800"
         }`}
       >
         <video ref={videoRef} className="h-full w-full object-cover" muted playsInline />
@@ -350,23 +387,30 @@ export default function AdminScanPage() {
           <>
             <ul className="mb-4 max-h-80 space-y-2 overflow-y-auto">
               {session.map((line) => (
-                <li key={line.card.id} className="flex items-center gap-2 text-sm">
+                <li key={lineKey(line.card.id, line.kind)} className="flex items-center gap-2 text-sm">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-zinc-100">{line.card.name}</p>
+                    <p className="truncate text-zinc-100">
+                      {line.card.name}
+                      {line.kind !== "base" && (
+                        <span className="ml-1 rounded bg-yellow-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-yellow-300">
+                          {KIND_LABEL[line.kind]}
+                        </span>
+                      )}
+                    </p>
                     <p className="truncate text-xs text-zinc-500">{line.card.set} · {line.card.rarity}</p>
                   </div>
                   <div className="flex items-center gap-1">
-                    <button onClick={() => setQty(line.card.id, line.qty - 1)} className="h-7 w-7 rounded border border-zinc-700 text-zinc-300 hover:border-purple-500">−</button>
+                    <button onClick={() => setQty(line.card.id, line.kind, line.qty - 1)} className="h-7 w-7 rounded border border-zinc-700 text-zinc-300 hover:border-purple-500">−</button>
                     <input
                       type="number"
                       min={0}
                       value={line.qty}
-                      onChange={(e) => setQty(line.card.id, Math.max(0, Math.round(Number(e.target.value)) || 0))}
+                      onChange={(e) => setQty(line.card.id, line.kind, Math.max(0, Math.round(Number(e.target.value)) || 0))}
                       className="w-12 rounded border border-zinc-700 bg-zinc-950 px-1 py-1 text-center text-zinc-100"
                     />
-                    <button onClick={() => setQty(line.card.id, line.qty + 1)} className="h-7 w-7 rounded border border-zinc-700 text-zinc-300 hover:border-purple-500">+</button>
+                    <button onClick={() => setQty(line.card.id, line.kind, line.qty + 1)} className="h-7 w-7 rounded border border-zinc-700 text-zinc-300 hover:border-purple-500">+</button>
                   </div>
-                  <button onClick={() => setQty(line.card.id, 0)} title="Remove" className="ml-1 text-zinc-600 hover:text-red-400">✕</button>
+                  <button onClick={() => setQty(line.card.id, line.kind, 0)} title="Remove" className="ml-1 text-zinc-600 hover:text-red-400">✕</button>
                 </li>
               ))}
             </ul>
