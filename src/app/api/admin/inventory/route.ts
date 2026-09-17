@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { isAdminEmail } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { logAdminAction } from "@/lib/audit";
+import { getEffectiveCardById } from "@/lib/catalog";
 import { isRateLimited, clientKeyFor } from "@/lib/rateLimit";
 
 export async function PATCH(request: Request) {
@@ -20,16 +21,28 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Expected { cardId, price, stock }" }, { status: 400 });
   }
 
+  // Capture the current values before the write so the log can show old → new.
+  const before = await getEffectiveCardById(cardId);
+  const name = before?.name ?? cardId;
+  const oldPrice = before?.price;
+  const oldStock = before?.stock;
+
   const override = await prisma.cardOverride.upsert({
     where: { cardId },
     create: { cardId, price, stock },
     update: { price, stock },
   });
 
+  const changes: string[] = [];
+  if (oldStock !== undefined && oldStock !== stock) changes.push(`stock ${oldStock} → ${stock}`);
+  else changes.push(`stock ${stock}`);
+  if (oldPrice !== undefined && oldPrice !== price) changes.push(`price $${oldPrice.toFixed(2)} → $${price.toFixed(2)}`);
+  else changes.push(`price $${price.toFixed(2)}`);
+
   await logAdminAction({
     adminEmail: session!.user!.email!,
     action: "inventory.edit_card",
-    detail: `${cardId} → $${price.toFixed(2)}, stock ${stock}`,
+    detail: `${name}: ${changes.join(", ")}`,
     request,
   });
 
