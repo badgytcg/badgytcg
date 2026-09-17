@@ -101,7 +101,8 @@ export default function AdminFoilsPage() {
     const existing = rowByKey.get(editKey(card.id, kind));
     return (
       edits[editKey(card.id, kind)] ?? {
-        price: existing ? String(existing.price) : card.price.toFixed(2),
+        // New foils start at $1 by default — adjust before saving as needed.
+        price: existing ? String(existing.price) : "1.00",
         stock: existing ? String(existing.stock) : "0",
       }
     );

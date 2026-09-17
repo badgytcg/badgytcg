@@ -4,7 +4,7 @@ import { isAdminEmail } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { parseDeckCode } from "@/lib/deckParser";
 import { findCardByAnyName } from "@/lib/inventory";
-import { VARIANT_KINDS } from "@/lib/catalog";
+import { VARIANT_KINDS, DEFAULT_FOIL_PRICE } from "@/lib/catalog";
 
 // Bulk-adds foil/alt-foil stock from a pasted list — same "4 Get Rekt"
 // format as the customer-facing deck importer. Quantities are ADDED to
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     const newStock = (existing?.stock ?? 0) + entry.qty;
     await prisma.cardVariantOverride.upsert({
       where: { cardId_kind: { cardId: card.id, kind } },
-      create: { cardId: card.id, kind, price: existing?.price ?? card.price, stock: newStock },
+      create: { cardId: card.id, kind, price: existing?.price ?? DEFAULT_FOIL_PRICE, stock: newStock },
       update: { stock: newStock },
     });
     updated.push({ name: card.name, qty: entry.qty, newStock });

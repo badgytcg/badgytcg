@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { isAdminEmail } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
-import { getEffectiveCards } from "@/lib/catalog";
+import { getEffectiveCards, DEFAULT_FOIL_PRICE } from "@/lib/catalog";
 import { logAdminAction } from "@/lib/audit";
 
 const VARIANT_KINDS = ["foil", "altfoil"];
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
       const existingPrice = (await prisma.cardVariantOverride.findUnique({ where: { cardId_kind: { cardId, kind } } }))?.price;
       await prisma.cardVariantOverride.upsert({
         where: { cardId_kind: { cardId, kind } },
-        create: { cardId, kind, price: existingPrice ?? card.price, stock: newStock },
+        create: { cardId, kind, price: existingPrice ?? DEFAULT_FOIL_PRICE, stock: newStock },
         update: { stock: newStock },
       });
       variantStock.set(key, newStock);

@@ -5,6 +5,10 @@ import { prisma } from "@/lib/prisma";
 const SPECIAL_PREFIX = "special::";
 
 export const VARIANT_KINDS = ["foil", "altfoil"] as const;
+
+// Starting price for a newly-stocked foil/alt-foil that has no price yet.
+// It's just a default — adjust per card on the Foils page afterward.
+export const DEFAULT_FOIL_PRICE = 1;
 export type VariantKind = (typeof VARIANT_KINDS)[number];
 
 export const VARIANT_LABEL: Record<VariantKind, string> = {
