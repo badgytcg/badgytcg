@@ -72,6 +72,7 @@ export default function AdminScanPage() {
   const [torchOn, setTorchOn] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [lastScan, setLastScan] = useState<string | null>(null);
+  const [scanStatus, setScanStatus] = useState<string | null>(null);
 
   const [session, setSession] = useState<SessionLine[]>([]);
   const [hydrated, setHydrated] = useState(false);
@@ -226,13 +227,23 @@ export default function AdminScanPage() {
       if (res.ok && result.card) {
         playDing();
         setFlash("success");
+        setScanStatus(null);
         addScannedCard(result.card, scanKindRef.current);
         // Brief cooldown so the same physical card isn't counted repeatedly.
         cooldownRef.current = true;
         setTimeout(() => { cooldownRef.current = false; setFlash("none"); }, COOLDOWN_MS);
+      } else if (!res.ok) {
+        // API problem (missing key, no credit, rate limit, model error).
+        setScanStatus(result?.error ?? `Scanner error (${res.status}).`);
+      } else if (result.rawText && result.rawText.toUpperCase() !== "UNKNOWN") {
+        // Read a name but it isn't in the catalog.
+        setScanStatus(`Read "${result.rawText}" — no match in the catalog.`);
+      } else {
+        // Couldn't read the title — usually framing/lighting/focus.
+        setScanStatus("Couldn't read the card — fill the frame, hold steady, add light.");
       }
     } catch {
-      /* ignore a bad frame */
+      setScanStatus("Couldn't reach the scanner. Check your connection.");
     } finally {
       processingRef.current = false;
       setScanning(false);
@@ -354,6 +365,12 @@ export default function AdminScanPage() {
       </div>
 
       {cameraError && <p className="mb-4 text-sm text-red-400">{cameraError}</p>}
+
+      {cameraOn && scanStatus && flash !== "success" && (
+        <p className={`mb-4 text-center text-xs ${scanStatus.startsWith("Read ") || scanStatus.startsWith("Couldn't read") ? "text-zinc-500" : "text-yellow-400"}`}>
+          {scanStatus}
+        </p>
+      )}
 
       {cameraOn && (
         <div className="mb-4 flex gap-2">
