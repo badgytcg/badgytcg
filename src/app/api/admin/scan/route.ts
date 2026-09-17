@@ -52,10 +52,18 @@ export async function POST(request: Request) {
     });
   } catch (err) {
     // Surface the real reason (bad key, no credit, rate limit, model error)
-    // instead of a silent 500 the scanner swallows.
-    const msg = err instanceof Error ? err.message : "unknown error";
-    console.error("[scan] Anthropic call failed:", msg);
-    return NextResponse.json({ error: `Recognition failed: ${msg}`, card: null }, { status: 502 });
+    // as a clean message instead of a silent 500 or raw JSON.
+    const raw = err instanceof Error ? err.message : "unknown error";
+    console.error("[scan] Anthropic call failed:", raw);
+    const friendly =
+      /credit balance is too low|billing/i.test(raw)
+        ? "Scanner is out of API credits. Add credits at console.anthropic.com → Billing, then scan again."
+        : /rate limit|429/i.test(raw)
+          ? "Scanner is being rate-limited — wait a few seconds and keep scanning."
+          : /authentication|invalid x-api-key|401/i.test(raw)
+            ? "Scanner API key is invalid — check ANTHROPIC_API_KEY."
+            : "Card recognition is temporarily unavailable. Try again in a moment.";
+    return NextResponse.json({ error: friendly, card: null }, { status: 502 });
   }
 
   const textBlock = response.content.find((b) => b.type === "text");
