@@ -266,6 +266,15 @@ export default function AdminOrdersPage() {
                     >
                       Message
                     </button>
+                    <a
+                      href={`/admin/orders/${order.id}/print`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Printable packing slip / receipt"
+                      className="rounded-lg border border-zinc-700 px-3 py-1 text-sm text-zinc-300 hover:border-purple-500 hover:text-purple-300"
+                    >
+                      Receipt
+                    </a>
                     {(order.status === "paid" || order.status === "fulfilled") && (
                       <button
                         onClick={() => refundOrder(order)}
