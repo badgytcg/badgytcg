@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/lib/types";
 import { colorCategory } from "@/lib/colors";
+import { isBannedCardName } from "@/lib/banned";
 
 interface MarketPrice {
   source: string;
@@ -80,6 +81,7 @@ export default function CardTile({
   const stock = showingVariant ? activeVariant!.stock : card.stock;
   const inStock = stock > 0;
   const marketPrices = getMarketPrices(selectedId);
+  const banned = isBannedCardName(card.name);
 
   return (
     <div
@@ -96,6 +98,14 @@ export default function CardTile({
             className={`object-cover ${!inStock ? "grayscale opacity-40" : ""} ${showingVariant ? "drop-shadow-[0_0_12px_rgba(168,85,247,0.6)]" : ""}`}
             unoptimized
           />
+          {banned && (
+            <span
+              title="Banned in competitive play"
+              className="absolute left-1.5 top-1.5 z-10 rounded-md bg-red-600/95 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white shadow"
+            >
+              ⛔ Banned
+            </span>
+          )}
           {!inStock && (
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="rotate-[-8deg] rounded border-2 border-red-500 px-2 py-0.5 text-sm font-bold uppercase tracking-wide text-red-500">

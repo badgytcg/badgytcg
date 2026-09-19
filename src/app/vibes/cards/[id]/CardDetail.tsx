@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Card } from "@/lib/types";
 import { useStore } from "@/context/StoreContext";
 import { colorCategory } from "@/lib/colors";
+import { isBannedCardName, BAN_ANNOUNCEMENT_URL } from "@/lib/banned";
 
 interface MarketPrice {
   source: string;
@@ -272,6 +273,7 @@ export default function CardDetail({ card }: { card: Card }) {
   }
 
   const colorLabel = colorCategory(card);
+  const banned = isBannedCardName(card.name);
 
   const RARITY_COLOR: Record<string, string> = {
     Common: "border-zinc-600 bg-zinc-700/40 text-zinc-300",
@@ -332,6 +334,19 @@ export default function CardDetail({ card }: { card: Card }) {
               ))}
             </div>
           </div>
+
+          {banned && (
+            <div className="rounded-lg border border-red-700/60 bg-red-950/40 px-4 py-3">
+              <p className="text-sm font-semibold text-red-300">⛔ Banned in competitive play</p>
+              <p className="mt-1 text-xs text-red-200/80">
+                This card is on the official Vibes TCG ban list and can&apos;t be used in competitive play
+                (starter decks stay legal out of the box).{" "}
+                <a href={BAN_ANNOUNCEMENT_URL} target="_blank" rel="noopener noreferrer" className="underline hover:text-red-100">
+                  Read the announcement →
+                </a>
+              </p>
+            </div>
+          )}
 
           {/* Stat grid */}
           <div className="grid grid-cols-2 gap-1.5">
