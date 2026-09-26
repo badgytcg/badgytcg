@@ -260,3 +260,11 @@ model AdminAuditLog {
 
   @@index([createdAt])
 }
+
+// Cards banned from competitive play — managed by the admin. The storefront
+// marks these with a "Banned" badge/warning.
+model BannedCard {
+  cardId    String   @id
+  cardName  String
+  createdAt DateTime @default(now())
+}

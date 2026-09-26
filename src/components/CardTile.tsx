@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card } from "@/lib/types";
 import { colorCategory } from "@/lib/colors";
-import { isBannedCardName } from "@/lib/banned";
 
 interface MarketPrice {
   source: string;
@@ -81,7 +80,7 @@ export default function CardTile({
   const stock = showingVariant ? activeVariant!.stock : card.stock;
   const inStock = stock > 0;
   const marketPrices = getMarketPrices(selectedId);
-  const banned = isBannedCardName(card.name);
+  const banned = !!card.banned;
 
   return (
     <div

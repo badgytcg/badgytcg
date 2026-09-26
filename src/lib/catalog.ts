@@ -29,13 +29,18 @@ function parseVariantId(id: string): { baseId: string; kind: VariantKind } | nul
 // the storefront should read from — it reflects whatever the admin most
 // recently set via /admin/inventory, without needing a redeploy.
 export async function getEffectiveCards(): Promise<Card[]> {
-  const dbOverrides = await prisma.cardOverride.findMany();
+  const [dbOverrides, banned] = await Promise.all([
+    prisma.cardOverride.findMany(),
+    prisma.bannedCard.findMany({ select: { cardId: true } }),
+  ]);
   const overrideMap = new Map(dbOverrides.map((o) => [o.cardId, o]));
+  const bannedSet = new Set(banned.map((b) => b.cardId));
 
   return seedCards.map((card) => {
     const override = overrideMap.get(card.id);
-    if (!override) return card;
-    return { ...card, price: override.price, stock: override.stock };
+    const banned = bannedSet.has(card.id);
+    if (!override && !banned) return card;
+    return { ...card, ...(override && { price: override.price, stock: override.stock }), banned };
   });
 }
 
@@ -60,6 +65,7 @@ export async function getEffectiveCardById(id: string): Promise<Card | undefined
       where: { cardId_kind: { cardId: parsed.baseId, kind: parsed.kind } },
     });
     if (!variant) return undefined; // no stock for this variant — toggle shouldn't even show
+    const banned = !!(await prisma.bannedCard.findUnique({ where: { cardId: parsed.baseId } }));
     return {
       ...base,
       id,
@@ -67,14 +73,21 @@ export async function getEffectiveCardById(id: string): Promise<Card | undefined
       price: variant.price,
       stock: variant.stock,
       isFoil: true,
+      banned,
     };
   }
 
-  const override = await prisma.cardOverride.findUnique({ where: { cardId: id } });
   const base = seedCards.find((c) => c.id === id);
   if (!base) return undefined;
-  if (!override) return base;
-  return { ...base, price: override.price, stock: override.stock };
+  const [override, bannedRow] = await Promise.all([
+    prisma.cardOverride.findUnique({ where: { cardId: id } }),
+    prisma.bannedCard.findUnique({ where: { cardId: id } }),
+  ]);
+  return {
+    ...base,
+    ...(override && { price: override.price, stock: override.stock }),
+    banned: !!bannedRow,
+  };
 }
 
 interface SpecialCardRow {

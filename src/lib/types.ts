@@ -17,6 +17,7 @@ export interface Card {
   image: string;
   isFoil?: boolean; // true for the synthetic "{baseId}::foil" variant of a card
   isSpecial?: boolean; // true for a one-off SpecialCard (graded slab, rare foil, etc.)
+  banned?: boolean; // true if on the competitive ban list (admin-managed)
   description?: string | null; // SpecialCard only
   grade?: string | null; // SpecialCard only
 }

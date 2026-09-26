@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Card } from "@/lib/types";
 import { useStore } from "@/context/StoreContext";
 import { colorCategory } from "@/lib/colors";
-import { isBannedCardName, BAN_ANNOUNCEMENT_URL } from "@/lib/banned";
+import { BAN_ANNOUNCEMENT_URL } from "@/lib/banned";
 
 interface MarketPrice {
   source: string;
@@ -273,7 +273,7 @@ export default function CardDetail({ card }: { card: Card }) {
   }
 
   const colorLabel = colorCategory(card);
-  const banned = isBannedCardName(card.name);
+  const banned = !!card.banned;
 
   const RARITY_COLOR: Record<string, string> = {
     Common: "border-zinc-600 bg-zinc-700/40 text-zinc-300",
