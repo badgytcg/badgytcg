@@ -17,6 +17,7 @@ interface EmailOpts {
   to: string;
   subject: string;
   text: string;
+  replyTo?: string; // so replies go to the customer, not the shop's from-address
   attachments?: Array<{ filename: string; content: string; contentType: string }>;
 }
 
@@ -40,6 +41,7 @@ async function sendViaResend(opts: EmailOpts, apiKey: string): Promise<boolean> 
         to: [opts.to],
         subject: opts.subject,
         text: opts.text,
+        ...(opts.replyTo && { reply_to: opts.replyTo }),
         // Resend takes attachment content as base64.
         attachments: opts.attachments?.map((a) => ({
           filename: a.filename,
@@ -97,6 +99,7 @@ async function sendViaGmail(opts: EmailOpts): Promise<boolean> {
       to: opts.to,
       subject: opts.subject,
       text: opts.text,
+      replyTo: opts.replyTo,
       attachments: opts.attachments,
     });
     return true;

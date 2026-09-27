@@ -45,6 +45,8 @@ export default function RootLayout({
             </div>
             <main className="flex-1">{children}</main>
             <footer className="border-t border-purple-900/40 px-6 py-6 text-center text-xs text-zinc-500 print:hidden">
+              <a href="/support" className="text-purple-400 hover:underline">Contact &amp; Support</a>
+              <span className="mx-2">·</span>
               Fan-made storefront, not affiliated with Orange Cap Games.
             </footer>
           </StoreProvider>
