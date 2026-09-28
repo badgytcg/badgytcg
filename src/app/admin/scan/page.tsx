@@ -25,7 +25,37 @@ interface SessionLine {
   qty: number;
 }
 
+// A past, committed scan session fetched from the server.
+interface PastItem {
+  id: string;
+  cardName: string;
+  kind: string;
+  qty: number;
+  newStock: number;
+  set: string | null;
+  cardNumber: string | null;
+  color: string | null;
+}
+interface PastSession {
+  id: string;
+  adminEmail: string;
+  createdAt: string;
+  totalCards: number;
+  items: PastItem[];
+}
+
 const lineKey = (cardId: string, kind: ScanKind) => `${cardId}::${kind}`;
+
+const COLOR_DOT: Record<string, string> = {
+  Blue: "#3b82f6", Yellow: "#eab308", Purple: "#a855f7", Green: "#22c55e",
+  Red: "#ef4444", Colorless: "#a1a1aa", Relic: "#d97706", Rod: "#06b6d4",
+};
+function ColorDot({ color }: { color: string | null }) {
+  if (!color) return null;
+  const stops = color.split(" ").filter(Boolean).map((p) => COLOR_DOT[p] ?? "#71717a");
+  const bg = stops.length > 1 ? `linear-gradient(135deg, ${stops[0]} 0 50%, ${stops[1]} 50% 100%)` : stops[0];
+  return <span title={color} className="inline-block h-3 w-3 shrink-0 rounded-full ring-1 ring-black/30" style={{ background: bg }} />;
+}
 
 function playDing() {
   try {
@@ -78,6 +108,8 @@ export default function AdminScanPage() {
   const [hydrated, setHydrated] = useState(false);
   const [committing, setCommitting] = useState(false);
   const [commitResult, setCommitResult] = useState<string | null>(null);
+  const [history, setHistory] = useState<PastSession[]>([]);
+  const [openSessions, setOpenSessions] = useState<Set<string>>(new Set());
   const [scanKind, setScanKind] = useState<ScanKind>("base");
   // captureAndScan closes over scanKind via a ref so the interval always sees
   // the current toggle without restarting.
@@ -96,6 +128,22 @@ export default function AdminScanPage() {
     if (!hydrated) return;
     try { localStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch { /* ignore */ }
   }, [session, hydrated]);
+
+  const loadHistory = useCallback(() => {
+    fetch("/api/admin/scan-sessions")
+      .then((r) => r.json())
+      .then((d) => setHistory(d.sessions ?? []))
+      .catch(() => { /* ignore */ });
+  }, []);
+  useEffect(loadHistory, [loadHistory]);
+
+  function toggleSession(id: string) {
+    setOpenSessions((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
 
   const startCamera = useCallback(async () => {
     setCameraError(null);
@@ -281,6 +329,7 @@ export default function AdminScanPage() {
       if (res.ok) {
         setCommitResult(`✓ Added ${cardCount} card(s) across ${data.updated.length} title(s) to inventory.`);
         setSession([]);
+        loadHistory();
       } else {
         setCommitResult(`✗ ${data.error ?? "Couldn't add to inventory."}`);
       }
@@ -448,6 +497,72 @@ export default function AdminScanPage() {
               </button>
             </div>
           </>
+        )}
+      </div>
+
+      {/* Past committed sessions — what each scan actually added */}
+      <div className="mt-6">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">Recent Scan Sessions</h2>
+          <button onClick={loadHistory} className="text-xs text-zinc-500 hover:text-zinc-300">Refresh</button>
+        </div>
+
+        {history.length === 0 ? (
+          <p className="text-sm text-zinc-500">No committed sessions yet — they show up here after you add a scan to inventory.</p>
+        ) : (
+          <ul className="space-y-2">
+            {history.map((s) => {
+              const open = openSessions.has(s.id);
+              const groups: { set: string; items: PastItem[] }[] = [];
+              for (const item of s.items) {
+                const set = item.set ?? "Other";
+                const last = groups[groups.length - 1];
+                if (last && last.set === set) last.items.push(item);
+                else groups.push({ set, items: [item] });
+              }
+              return (
+                <li key={s.id} className="overflow-hidden rounded-xl border border-zinc-800">
+                  <button onClick={() => toggleSession(s.id)} className="flex w-full items-center justify-between gap-2 bg-zinc-900 px-4 py-3 text-left hover:bg-zinc-800/60">
+                    <div>
+                      <p className="text-sm font-medium text-zinc-100">{new Date(s.createdAt).toLocaleString()}</p>
+                      <p className="text-xs text-zinc-500">{s.items.length} title(s) · {s.totalCards} card(s) · {s.adminEmail}</p>
+                    </div>
+                    <span className="text-lg text-zinc-400">{open ? "▾" : "▸"}</span>
+                  </button>
+                  {open && (
+                    <div className="border-t border-zinc-800">
+                      {groups.map((g) => (
+                        <div key={g.set}>
+                          <div className="flex items-center justify-between bg-zinc-800/60 px-3 py-1">
+                            <span className="text-xs font-semibold uppercase tracking-wide text-zinc-300">{g.set}</span>
+                            <span className="text-[10px] text-zinc-500">{g.items.reduce((n, i) => n + i.qty, 0)} card(s)</span>
+                          </div>
+                          <ul className="divide-y divide-zinc-800/60">
+                            {g.items.map((i) => (
+                              <li key={i.id} className="flex items-center gap-2 px-3 py-1.5 text-sm">
+                                <span className="w-9 shrink-0 text-right font-semibold text-purple-300">+{i.qty}</span>
+                                <ColorDot color={i.color} />
+                                <span className="flex-1 truncate text-zinc-200">
+                                  {i.cardName}
+                                  {i.kind !== "base" && (
+                                    <span className="ml-1 rounded bg-yellow-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-yellow-300">
+                                      {i.kind === "foil" ? "Foil" : "Alt Foil"}
+                                    </span>
+                                  )}
+                                </span>
+                                {i.cardNumber && <span className="shrink-0 font-mono text-xs text-zinc-500">#{i.cardNumber}</span>}
+                                <span className="w-20 shrink-0 text-right text-xs text-zinc-500">→ {i.newStock} in stock</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
         )}
       </div>
     </div>

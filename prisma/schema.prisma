@@ -269,6 +269,32 @@ model BannedCard {
   createdAt DateTime @default(now())
 }
 
+// A committed scan session — one "Add all to inventory" from the Scan page.
+// Kept so the admin can review exactly which cards a given scan added.
+model ScanSession {
+  id         String            @id @default(cuid())
+  adminEmail String
+  totalCards Int // sum of qty across items
+  createdAt  DateTime          @default(now())
+  items      ScanSessionItem[]
+
+  @@index([createdAt])
+}
+
+model ScanSessionItem {
+  id        String @id @default(cuid())
+  sessionId String
+  cardId    String
+  cardName  String
+  kind      String @default("base") // base | foil | altfoil
+  qty       Int
+  newStock  Int // resulting stock after this scan was applied
+
+  session ScanSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+}
+
 // Customer support / contact-form submissions. Emailed to the admin and kept
 // here so nothing is lost if email hiccups.
 model ContactMessage {

@@ -74,7 +74,26 @@ export async function POST(request: Request) {
     totalCards += qty;
   }
 
+  let sessionId: string | null = null;
   if (updated.length > 0) {
+    // Persist the session so the admin can review exactly what a scan added.
+    const saved = await prisma.scanSession.create({
+      data: {
+        adminEmail: session!.user!.email!,
+        totalCards,
+        items: {
+          create: updated.map((u) => ({
+            cardId: u.cardId,
+            cardName: u.name,
+            kind: u.kind,
+            qty: u.qty,
+            newStock: u.newStock,
+          })),
+        },
+      },
+    });
+    sessionId = saved.id;
+
     await logAdminAction({
       adminEmail: session!.user!.email!,
       action: "inventory.scan_commit",
@@ -83,5 +102,5 @@ export async function POST(request: Request) {
     });
   }
 
-  return NextResponse.json({ updated, unmatched });
+  return NextResponse.json({ updated, unmatched, sessionId });
 }
