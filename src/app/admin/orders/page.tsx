@@ -11,6 +11,49 @@ interface OrderItem {
   set: string | null;
   setCode: string | null;
   cardNumber: string | null;
+  color: string | null;
+}
+
+// Vibes card colors → a dot swatch. Dual-color cards ("Blue Yellow") render
+// as two half-dots so you can eyeball the color while pulling the card.
+const COLOR_DOT: Record<string, string> = {
+  Blue: "#3b82f6",
+  Yellow: "#eab308",
+  Purple: "#a855f7",
+  Green: "#22c55e",
+  Red: "#ef4444",
+  Colorless: "#a1a1aa",
+  Relic: "#d97706",
+  Rod: "#06b6d4",
+};
+
+function ColorDot({ color }: { color: string | null }) {
+  if (!color) return null;
+  const parts = color.split(" ").filter(Boolean);
+  const stops = parts.map((p) => COLOR_DOT[p] ?? "#71717a");
+  const bg =
+    stops.length > 1
+      ? `linear-gradient(135deg, ${stops[0]} 0 50%, ${stops[1]} 50% 100%)`
+      : stops[0];
+  return (
+    <span
+      title={color}
+      className="inline-block h-3 w-3 shrink-0 rounded-full ring-1 ring-black/30"
+      style={{ background: bg }}
+    />
+  );
+}
+
+// Group an order's (already set→name sorted) items under their set heading.
+function bySet(items: OrderItem[]): { set: string; items: OrderItem[] }[] {
+  const groups: { set: string; items: OrderItem[] }[] = [];
+  for (const item of items) {
+    const set = item.set ?? "Other";
+    const last = groups[groups.length - 1];
+    if (last && last.set === set) last.items.push(item);
+    else groups.push({ set, items: [item] });
+  }
+  return groups;
 }
 
 interface AdminOrder {
@@ -290,19 +333,29 @@ export default function AdminOrdersPage() {
                     )}
                   </div>
                 </div>
-                <ul className="mt-3 space-y-0.5 text-xs text-zinc-500">
-                  {order.items.map((item) => (
-                    <li key={item.id} className="flex flex-wrap items-baseline gap-x-2">
-                      <span className="text-zinc-300">{item.qty}x {item.cardName}</span>
-                      {item.set && (
-                        <span className="rounded bg-zinc-800 px-1.5 py-0.5 text-[10px] font-medium text-zinc-400">
-                          {item.set}{item.cardNumber ? ` #${item.cardNumber}` : ""}
+                <div className="mt-3 overflow-hidden rounded-lg border border-zinc-800">
+                  {bySet(order.items).map((group) => (
+                    <div key={group.set}>
+                      <div className="flex items-center justify-between bg-zinc-800/60 px-3 py-1">
+                        <span className="text-xs font-semibold uppercase tracking-wide text-zinc-300">{group.set}</span>
+                        <span className="text-[10px] text-zinc-500">
+                          {group.items.reduce((n, i) => n + i.qty, 0)} card{group.items.reduce((n, i) => n + i.qty, 0) === 1 ? "" : "s"}
                         </span>
-                      )}
-                      <span>— ${(item.priceCents / 100).toFixed(2)} ea</span>
-                    </li>
+                      </div>
+                      <ul className="divide-y divide-zinc-800/60">
+                        {group.items.map((item) => (
+                          <li key={item.id} className="flex items-center gap-2 px-3 py-1.5 text-sm">
+                            <span className="w-8 shrink-0 text-right font-semibold text-purple-300">{item.qty}×</span>
+                            <ColorDot color={item.color} />
+                            <span className="flex-1 text-zinc-200">{item.cardName}</span>
+                            {item.cardNumber && <span className="shrink-0 font-mono text-xs text-zinc-500">#{item.cardNumber}</span>}
+                            <span className="w-16 shrink-0 text-right text-xs text-zinc-500">${(item.priceCents / 100).toFixed(2)} ea</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   ))}
-                </ul>
+                </div>
 
                 {order.shipLine1 ? (
                   <div className="mt-3 rounded-lg border border-zinc-800 bg-zinc-950 p-3">

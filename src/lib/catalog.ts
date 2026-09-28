@@ -164,13 +164,14 @@ export interface CardSetInfo {
   set: string;
   setCode: string;
   cardNumber: string;
+  color: string | null;
 }
 
-/** Bulk-resolve set / set-code / collector number for a list of order-item
- * card ids, so fulfillment views can show where each card lives. Base and
- * foil/alt-foil ids resolve from the in-memory seed (no DB hit); one-off
- * special/graded ids are looked up in a single query. Ids we can't resolve
- * are simply absent from the map. */
+/** Bulk-resolve set / set-code / collector number / color for a list of
+ * order-item card ids, so fulfillment views can show where each card lives
+ * and what color it is. Base and foil/alt-foil ids resolve from the in-memory
+ * seed (no DB hit); one-off special/graded ids are looked up in a single
+ * query. Ids we can't resolve are simply absent from the map. */
 export async function getSetInfoByIds(ids: string[]): Promise<Map<string, CardSetInfo>> {
   const seedById = new Map(seedCards.map((c) => [c.id, c]));
   const result = new Map<string, CardSetInfo>();
@@ -183,13 +184,13 @@ export async function getSetInfoByIds(ids: string[]): Promise<Map<string, CardSe
     }
     const baseId = parseVariantId(id)?.baseId ?? id;
     const base = seedById.get(baseId);
-    if (base) result.set(id, { set: base.set, setCode: base.setCode, cardNumber: base.cardNumber });
+    if (base) result.set(id, { set: base.set, setCode: base.setCode, cardNumber: base.cardNumber, color: base.color });
   }
 
   if (specialDbIds.length) {
     const specials = await prisma.specialCard.findMany({ where: { id: { in: specialDbIds } } });
     for (const s of specials) {
-      result.set(`${SPECIAL_PREFIX}${s.id}`, { set: s.set ?? "Special", setCode: "Special", cardNumber: "" });
+      result.set(`${SPECIAL_PREFIX}${s.id}`, { set: s.set ?? "Special", setCode: "Special", cardNumber: "", color: null });
     }
   }
 

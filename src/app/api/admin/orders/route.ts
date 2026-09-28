@@ -24,7 +24,7 @@ export async function GET() {
     items: o.items
       .map((i) => {
         const s = setInfo.get(i.cardId);
-        return { ...i, set: s?.set ?? null, setCode: s?.setCode ?? null, cardNumber: s?.cardNumber ?? null };
+        return { ...i, set: s?.set ?? null, setCode: s?.setCode ?? null, cardNumber: s?.cardNumber ?? null, color: s?.color ?? null };
       })
       .sort(
         (a, b) =>
