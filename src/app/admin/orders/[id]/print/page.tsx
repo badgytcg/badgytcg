@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { isAdminEmail } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
+import { getSetInfoByIds } from "@/lib/catalog";
 import PrintButton from "./PrintButton";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +28,20 @@ export default async function OrderReceiptPage({ params }: { params: Promise<{ i
   const shipping = Math.max(0, order.totalCents - subtotal);
   const custEmail = order.user?.email ?? order.guestEmail;
   const hasAddr = !!order.shipLine1;
+
+  // Show which set each card is from and sort by set → name A–Z, matching how
+  // physical stock is filed so the slip doubles as a pick-list.
+  const setInfo = await getSetInfoByIds(order.items.map((i) => i.cardId));
+  const items = order.items
+    .map((i) => {
+      const s = setInfo.get(i.cardId);
+      return { ...i, set: s?.set ?? null, cardNumber: s?.cardNumber ?? null };
+    })
+    .sort(
+      (a, b) =>
+        (a.set ?? "￿").localeCompare(b.set ?? "￿") ||
+        a.cardName.localeCompare(b.cardName)
+    );
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-8 print:max-w-none print:p-0">
@@ -74,15 +89,19 @@ export default async function OrderReceiptPage({ params }: { params: Promise<{ i
             <tr className="border-b border-black text-left">
               <th className="py-2 pr-2">Qty</th>
               <th className="py-2 pr-2">Item</th>
+              <th className="py-2 pr-2">Set</th>
               <th className="py-2 pr-2 text-right">Unit</th>
               <th className="py-2 text-right">Total</th>
             </tr>
           </thead>
           <tbody>
-            {order.items.map((i) => (
+            {items.map((i) => (
               <tr key={i.id} className="border-b border-zinc-300">
                 <td className="py-2 pr-2">{i.qty}</td>
                 <td className="py-2 pr-2">{i.cardName}</td>
+                <td className="py-2 pr-2 text-zinc-600">
+                  {i.set ?? "—"}{i.cardNumber ? ` #${i.cardNumber}` : ""}
+                </td>
                 <td className="py-2 pr-2 text-right">{money(i.priceCents)}</td>
                 <td className="py-2 text-right">{money(i.priceCents * i.qty)}</td>
               </tr>
@@ -90,15 +109,15 @@ export default async function OrderReceiptPage({ params }: { params: Promise<{ i
           </tbody>
           <tfoot>
             <tr>
-              <td colSpan={3} className="pt-3 text-right text-zinc-600">Subtotal</td>
+              <td colSpan={4} className="pt-3 text-right text-zinc-600">Subtotal</td>
               <td className="pt-3 text-right">{money(subtotal)}</td>
             </tr>
             <tr>
-              <td colSpan={3} className="py-1 text-right text-zinc-600">Shipping</td>
+              <td colSpan={4} className="py-1 text-right text-zinc-600">Shipping</td>
               <td className="py-1 text-right">{money(shipping)}</td>
             </tr>
             <tr className="border-t-2 border-black text-base font-bold">
-              <td colSpan={3} className="pt-2 text-right">Total</td>
+              <td colSpan={4} className="pt-2 text-right">Total</td>
               <td className="pt-2 text-right">{money(order.totalCents)}</td>
             </tr>
           </tfoot>

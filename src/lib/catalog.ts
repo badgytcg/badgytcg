@@ -160,6 +160,42 @@ export function specialCardId(id: string): string {
   return `${SPECIAL_PREFIX}${id}`;
 }
 
+export interface CardSetInfo {
+  set: string;
+  setCode: string;
+  cardNumber: string;
+}
+
+/** Bulk-resolve set / set-code / collector number for a list of order-item
+ * card ids, so fulfillment views can show where each card lives. Base and
+ * foil/alt-foil ids resolve from the in-memory seed (no DB hit); one-off
+ * special/graded ids are looked up in a single query. Ids we can't resolve
+ * are simply absent from the map. */
+export async function getSetInfoByIds(ids: string[]): Promise<Map<string, CardSetInfo>> {
+  const seedById = new Map(seedCards.map((c) => [c.id, c]));
+  const result = new Map<string, CardSetInfo>();
+  const specialDbIds: string[] = [];
+
+  for (const id of ids) {
+    if (id.startsWith(SPECIAL_PREFIX)) {
+      specialDbIds.push(id.slice(SPECIAL_PREFIX.length));
+      continue;
+    }
+    const baseId = parseVariantId(id)?.baseId ?? id;
+    const base = seedById.get(baseId);
+    if (base) result.set(id, { set: base.set, setCode: base.setCode, cardNumber: base.cardNumber });
+  }
+
+  if (specialDbIds.length) {
+    const specials = await prisma.specialCard.findMany({ where: { id: { in: specialDbIds } } });
+    for (const s of specials) {
+      result.set(`${SPECIAL_PREFIX}${s.id}`, { set: s.set ?? "Special", setCode: "Special", cardNumber: "" });
+    }
+  }
+
+  return result;
+}
+
 /** Called once per purchased line after a successful checkout. Branches by
  * id namespace: a one-off special card is removed entirely (it's sold, no
  * such thing as restocking it), a foil/alt-foil decrements its own

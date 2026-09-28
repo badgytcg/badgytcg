@@ -8,6 +8,9 @@ interface OrderItem {
   cardName: string;
   qty: number;
   priceCents: number;
+  set: string | null;
+  setCode: string | null;
+  cardNumber: string | null;
 }
 
 interface AdminOrder {
@@ -287,9 +290,17 @@ export default function AdminOrdersPage() {
                     )}
                   </div>
                 </div>
-                <ul className="mt-3 text-xs text-zinc-500">
+                <ul className="mt-3 space-y-0.5 text-xs text-zinc-500">
                   {order.items.map((item) => (
-                    <li key={item.id}>{item.qty}x {item.cardName} — ${(item.priceCents / 100).toFixed(2)} ea</li>
+                    <li key={item.id} className="flex flex-wrap items-baseline gap-x-2">
+                      <span className="text-zinc-300">{item.qty}x {item.cardName}</span>
+                      {item.set && (
+                        <span className="rounded bg-zinc-800 px-1.5 py-0.5 text-[10px] font-medium text-zinc-400">
+                          {item.set}{item.cardNumber ? ` #${item.cardNumber}` : ""}
+                        </span>
+                      )}
+                      <span>— ${(item.priceCents / 100).toFixed(2)} ea</span>
+                    </li>
                   ))}
                 </ul>
 
