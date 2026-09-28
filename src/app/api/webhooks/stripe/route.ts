@@ -33,20 +33,27 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true });
   }
 
-  const lineItems = await getStripe().checkout.sessions.listLineItems(session.id, {
+  // listLineItems is paginated (10 per page by default). Auto-page through
+  // ALL of them — a big cart would otherwise silently drop every item past
+  // the first page, leaving the order with a wrong, incomplete item list.
+  const lineItemData: Stripe.LineItem[] = [];
+  for await (const item of getStripe().checkout.sessions.listLineItems(session.id, {
+    limit: 100,
     expand: ["data.price.product"],
-  });
+  })) {
+    lineItemData.push(item);
+  }
 
   // Snapshot consigner ownership at the moment of sale so reports remain
   // accurate even if ownership is later re-assigned in inventory.
-  const cardIds = lineItems.data.map((item) => {
+  const cardIds = lineItemData.map((item) => {
     const product = item.price?.product as Stripe.Product;
     return product.metadata.cardId as string;
   });
   const overrides = await prisma.cardOverride.findMany({ where: { cardId: { in: cardIds } } });
   const ownerByCardId = new Map(overrides.map((o) => [o.cardId, o.owner]));
 
-  const orderItems = lineItems.data.map((item) => {
+  const orderItems = lineItemData.map((item) => {
     const product = item.price?.product as Stripe.Product;
     const cardId = product.metadata.cardId as string;
     return {
