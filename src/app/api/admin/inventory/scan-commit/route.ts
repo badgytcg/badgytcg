@@ -98,6 +98,7 @@ export async function POST(request: Request) {
       adminEmail: session!.user!.email!,
       action: "inventory.scan_commit",
       detail: `Scan session: +${totalCards} card(s) across ${updated.length} entr(ies)`,
+      refId: sessionId,
       request,
     });
   }

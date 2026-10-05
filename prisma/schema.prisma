@@ -255,6 +255,7 @@ model AdminAuditLog {
   adminEmail String
   action     String // short machine-readable tag, e.g. "inventory.bulk_update"
   detail     String // human-readable summary of what changed
+  refId      String? // optional link to a related record (e.g. ScanSession id for scan_commit)
   ip         String?
   createdAt  DateTime @default(now())
 

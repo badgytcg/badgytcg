@@ -6,12 +6,13 @@ export async function logAdminAction(opts: {
   adminEmail: string;
   action: string;
   detail: string;
+  refId?: string | null;
   request?: Request;
 }): Promise<void> {
   try {
     const ip = opts.request?.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
     await prisma.adminAuditLog.create({
-      data: { adminEmail: opts.adminEmail, action: opts.action, detail: opts.detail, ip },
+      data: { adminEmail: opts.adminEmail, action: opts.action, detail: opts.detail, refId: opts.refId ?? null, ip },
     });
   } catch (err) {
     console.error("[audit log] failed to record:", err);
