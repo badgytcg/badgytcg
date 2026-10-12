@@ -39,12 +39,12 @@ export function extractShipping(session: Stripe.Checkout.Session): OrderShipping
   };
 }
 
-// Shipping is sized by card count — a heavy order costs real postage no
-// matter what it's worth. No free-shipping tier: orders can ship from two
-// different consigners, so we always charge postage.
+// Shipping is sized by card count / order value — a heavier or pricier order
+// costs real postage no matter what. No free-shipping tier: orders can ship
+// from two different consigners, so we always charge postage.
 //   - Over 50 cards: small box, flat $8.99 tracked
-//   - 13–50 cards (or $20+ subtotal): bubble mailer, $4.99 tracked
-//   - ≤12 cards under $20: PWE option ($1.29, untracked) alongside tracked
+//   - Otherwise over $20 (or 13–50 cards): padded poly pack, flat $6.00 tracked
+//   - ≤12 cards under $20: PWE option ($1.29, untracked) alongside a $4.99 mailer
 export function buildShippingOptions(
   subtotalCents: number,
   totalCards: number
@@ -61,7 +61,17 @@ export function buildShippingOptions(
       delivery_estimate: trackedEstimate,
     },
   };
-  const trackedOption = {
+  // Padded poly pack — the main tier for orders over $20 (or 13–50 cards).
+  const polyPackOption = {
+    shipping_rate_data: {
+      display_name: "USPS Ground Advantage — Padded Poly Pack (tracked)",
+      type: "fixed_amount" as const,
+      fixed_amount: { amount: 600, currency: "usd" },
+      delivery_estimate: trackedEstimate,
+    },
+  };
+  // Cheaper tracked mailer, offered only on small (<$20, ≤12 card) orders.
+  const mailerOption = {
     shipping_rate_data: {
       display_name: "USPS Ground Advantage — Bubble Mailer (tracked)",
       type: "fixed_amount" as const,
@@ -84,6 +94,6 @@ export function buildShippingOptions(
   return totalCards > 50
     ? [boxOption]
     : totalCards <= 12 && subtotalCents < 2000
-      ? [pweOption, trackedOption]
-      : [trackedOption];
+      ? [pweOption, mailerOption]
+      : [polyPackOption];
 }
