@@ -1,7 +1,8 @@
 import { cards } from "@/data/cards";
+import type { Card } from "@/lib/types";
 import { normalizeCardKey } from "@/lib/normalize";
 import { prisma } from "@/lib/prisma";
-import { variantCardId, VariantKind } from "@/lib/catalog";
+import { variantCardId, VariantKind, treatmentsForSetCode, setAllowsTreatment } from "@/lib/catalog";
 
 interface PriceRow {
   cardId: string;
@@ -39,6 +40,22 @@ function detectVariant(text: string): { kind: VariantKind | null; cleaned: strin
   }
   if (FOIL_PATTERN.test(text)) return { kind: "foil", cleaned: text.replace(FOIL_PATTERN, "").trim(), skip: false };
   return { kind: null, cleaned: text, skip: false };
+}
+
+/** Resolve a listing's detected foil wording to the actual treatment for THIS
+ * card's set. A named foil (arctic/birb/pengu) must be valid for the set or the
+ * listing is dropped. A generic "foil" maps to the set's single treatment
+ * (Enter the Huddle → foil, Legend of the Lils → arctic); for a set with two
+ * treatments (Birb & Pengu) a generic "foil" is ambiguous, so it's skipped
+ * rather than guessed. `null` kind means a plain base-card listing. */
+function finalizeKind(card: Card, detected: VariantKind | null): { kind: VariantKind | null; skip: boolean } {
+  if (detected === null) return { kind: null, skip: false };
+  if (detected === "foil") {
+    const treatments = treatmentsForSetCode(card.setCode);
+    if (treatments.length === 1) return { kind: treatments[0], skip: false };
+    return { kind: null, skip: true }; // ambiguous (e.g. Birb vs Pengu) — don't guess
+  }
+  return setAllowsTreatment(card.setCode, detected) ? { kind: detected, skip: false } : { kind: null, skip: true };
 }
 
 const byNameAndSet = new Map(
@@ -80,11 +97,15 @@ async function fetchDyliPrices(): Promise<PriceRow[]> {
       const namePart = item.name.slice(0, lastDash).trim();
       const setPart = item.name.slice(lastDash + 3).trim();
 
-      const { kind, cleaned, skip } = detectVariant(namePart);
-      if (skip) continue;
+      const detected = detectVariant(namePart);
+      if (detected.skip) continue;
 
-      const card = byNameAndSet.get(`${normalizeCardKey(cleaned)}::${normalizeSet(setPart)}`);
+      const card = byNameAndSet.get(`${normalizeCardKey(detected.cleaned)}::${normalizeSet(setPart)}`);
       if (!card) continue;
+      // Pin the foil wording to this card's set (Lils foil → arctic, etc.);
+      // drop listings whose foil can't belong to the card's set.
+      const { kind, skip: kindSkip } = finalizeKind(card, detected.kind);
+      if (kindSkip) continue;
       const cardId = kind ? variantCardId(card.id, kind) : card.id;
 
       // Price priority:
@@ -214,7 +235,13 @@ async function fetchScgPrices(): Promise<PriceRow[]> {
         const card = bySetCodeAndNumber.get(`${setCode}::${number}`);
         if (!card) continue;
 
-        const kind: VariantKind | null = item.finish?.toLowerCase() === "foil" ? "foil" : null;
+        // SCG's finish chip carries the treatment ("Foil", "Arctic Foil",
+        // "Birb Foil", "Pengu Foil"); fall back to the item name in case the
+        // named foil is only there. Resolve it against the card's set.
+        const detected = detectVariant(`${item.finish ?? ""} ${item.name ?? ""}`);
+        if (detected.skip) continue;
+        const { kind, skip: kindSkip } = finalizeKind(card, detected.kind);
+        if (kindSkip) continue;
         const cardId = kind ? variantCardId(card.id, kind) : card.id;
         const price = Number(item.price.replace(/[^0-9.]/g, ""));
         if (!Number.isFinite(price)) continue;

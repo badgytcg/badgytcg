@@ -226,6 +226,28 @@ export default function AdminFoilsPage() {
   const sets = useMemo(() => Array.from(new Set(rows.map((r) => r.set))).sort(), [rows]);
   const rarities = useMemo(() => Array.from(new Set(rows.map((r) => cards.find((c) => c.id === r.cardId)?.rarity).filter(Boolean) as string[])).sort(), [rows, cards]);
 
+  // Filter + sort for the Stocked Variants table.
+  const [rowQuery, setRowQuery] = useState("");
+  const [rowSet, setRowSet] = useState("All");
+  const [sortKey, setSortKey] = useState<"name" | "set" | "kind">("name");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  function toggleSort(key: "name" | "set" | "kind") {
+    if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else { setSortKey(key); setSortDir("asc"); }
+  }
+  const sortArrow = (key: "name" | "set" | "kind") => (sortKey === key ? (sortDir === "asc" ? " ▲" : " ▼") : "");
+  const displayRows = useMemo(() => {
+    const q = rowQuery.trim().toLowerCase();
+    const filtered = rows.filter(
+      (r) =>
+        (rowSet === "All" || r.set === rowSet) &&
+        (!q || r.name.toLowerCase().includes(q) || r.set.toLowerCase().includes(q) || r.kindLabel.toLowerCase().includes(q))
+    );
+    const dir = sortDir === "asc" ? 1 : -1;
+    const val = (r: VariantRow) => (sortKey === "name" ? r.name : sortKey === "set" ? r.set : r.kindLabel);
+    return [...filtered].sort((a, b) => val(a).localeCompare(val(b)) * dir || a.name.localeCompare(b.name));
+  }, [rows, rowQuery, rowSet, sortKey, sortDir]);
+
   const bulkMatches = useMemo(() =>
     rows.filter((r) => {
       const card = cards.find((c) => c.id === r.cardId);
@@ -380,18 +402,37 @@ export default function AdminFoilsPage() {
 
       <section className="mb-10">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-          Stocked Variants ({rows.length})
+          Stocked Variants ({displayRows.length}{displayRows.length !== rows.length ? ` of ${rows.length}` : ""})
         </h2>
         {rows.length === 0 ? (
           <p className="text-sm text-zinc-500">None yet — search for a card below to add one.</p>
         ) : (
+          <>
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <input
+              value={rowQuery}
+              onChange={(e) => setRowQuery(e.target.value)}
+              placeholder="Filter by card, set, or variant…"
+              className="flex-1 min-w-[200px] max-w-sm rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500"
+            />
+            <select value={rowSet} onChange={(e) => setRowSet(e.target.value)} className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100">
+              <option value="All">All sets</option>
+              {sets.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+            {(rowQuery || rowSet !== "All") && (
+              <button onClick={() => { setRowQuery(""); setRowSet("All"); }} className="text-xs text-zinc-400 hover:text-zinc-200">Clear</button>
+            )}
+          </div>
+          {displayRows.length === 0 ? (
+            <p className="text-sm text-zinc-500">No variants match that filter.</p>
+          ) : (
           <div className="overflow-x-auto rounded-xl border border-zinc-800">
             <table className="w-full text-sm">
               <thead className="bg-zinc-900 text-left text-xs uppercase tracking-wide text-zinc-500">
                 <tr>
-                  <th className="px-4 py-3">Card</th>
-                  <th className="px-4 py-3">Set</th>
-                  <th className="px-4 py-3">Variant</th>
+                  <th className="cursor-pointer select-none px-4 py-3 hover:text-zinc-300" onClick={() => toggleSort("name")}>Card{sortArrow("name")}</th>
+                  <th className="cursor-pointer select-none px-4 py-3 hover:text-zinc-300" onClick={() => toggleSort("set")}>Set{sortArrow("set")}</th>
+                  <th className="cursor-pointer select-none px-4 py-3 hover:text-zinc-300" onClick={() => toggleSort("kind")}>Variant{sortArrow("kind")}</th>
                   <th className="px-4 py-3">Price</th>
                   <th className="px-4 py-3">Stock</th>
                   <th className="px-4 py-3">Dyli</th>
@@ -400,7 +441,7 @@ export default function AdminFoilsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800">
-                {rows.map((row) => {
+                {displayRows.map((row) => {
                   const key = `${row.cardId}::${row.kind}`;
                   const card = cards.find((c) => c.id === row.cardId);
                   const edit = card
@@ -542,6 +583,8 @@ export default function AdminFoilsPage() {
               </tbody>
             </table>
           </div>
+          )}
+          </>
         )}
       </section>
 
