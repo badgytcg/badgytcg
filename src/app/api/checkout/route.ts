@@ -75,6 +75,9 @@ export async function POST(request: Request) {
   const checkoutSession = await getStripe().checkout.sessions.create({
     mode: "payment",
     line_items: lineItems,
+    // Show the "Add promotion code" field so customers can redeem codes
+    // (e.g. BADGY10). Stripe enforces each code's discount and usage cap.
+    allow_promotion_codes: true,
     shipping_address_collection: { allowed_countries: ["US"] },
     shipping_options: buildShippingOptions(subtotalCents, totalCards),
     success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
