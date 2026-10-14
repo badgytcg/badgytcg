@@ -4,17 +4,44 @@ import { prisma } from "@/lib/prisma";
 
 const SPECIAL_PREFIX = "special::";
 
-export const VARIANT_KINDS = ["foil", "altfoil"] as const;
+// Foil treatments. Which ones a card can have depends on its set (see
+// SET_TREATMENTS below): Enter the Huddle has a plain Foil, Legend of the Lils
+// has Arctic Foil, and Birb & Pengu has Birb Foil and Pengu Foil. "foil" also
+// lingers on legacy Birb & Pengu rows entered before the split — still valid to
+// parse/display, just no longer offered for new Birb & Pengu adds.
+export const VARIANT_KINDS = ["foil", "arctic", "birb", "pengu"] as const;
 
-// Starting price for a newly-stocked foil/alt-foil that has no price yet.
-// It's just a default — adjust per card on the Foils page afterward.
+// Starting price for a newly-stocked foil that has no price yet. It's just a
+// default — adjust per card on the Foils page afterward.
 export const DEFAULT_FOIL_PRICE = 1;
 export type VariantKind = (typeof VARIANT_KINDS)[number];
 
 export const VARIANT_LABEL: Record<VariantKind, string> = {
   foil: "Foil",
-  altfoil: "Alt Foil",
+  arctic: "Arctic Foil",
+  birb: "Birb Foil",
+  pengu: "Pengu Foil",
 };
+
+// Foil treatments available in each set, keyed by setCode. A card's valid foil
+// treatments come from the set it belongs to — so an Enter the Huddle card
+// can't be an Arctic Foil, etc.
+const SET_TREATMENTS: Record<string, VariantKind[]> = {
+  Eth: ["foil"],          // Enter the Huddle
+  Lotl: ["arctic"],       // Legend of the Lils
+  Bap: ["birb", "pengu"], // Birb & Pengu
+};
+
+/** The foil treatments a card's set supports, by setCode. Empty for sets with
+ * no foils. */
+export function treatmentsForSetCode(setCode: string | null | undefined): VariantKind[] {
+  return (setCode && SET_TREATMENTS[setCode]) || [];
+}
+
+/** True if a card in the given set can carry this foil treatment. */
+export function setAllowsTreatment(setCode: string | null | undefined, kind: VariantKind): boolean {
+  return treatmentsForSetCode(setCode).includes(kind);
+}
 
 function parseVariantId(id: string): { baseId: string; kind: VariantKind } | null {
   for (const kind of VARIANT_KINDS) {

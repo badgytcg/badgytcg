@@ -2,18 +2,17 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { isAdminEmail } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
-import { getEffectiveCards, DEFAULT_FOIL_PRICE } from "@/lib/catalog";
+import { getEffectiveCards, DEFAULT_FOIL_PRICE, VARIANT_KINDS, setAllowsTreatment, type VariantKind } from "@/lib/catalog";
 import { logAdminAction } from "@/lib/audit";
 
-const VARIANT_KINDS = ["foil", "altfoil"];
-
 // Commit a whole scan session at once.
-// Body: { items: [{ cardId, qty, kind? }] } where kind is "base" (default),
-// "foil", or "altfoil". Quantities are ADDED to current stock (fresh read
-// here, so a stale scan-time count can't clobber a concurrent edit). Base
-// cards go to CardOverride; foils go to CardVariantOverride. A foil variant
-// that doesn't exist yet is created starting at the base card's price (adjust
-// on the Foils page afterward).
+// Body: { items: [{ cardId, qty, kind? }] } where kind is "base" (default) or a
+// foil treatment (foil / arctic / birb / pengu). A foil treatment is only
+// applied if the card's set actually has it (e.g. Arctic Foil only for Legend
+// of the Lils) — mismatches are returned in `rejected`. Quantities are ADDED to
+// current stock (fresh read here, so a stale scan-time count can't clobber a
+// concurrent edit). Base cards go to CardOverride; foils go to
+// CardVariantOverride, created at the base card's price if new.
 export async function POST(request: Request) {
   const session = await auth();
   if (!isAdminEmail(session?.user?.email)) {
@@ -32,15 +31,23 @@ export async function POST(request: Request) {
 
   const updated: { cardId: string; name: string; kind: string; qty: number; newStock: number }[] = [];
   const unmatched: string[] = [];
+  const rejected: { cardId: string; name: string; kind: string; set: string }[] = [];
   let totalCards = 0;
 
   for (const raw of items) {
     const cardId = String(raw?.cardId ?? "");
     const qty = Math.max(0, Math.round(Number(raw?.qty) || 0));
-    const kind = VARIANT_KINDS.includes(raw?.kind) ? (raw.kind as string) : "base";
+    const kind = (VARIANT_KINDS as readonly string[]).includes(raw?.kind) ? (raw.kind as string) : "base";
     const card = byId.get(cardId);
     if (!card || qty <= 0) {
       if (cardId) unmatched.push(cardId);
+      continue;
+    }
+
+    // Guard foil treatments against the card's set — don't stock an
+    // impossible variant (e.g. an Arctic Foil of an Enter the Huddle card).
+    if (kind !== "base" && !setAllowsTreatment(card.setCode, kind as VariantKind)) {
+      rejected.push({ cardId, name: card.name, kind, set: card.set });
       continue;
     }
 
@@ -103,5 +110,5 @@ export async function POST(request: Request) {
     });
   }
 
-  return NextResponse.json({ updated, unmatched, sessionId });
+  return NextResponse.json({ updated, unmatched, rejected, sessionId });
 }

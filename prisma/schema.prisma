@@ -201,12 +201,13 @@ model MarketPriceHistory {
   @@index([cardId, source, recordedAt])
 }
 
-// A foil/alt-foil copy of a catalog card. `kind` is "foil" or "altfoil" —
-// only exists once an admin has actually stocked that variant; the toggle
-// on a card's tile/detail page only shows the tiers that have a row here.
+// A foil copy of a catalog card. `kind` is a set-specific treatment:
+// "foil" (Enter the Huddle), "arctic" (Legend of the Lils), or "birb"/"pengu"
+// (Birb & Pengu). Only exists once an admin has stocked that variant; the
+// toggle on a card's tile/detail page shows only the treatments with a row.
 model CardVariantOverride {
   cardId    String
-  kind      String // "foil" | "altfoil"
+  kind      String // foil | arctic | birb | pengu
   price     Float
   stock     Int
   updatedAt DateTime @updatedAt

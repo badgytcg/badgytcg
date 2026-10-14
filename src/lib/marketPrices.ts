@@ -19,8 +19,13 @@ function normalizeSet(value: string): string {
 // Listings we don't track pricing for at all — promos, one-off sketches,
 // QR/code cards. These get skipped entirely, not attributed to any variant.
 const SKIP_PATTERN = /\b(promo|qr|sketch|ttm)\b/i;
-// "Arctic Foil" is checked before plain "foil" since it also contains the word.
-const ALT_FOIL_PATTERN = /\barctic foil\b/i;
+// Named foil treatments are checked before plain "foil" since the names also
+// contain the word "foil". Each maps to a set-specific variant kind.
+const NAMED_FOIL_PATTERNS: { pattern: RegExp; kind: VariantKind }[] = [
+  { pattern: /\barctic foil\b/i, kind: "arctic" }, // Legend of the Lils
+  { pattern: /\bbirb foil\b/i, kind: "birb" },     // Birb & Pengu
+  { pattern: /\bpengu foil\b/i, kind: "pengu" },   // Birb & Pengu
+];
 const FOIL_PATTERN = /\b(holo|foil)\b/i;
 
 /** Pulls a variant tier (if any) out of a listing's name and returns the
@@ -29,7 +34,9 @@ const FOIL_PATTERN = /\b(holo|foil)\b/i;
  * and `skip: true` for promos/sketches/etc. we don't track at all. */
 function detectVariant(text: string): { kind: VariantKind | null; cleaned: string; skip: boolean } {
   if (SKIP_PATTERN.test(text)) return { kind: null, cleaned: text, skip: true };
-  if (ALT_FOIL_PATTERN.test(text)) return { kind: "altfoil", cleaned: text.replace(ALT_FOIL_PATTERN, "").trim(), skip: false };
+  for (const { pattern, kind } of NAMED_FOIL_PATTERNS) {
+    if (pattern.test(text)) return { kind, cleaned: text.replace(pattern, "").trim(), skip: false };
+  }
   if (FOIL_PATTERN.test(text)) return { kind: "foil", cleaned: text.replace(FOIL_PATTERN, "").trim(), skip: false };
   return { kind: null, cleaned: text, skip: false };
 }

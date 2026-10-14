@@ -11,13 +11,34 @@ const OUTPUT_H = 1000;
 const SESSION_KEY = "badgy-scan-session";
 
 type Flash = "none" | "success";
-type ScanKind = "base" | "foil" | "altfoil";
+type ScanKind = "base" | "foil" | "arctic" | "birb" | "pengu";
+const KIND_LABEL: Record<ScanKind, string> = {
+  base: "Normal",
+  foil: "Foil",
+  arctic: "Arctic Foil",
+  birb: "Birb Foil",
+  pengu: "Pengu Foil",
+};
+// Foil treatments are set-specific — the dropdown notes which set each is for,
+// and a scan is rejected if its card isn't from a set that has that treatment.
 const KINDS: { value: ScanKind; label: string }[] = [
   { value: "base", label: "Normal" },
-  { value: "foil", label: "Foil" },
-  { value: "altfoil", label: "Alt Foil" },
+  { value: "foil", label: "Foil — Enter the Huddle" },
+  { value: "arctic", label: "Arctic Foil — Legend of the Lils" },
+  { value: "birb", label: "Birb Foil — Birb & Pengu" },
+  { value: "pengu", label: "Pengu Foil — Birb & Pengu" },
 ];
-const KIND_LABEL: Record<ScanKind, string> = { base: "Normal", foil: "Foil", altfoil: "Alt Foil" };
+// setCode → the foil treatments valid for cards in that set (mirrors
+// SET_TREATMENTS in @/lib/catalog; inlined so this client file avoids importing
+// the server-only catalog module).
+const SET_TREATMENTS: Record<string, ScanKind[]> = {
+  Eth: ["foil"],
+  Lotl: ["arctic"],
+  Bap: ["birb", "pengu"],
+};
+function setAllowsKind(setCode: string, kind: ScanKind): boolean {
+  return kind === "base" || (SET_TREATMENTS[setCode] ?? []).includes(kind);
+}
 
 interface SessionLine {
   card: Card;
@@ -273,13 +294,23 @@ export default function AdminScanPage() {
       });
       const result = await res.json();
       if (res.ok && result.card) {
-        playDing();
-        setFlash("success");
-        setScanStatus(null);
-        addScannedCard(result.card, scanKindRef.current);
-        // Brief cooldown so the same physical card isn't counted repeatedly.
-        cooldownRef.current = true;
-        setTimeout(() => { cooldownRef.current = false; setFlash("none"); }, COOLDOWN_MS);
+        const kind = scanKindRef.current;
+        const card = result.card as Card;
+        if (!setAllowsKind(card.setCode, kind)) {
+          // Scanned a card whose set can't have the selected foil treatment —
+          // e.g. scanning as "Arctic Foil" but the card is from Birb & Pengu.
+          setScanStatus(`⚠️ ${card.name} is ${card.set} — it can't be a ${KIND_LABEL[kind]}. Switch the foil type to match the stack you're scanning.`);
+          cooldownRef.current = true;
+          setTimeout(() => { cooldownRef.current = false; }, COOLDOWN_MS);
+        } else {
+          playDing();
+          setFlash("success");
+          setScanStatus(null);
+          addScannedCard(card, kind);
+          // Brief cooldown so the same physical card isn't counted repeatedly.
+          cooldownRef.current = true;
+          setTimeout(() => { cooldownRef.current = false; setFlash("none"); }, COOLDOWN_MS);
+        }
       } else if (!res.ok) {
         // API problem (missing key, no credit, rate limit, model error).
         setScanStatus(result?.error ?? `Scanner error (${res.status}).`);
@@ -327,7 +358,13 @@ export default function AdminScanPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        setCommitResult(`✓ Added ${cardCount} card(s) across ${data.updated.length} title(s) to inventory.`);
+        const addedCards = (data.updated ?? []).reduce((n: number, u: { qty: number }) => n + u.qty, 0);
+        let msg = `✓ Added ${addedCards} card(s) across ${data.updated.length} title(s) to inventory.`;
+        if (Array.isArray(data.rejected) && data.rejected.length > 0) {
+          const names = data.rejected.map((r: { name: string; set: string }) => `${r.name} (${r.set})`).join(", ");
+          msg += ` ⚠️ Skipped ${data.rejected.length} — wrong foil type for their set: ${names}.`;
+        }
+        setCommitResult(msg);
         setSession([]);
         loadHistory();
       } else {
@@ -353,22 +390,22 @@ export default function AdminScanPage() {
         scanning; nothing hits your inventory until you tap <span className="text-zinc-200">Add all to inventory</span>.
       </p>
 
-      {/* What you're scanning into — flip to Foil to batch foils together */}
+      {/* What you're scanning into. Foil treatments are per-set, so pick the one
+          matching the stack in hand — a card from another set is rejected. */}
       <div className="mb-3">
-        <div className="flex rounded-full border border-zinc-700 p-0.5 text-sm">
+        <label className="mb-1 block text-xs font-medium text-zinc-400">Scanning as</label>
+        <select
+          value={scanKind}
+          onChange={(e) => setScanKind(e.target.value as ScanKind)}
+          className={`w-full rounded-lg border px-3 py-2 text-sm text-zinc-100 ${scanKind !== "base" ? "border-yellow-500/60 bg-zinc-900" : "border-zinc-700 bg-zinc-900"}`}
+        >
           {KINDS.map((k) => (
-            <button
-              key={k.value}
-              onClick={() => setScanKind(k.value)}
-              className={`flex-1 rounded-full py-1.5 ${scanKind === k.value ? "bg-purple-600 font-medium text-white" : "text-zinc-400 hover:text-zinc-200"}`}
-            >
-              {k.label}
-            </button>
+            <option key={k.value} value={k.value}>{k.label}</option>
           ))}
-        </div>
+        </select>
         {scanKind !== "base" && (
-          <p className="mt-1.5 text-center text-xs text-yellow-400">
-            ✨ Scanning as {KIND_LABEL[scanKind]} — these go to your foil stock.
+          <p className="mt-1.5 text-xs text-yellow-400">
+            ✨ Scanning as {KIND_LABEL[scanKind]} — these go to your foil stock. Scan only {KIND_LABEL[scanKind]} cards from that set.
           </p>
         )}
       </div>
@@ -546,7 +583,7 @@ export default function AdminScanPage() {
                                   {i.cardName}
                                   {i.kind !== "base" && (
                                     <span className="ml-1 rounded bg-yellow-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-yellow-300">
-                                      {i.kind === "foil" ? "Foil" : "Alt Foil"}
+                                      {KIND_LABEL[i.kind as ScanKind] ?? i.kind}
                                     </span>
                                   )}
                                 </span>

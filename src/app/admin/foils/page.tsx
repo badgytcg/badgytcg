@@ -5,8 +5,31 @@ import { Card } from "@/lib/types";
 
 function variantCardId(baseId: string, kind: string) { return `${baseId}::${kind}`; }
 
-type VariantKind = "foil" | "altfoil";
-const VARIANT_LABEL: Record<VariantKind, string> = { foil: "Foil", altfoil: "Alt Foil" };
+type VariantKind = "foil" | "arctic" | "birb" | "pengu";
+const VARIANT_LABEL: Record<string, string> = {
+  foil: "Foil",
+  arctic: "Arctic Foil",
+  birb: "Birb Foil",
+  pengu: "Pengu Foil",
+};
+// Foil treatments available per set (by setCode) — mirrors SET_TREATMENTS in
+// @/lib/catalog; inlined so this client file avoids the server-only module.
+const SET_TREATMENTS: Record<string, VariantKind[]> = {
+  Eth: ["foil"],
+  Lotl: ["arctic"],
+  Bap: ["birb", "pengu"],
+};
+const ALL_TREATMENTS: VariantKind[] = ["foil", "arctic", "birb", "pengu"];
+function setAllowsKind(setCode: string, kind: VariantKind): boolean {
+  return (SET_TREATMENTS[setCode] ?? []).includes(kind);
+}
+// Treatment → the set it belongs to, for the add-treatment picker hints.
+const KIND_SET_HINT: Record<VariantKind, string> = {
+  foil: "Enter the Huddle",
+  arctic: "Legend of the Lils",
+  birb: "Birb & Pengu",
+  pengu: "Birb & Pengu",
+};
 const BULK_ADD_PLACEHOLDER = `4 Get Rekt
 1 Lil Waker
 2 Mount Fuji
@@ -63,6 +86,7 @@ export default function AdminFoilsPage() {
   const [bulkAddResult, setBulkAddResult] = useState<{
     updated: { name: string; qty: number; newStock: number }[];
     unmatched: { name: string; qty: number }[];
+    wrongSet?: { name: string; qty: number; set: string }[];
   } | null>(null);
   const [bulkAddError, setBulkAddError] = useState<string | null>(null);
 
@@ -89,8 +113,13 @@ export default function AdminFoilsPage() {
   const rowByKey = useMemo(() => new Map(rows.map((r) => [`${r.cardId}::${r.kind}`, r])), [rows]);
 
   const filtered = useMemo(
-    () => (query ? cards.filter((c) => c.name.toLowerCase().includes(query.toLowerCase())).slice(0, 50) : []),
-    [cards, query]
+    () =>
+      query
+        ? cards
+            .filter((c) => setAllowsKind(c.setCode, addKind) && c.name.toLowerCase().includes(query.toLowerCase()))
+            .slice(0, 50)
+        : [],
+    [cards, query, addKind]
   );
 
   function editKey(cardId: string, kind: VariantKind) {
@@ -175,6 +204,25 @@ export default function AdminFoilsPage() {
     setRows((prev) => prev.filter((r) => !(r.cardId === cardId && r.kind === kind)));
   }
 
+  // Legacy rows whose treatment isn't valid for their set (e.g. a Birb & Pengu
+  // "foil" entered before the Birb/Pengu split) can be reclassified in place.
+  const [reclassTo, setReclassTo] = useState<Record<string, VariantKind>>({});
+  const [reclassifying, setReclassifying] = useState<string | null>(null);
+
+  async function reclassify(row: VariantRow, setCode: string) {
+    const key = `${row.cardId}::${row.kind}`;
+    const toKind = reclassTo[key] ?? (SET_TREATMENTS[setCode] ?? [])[0];
+    if (!toKind) return;
+    setReclassifying(key);
+    const res = await fetch("/api/admin/foil-inventory/reclassify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ cardId: row.cardId, fromKind: row.kind, toKind }),
+    });
+    setReclassifying(null);
+    if (res.ok) load();
+  }
+
   const sets = useMemo(() => Array.from(new Set(rows.map((r) => r.set))).sort(), [rows]);
   const rarities = useMemo(() => Array.from(new Set(rows.map((r) => cards.find((c) => c.id === r.cardId)?.rarity).filter(Boolean) as string[])).sort(), [rows, cards]);
 
@@ -244,7 +292,7 @@ export default function AdminFoilsPage() {
       }
       setBulkAddResult(data);
       load();
-      if (data.unmatched.length === 0) setBulkAddText("");
+      if (data.unmatched.length === 0 && (data.wrongSet?.length ?? 0) === 0) setBulkAddText("");
     } catch {
       setBulkAddError("Bulk add failed — try again in a moment.");
     }
@@ -257,10 +305,11 @@ export default function AdminFoilsPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-6 py-10">
-      <h1 className="mb-2 text-2xl font-bold text-zinc-100">Foil &amp; Alt Foil Inventory</h1>
+      <h1 className="mb-2 text-2xl font-bold text-zinc-100">Foil Inventory</h1>
       <p className="mb-6 text-sm text-zinc-400">
-        Each variant has its own separate stock/price from the regular card. The toggle on a card&apos;s
-        tile/page only shows the tiers that have a row here.
+        Each foil treatment has its own stock/price, separate from the regular card. Treatments are
+        per set — Enter the Huddle has Foil, Legend of the Lils has Arctic Foil, Birb &amp; Pengu has
+        Birb Foil and Pengu Foil.
       </p>
 
       {/* Bulk price update */}
@@ -288,8 +337,7 @@ export default function AdminFoilsPage() {
             <label className="mb-1 block text-xs text-zinc-500">Variant</label>
             <select value={bulkKind} onChange={(e) => setBulkKind(e.target.value as "All" | VariantKind)} className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100">
               <option value="All">All variants</option>
-              <option value="foil">Foil</option>
-              <option value="altfoil">Alt Foil</option>
+              {ALL_TREATMENTS.map((k) => <option key={k} value={k}>{VARIANT_LABEL[k]}</option>)}
             </select>
           </div>
           <div>
@@ -451,20 +499,41 @@ export default function AdminFoilsPage() {
                       </td>
 
                       <td className="px-4 py-2">
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => card && save(card, row.kind)}
-                            disabled={savingId === key || !card}
-                            className="rounded-lg bg-purple-600 px-3 py-1 text-xs font-medium text-white hover:bg-purple-500 disabled:bg-zinc-700"
-                          >
-                            {savingId === key ? "Saving..." : "Save"}
-                          </button>
-                          <button
-                            onClick={() => removeVariant(row.cardId, row.kind)}
-                            className="rounded-lg border border-zinc-700 px-3 py-1 text-xs text-zinc-300 hover:border-red-500 hover:text-red-400"
-                          >
-                            Remove
-                          </button>
+                        <div className="flex flex-col gap-2">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => card && save(card, row.kind)}
+                              disabled={savingId === key || !card}
+                              className="rounded-lg bg-purple-600 px-3 py-1 text-xs font-medium text-white hover:bg-purple-500 disabled:bg-zinc-700"
+                            >
+                              {savingId === key ? "Saving..." : "Save"}
+                            </button>
+                            <button
+                              onClick={() => removeVariant(row.cardId, row.kind)}
+                              className="rounded-lg border border-zinc-700 px-3 py-1 text-xs text-zinc-300 hover:border-red-500 hover:text-red-400"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                          {card && !setAllowsKind(card.setCode, row.kind) && (SET_TREATMENTS[card.setCode]?.length ?? 0) > 0 && (
+                            <div className="flex items-center gap-1 rounded-lg border border-yellow-700/50 bg-yellow-900/10 px-2 py-1">
+                              <span className="text-[10px] text-yellow-500" title={`"${row.kindLabel}" isn't a ${row.set} treatment`}>Reclassify →</span>
+                              <select
+                                value={reclassTo[key] ?? SET_TREATMENTS[card.setCode][0]}
+                                onChange={(e) => setReclassTo((prev) => ({ ...prev, [key]: e.target.value as VariantKind }))}
+                                className="rounded border border-zinc-700 bg-zinc-900 px-1 py-0.5 text-[11px] text-zinc-100"
+                              >
+                                {SET_TREATMENTS[card.setCode].map((k) => <option key={k} value={k}>{VARIANT_LABEL[k]}</option>)}
+                              </select>
+                              <button
+                                onClick={() => reclassify(row, card.setCode)}
+                                disabled={reclassifying === key}
+                                className="rounded bg-yellow-700 px-1.5 py-0.5 text-[10px] text-white hover:bg-yellow-600 disabled:bg-zinc-700"
+                              >
+                                {reclassifying === key ? "…" : "Go"}
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -476,16 +545,20 @@ export default function AdminFoilsPage() {
         )}
       </section>
 
-      <div className="mb-4 flex rounded-full border border-zinc-700 p-0.5 text-sm">
-        {(["foil", "altfoil"] as VariantKind[]).map((kind) => (
-          <button
-            key={kind}
-            onClick={() => setAddKind(kind)}
-            className={`rounded-full px-4 py-1 ${addKind === kind ? "bg-purple-600 text-white" : "text-zinc-400"}`}
-          >
-            {VARIANT_LABEL[kind]}
-          </button>
-        ))}
+      <div className="mb-4">
+        <label className="mb-1 block text-xs font-medium text-zinc-500">Foil treatment to add / edit</label>
+        <select
+          value={addKind}
+          onChange={(e) => setAddKind(e.target.value as VariantKind)}
+          className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100"
+        >
+          {ALL_TREATMENTS.map((k) => (
+            <option key={k} value={k}>{VARIANT_LABEL[k]} — {KIND_SET_HINT[k]}</option>
+          ))}
+        </select>
+        <p className="mt-1 text-xs text-zinc-500">
+          Only cards from {KIND_SET_HINT[addKind]} can be a {VARIANT_LABEL[addKind]}; the search below is limited to that set.
+        </p>
       </div>
 
       <section className="mb-10 rounded-xl border border-zinc-800 bg-zinc-900 p-5">
@@ -534,6 +607,18 @@ export default function AdminFoilsPage() {
                 <ul className="space-y-1 text-sm text-zinc-300">
                   {bulkAddResult.unmatched.map((u, i) => (
                     <li key={i}>{u.qty} {u.name}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {bulkAddResult.wrongSet && bulkAddResult.wrongSet.length > 0 && (
+              <div>
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-red-400">
+                  Wrong set for {VARIANT_LABEL[addKind]} ({bulkAddResult.wrongSet.length})
+                </h3>
+                <ul className="space-y-1 text-sm text-zinc-300">
+                  {bulkAddResult.wrongSet.map((u, i) => (
+                    <li key={i}>{u.qty} {u.name} <span className="text-zinc-500">— {u.set}</span></li>
                   ))}
                 </ul>
               </div>
