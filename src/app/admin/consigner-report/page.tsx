@@ -35,6 +35,25 @@ export default function ConsignerReportPage() {
     fetch("/api/admin/consigners").then((r) => r.json()).then((d) => setConsigners(d.consigners ?? []));
   }, []);
 
+  // Local YYYY-MM-DD (not UTC) so "Today" matches the admin's calendar day.
+  const fmt = (d: Date) => {
+    const tz = new Date(d.getTime() - d.getTimezoneOffset() * 60_000);
+    return tz.toISOString().slice(0, 10);
+  };
+  function setToday() { const t = fmt(new Date()); setFrom(t); setTo(t); }
+  function setLastDays(n: number) { const e = new Date(); const s = new Date(); s.setDate(s.getDate() - (n - 1)); setFrom(fmt(s)); setTo(fmt(e)); }
+  function setThisMonth() { const now = new Date(); setFrom(fmt(new Date(now.getFullYear(), now.getMonth(), 1))); setTo(fmt(now)); }
+  function setThisYear() { const now = new Date(); setFrom(fmt(new Date(now.getFullYear(), 0, 1))); setTo(fmt(now)); }
+  function setAllTime() { setFrom(""); setTo(""); }
+  const PRESETS: { label: string; fn: () => void }[] = [
+    { label: "Today", fn: setToday },
+    { label: "Last 7 days", fn: () => setLastDays(7) },
+    { label: "Last 30 days", fn: () => setLastDays(30) },
+    { label: "This month", fn: setThisMonth },
+    { label: "This year", fn: setThisYear },
+    { label: "All time", fn: setAllTime },
+  ];
+
   async function runReport() {
     const params = new URLSearchParams();
     if (owner !== "all") params.set("owner", owner);
@@ -97,18 +116,31 @@ export default function ConsignerReportPage() {
           <input
             type="date"
             value={from}
+            max={to || undefined}
             onChange={(e) => setFrom(e.target.value)}
-            className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100"
+            onClick={(e) => e.currentTarget.showPicker?.()}
+            className="cursor-pointer rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100"
           />
         </div>
         <div>
           <label className="mb-1 block text-xs text-zinc-500">To</label>
-          <input
-            type="date"
-            value={to}
-            onChange={(e) => setTo(e.target.value)}
-            className="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100"
-          />
+          <div className="flex items-center gap-1">
+            <input
+              type="date"
+              value={to}
+              min={from || undefined}
+              onChange={(e) => setTo(e.target.value)}
+              onClick={(e) => e.currentTarget.showPicker?.()}
+              className="cursor-pointer rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100"
+            />
+            <button
+              onClick={() => setTo(fmt(new Date()))}
+              title="Set end date to today"
+              className="rounded-lg border border-zinc-700 px-2 py-2 text-xs text-zinc-300 hover:border-purple-500 hover:text-purple-300"
+            >
+              Today
+            </button>
+          </div>
         </div>
         <button
           onClick={runReport}
@@ -124,6 +156,18 @@ export default function ConsignerReportPage() {
             Export CSV
           </button>
         )}
+        <div className="flex w-full flex-wrap items-center gap-2 border-t border-zinc-800 pt-3">
+          <span className="text-xs text-zinc-500">Quick range:</span>
+          {PRESETS.map((p) => (
+            <button
+              key={p.label}
+              onClick={p.fn}
+              className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300 hover:border-purple-500 hover:text-purple-300"
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {loaded && (
