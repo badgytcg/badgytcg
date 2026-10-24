@@ -18,7 +18,9 @@ export async function GET(request: Request) {
     where: {
       ...(owner ? { owner } : {}),
       order: {
-        status: { in: ["paid", "fulfilled"] },
+        // All completed sales count — including delivered (Complete) orders.
+        // Only cancelled/refunded are left out.
+        status: { in: ["paid", "fulfilled", "delivered"] },
         ...(from || to
           ? {
               createdAt: {

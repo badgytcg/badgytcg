@@ -330,7 +330,7 @@ export default function AdminOrdersPage() {
                     >
                       Receipt
                     </a>
-                    {(order.status === "paid" || order.status === "fulfilled") && (
+                    {(order.status === "paid" || order.status === "fulfilled" || order.status === "delivered") && (
                       <button
                         onClick={() => refundOrder(order)}
                         disabled={refundingId === order.id}
