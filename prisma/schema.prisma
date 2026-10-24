@@ -298,6 +298,21 @@ model ScanSessionItem {
   @@index([sessionId])
 }
 
+// Money the shop spends — card purchases, supplies, shipping materials, fees.
+// Each is a labeled line item; the sum is the shop's running cost, subtracted
+// from sales to show profit/loss on the Sales Report.
+model ShopExpense {
+  id         String   @id @default(cuid())
+  label      String // what it was, e.g. "Enter the Huddle booster case"
+  category   String   @default("cards") // cards | supplies | shipping | fees | other
+  amountCents Int
+  note       String?
+  spentAt    DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@index([spentAt])
+}
+
 // Customer support / contact-form submissions. Emailed to the admin and kept
 // here so nothing is lost if email hiccups.
 model ContactMessage {
