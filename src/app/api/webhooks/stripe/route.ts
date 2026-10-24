@@ -120,6 +120,9 @@ export async function POST(request: Request) {
   const customerEmail = session.customer_details?.email ?? order.guestEmail;
   if (customerEmail) {
     try {
+      // Include the active shipping-delay notice, if any, so buyers are warned.
+      const { getShippingNotice, shippingNoticeLine } = await import("@/lib/shippingNotice");
+      const shippingNote = shippingNoticeLine(await getShippingNotice());
       await sendOrderConfirmation({
         to: customerEmail,
         name: ship.shipName ?? session.customer_details?.name ?? null,
@@ -129,6 +132,7 @@ export async function POST(request: Request) {
         shipCity: ship.shipCity,
         shipState: ship.shipState,
         shipPostal: ship.shipPostal,
+        shippingNote,
       });
     } catch (err) {
       console.error("[order confirmation email] failed:", err);

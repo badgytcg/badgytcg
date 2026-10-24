@@ -4,6 +4,7 @@ import "./globals.css";
 import { StoreProvider } from "@/context/StoreContext";
 import Navbar from "@/components/Navbar";
 import AuthProvider from "@/components/AuthProvider";
+import ShippingNoticeBanner from "@/components/ShippingNoticeBanner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,6 +43,7 @@ export default function RootLayout({
           <StoreProvider>
             <div className="print:hidden">
               <Navbar />
+              <ShippingNoticeBanner />
             </div>
             <main className="flex-1">{children}</main>
             <footer className="border-t border-purple-900/40 px-6 py-6 text-center text-xs text-zinc-500 print:hidden">

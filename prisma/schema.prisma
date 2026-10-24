@@ -298,6 +298,17 @@ model ScanSessionItem {
   @@index([sessionId])
 }
 
+// A shop-wide shipping-delay notice (e.g. owner out of town). Single row,
+// id "default". When active, buyers see a banner and it's noted in order
+// confirmation emails.
+model ShippingNotice {
+  id         String    @id @default("default")
+  active     Boolean   @default(false)
+  message    String    @default("")
+  resumeDate DateTime? // optional date orders start shipping again
+  updatedAt  DateTime  @updatedAt
+}
+
 // Money the shop spends — card purchases, supplies, shipping materials, fees.
 // Each is a labeled line item; the sum is the shop's running cost, subtracted
 // from sales to show profit/loss on the Sales Report.

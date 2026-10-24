@@ -21,9 +21,11 @@ export async function sendOrderConfirmation(opts: {
   shipCity?: string | null;
   shipState?: string | null;
   shipPostal?: string | null;
+  shippingNote?: string | null; // optional delay notice when the shop is on pause
 }): Promise<boolean> {
   const itemLines = opts.items.map((i) => `🃏 ${i.qty}x ${i.cardName}`);
   const dest = [opts.shipCity, opts.shipState].filter(Boolean).join(", ") + (opts.shipPostal ? ` ${opts.shipPostal}` : "");
+  const note = opts.shippingNote?.trim();
   return sendEmail({
     to: opts.to,
     subject: `LET'S GO — your BadgyTCG order is in! ⚡🐧`,
@@ -36,6 +38,8 @@ export async function sendOrderConfirmation(opts: {
       `💰 Total: $${(opts.totalCents / 100).toFixed(2)}`,
       "",
       dest.trim() ? `📦 Heading to: ${dest.trim()}` : "",
+      note ? "" : null,
+      note ? `🚚 Heads up: ${note}` : null,
       "",
       "Tracking drops in your inbox the second it ships. Thanks for repping the vibe! 🐧",
       "",
