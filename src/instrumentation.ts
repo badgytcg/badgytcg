@@ -35,4 +35,18 @@ export async function register() {
       console.error("[daily report] failed:", err);
     }
   }, 60_000);
+
+  // Check USPS-tracked orders for delivery every 30 minutes and mark delivered
+  // ones Complete. Runs only if the USPS API is configured; no-ops otherwise.
+  const runDeliveryCheck = async () => {
+    try {
+      const { checkDeliveries } = await import("@/lib/deliveries");
+      const result = await checkDeliveries();
+      if (result.delivered > 0) console.log(`[delivery check] ${result.detail}`);
+    } catch (err) {
+      console.error("[delivery check] failed:", err);
+    }
+  };
+  setTimeout(runDeliveryCheck, 60_000); // once shortly after boot
+  setInterval(runDeliveryCheck, 30 * 60_000);
 }

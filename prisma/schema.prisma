@@ -115,9 +115,10 @@ model Order {
   userId          String?
   guestEmail      String?
   stripeSessionId String      @unique
-  status          String      @default("pending") // pending | paid | fulfilled | cancelled | refunded
+  status          String      @default("pending") // pending | paid | fulfilled | delivered | cancelled | refunded
   totalCents      Int
   createdAt       DateTime    @default(now())
+  deliveredAt     DateTime? // set when USPS tracking reports the package delivered
 
   // Shipping address collected by Stripe Checkout (US only). Nullable so old
   // orders and any non-shipping flow don't break.

@@ -6,7 +6,7 @@ import { logAdminAction } from "@/lib/audit";
 import { sendShippedEmail } from "@/lib/orderEmails";
 import { validateTracking } from "@/lib/tracking";
 
-const VALID_STATUSES = ["pending", "paid", "fulfilled", "cancelled", "refunded"];
+const VALID_STATUSES = ["pending", "paid", "fulfilled", "delivered", "cancelled", "refunded"];
 const VALID_CARRIERS = ["usps", "ups", "fedex", "other"];
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -33,6 +33,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     }
     data.status = status;
     details.push(`status → ${status}`);
+    // Keep deliveredAt in step with a manual status change.
+    if (status === "delivered") data.deliveredAt = new Date();
+    else data.deliveredAt = null;
   }
 
   // Tracking update. Adding a tracking number marks the order fulfilled

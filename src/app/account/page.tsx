@@ -175,7 +175,14 @@ export default function AccountPage() {
               <li key={order.id} className="rounded-xl border border-zinc-800 p-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-zinc-300">
-                    {new Date(order.createdAt).toLocaleDateString()} · {order.status}
+                    {new Date(order.createdAt).toLocaleDateString()} ·{" "}
+                    {order.status === "delivered" ? (
+                      <span className="font-semibold text-green-400">✓ Delivered</span>
+                    ) : order.status === "fulfilled" ? (
+                      <span className="text-zinc-200">Shipped</span>
+                    ) : (
+                      order.status
+                    )}
                   </span>
                   <span className="font-medium text-purple-300">
                     ${(order.totalCents / 100).toFixed(2)}

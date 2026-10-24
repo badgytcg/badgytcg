@@ -74,9 +74,10 @@ interface AdminOrder {
   shipPhone: string | null;
   trackingNumber: string | null;
   trackingCarrier: string | null;
+  deliveredAt: string | null;
 }
 
-const STATUSES = ["pending", "paid", "fulfilled", "cancelled", "refunded"];
+const STATUSES = ["pending", "paid", "fulfilled", "delivered", "cancelled", "refunded"];
 
 interface OrderGroup {
   key: string;
@@ -294,6 +295,14 @@ export default function AdminOrdersPage() {
                     <p className="text-xs text-zinc-500">{new Date(order.createdAt).toLocaleString()} · #{order.id.slice(-6)}</p>
                   </div>
                   <div className="flex items-center gap-3">
+                    {order.status === "delivered" && (
+                      <span
+                        className="rounded-full bg-green-900/40 px-2.5 py-1 text-xs font-semibold text-green-400 ring-1 ring-green-700/50"
+                        title={order.deliveredAt ? `Delivered ${new Date(order.deliveredAt).toLocaleString()}` : "Delivered"}
+                      >
+                        ✓ Complete
+                      </span>
+                    )}
                     <span className="font-medium text-purple-300">${(order.totalCents / 100).toFixed(2)}</span>
                     <select
                       value={order.status}
@@ -301,7 +310,7 @@ export default function AdminOrdersPage() {
                       className="rounded-lg border border-zinc-700 bg-zinc-900 px-2 py-1 text-sm text-zinc-100"
                     >
                       {STATUSES.map((s) => (
-                        <option key={s} value={s}>{s}</option>
+                        <option key={s} value={s}>{s === "delivered" ? "delivered (complete)" : s}</option>
                       ))}
                     </select>
                     <button
