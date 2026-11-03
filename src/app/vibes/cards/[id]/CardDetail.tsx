@@ -16,12 +16,20 @@ interface MarketPrice {
   updatedAt: string;
 }
 
-type VariantKind = "foil" | "altfoil";
-const VARIANT_LABEL: Record<VariantKind, string> = { foil: "Foil", altfoil: "Alt Foil" };
-const VARIANT_KINDS: VariantKind[] = ["foil", "altfoil"];
-const VARIANT_COL_KEYS = ["base", "foil", "altfoil"] as const;
-type ColKey = (typeof VARIANT_COL_KEYS)[number];
-const COL_LABEL: Record<ColKey, string> = { base: "Base", foil: "Foil", altfoil: "Alt Foil" };
+type VariantKind = "foil" | "arctic" | "birb" | "pengu";
+const VARIANT_LABEL: Record<string, string> = { base: "Base", foil: "Foil", arctic: "Arctic Foil", birb: "Birb Foil", pengu: "Pengu Foil" };
+// Foil treatments available per set (by setCode) — mirrors @/lib/catalog.
+const SET_TREATMENTS: Record<string, VariantKind[]> = { Eth: ["foil"], Lotl: ["arctic"], Bap: ["birb", "pengu"] };
+
+// Market data computed server-side (see page.tsx).
+interface MarketSummary {
+  variant: string; ready: boolean; trackingSince: string | null; daysTracked: number;
+  change7dPct: number | null; change30dPct: number | null;
+  low30Cents: number | null; high30Cents: number | null; median90Cents: number | null;
+}
+interface RecentSale { priceCents: number; variant: string; qty: number; soldAt: string }
+interface SalesStats { lastSold: { priceCents: number; soldAt: string } | null; unitsSold: number; ordersCount: number }
+interface Insights { summary: MarketSummary; stats: SalesStats; sales: RecentSale[] }
 
 const SOURCE_LOGO: Record<string, { src: string; width: number; height: number }> = {
   dyli: { src: "/logos/dyli-logo.png", width: 48, height: 18 },
@@ -219,7 +227,7 @@ function AbilityText({ text }: { text: string }) {
   );
 }
 
-export default function CardDetail({ card }: { card: Card }) {
+export default function CardDetail({ card, insights }: { card: Card; insights: Insights }) {
   const { addToCart, addToWishlist } = useStore();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
@@ -228,31 +236,37 @@ export default function CardDetail({ card }: { card: Card }) {
   const [variantCards, setVariantCards] = useState<Partial<Record<VariantKind, Card>>>({});
   const [selectedVariant, setSelectedVariant] = useState<"base" | VariantKind>("base");
 
+  // The foil treatments this card's set can have (Arctic/Birb/Pengu/Foil).
+  const treatments = SET_TREATMENTS[card.setCode] ?? [];
+  const colKeys: ("base" | VariantKind)[] = ["base", ...treatments];
+
   useEffect(() => {
     setSelectedVariant("base");
     setVariantCards({});
-    for (const kind of VARIANT_KINDS) {
+    for (const kind of treatments) {
       fetch(`/api/cards/${encodeURIComponent(`${card.id}::${kind}`)}`)
         .then((res) => (res.ok ? res.json() : null))
         .then((data) => {
           if (data?.card) setVariantCards((prev) => ({ ...prev, [kind]: data.card }));
         });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [card.id]);
 
   const selected = selectedVariant !== "base" ? variantCards[selectedVariant] ?? card : card;
   const inStock = selected.stock > 0;
-  const availableVariants = VARIANT_KINDS.filter((k) => variantCards[k]);
+  const availableVariants = treatments.filter((k) => variantCards[k]);
 
-  // Fetch market prices for base + all variants simultaneously so we can
-  // display a complete table (Base | Foil | Alt Foil columns) at once.
+  // Fetch market prices for base + all of this set's treatments at once so the
+  // comparison table shows every column together.
   useEffect(() => {
-    const ids = [card.id, `${card.id}::foil`, `${card.id}::altfoil`];
+    const ids = [card.id, ...treatments.map((t) => `${card.id}::${t}`)];
     for (const id of ids) {
       fetch(`/api/cards/${encodeURIComponent(id)}/market-prices`)
         .then((res) => res.json())
         .then((data) => setMarketPricesById((prev) => ({ ...prev, [id]: data.prices ?? [] })));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [card.id]);
 
   useEffect(() => {
@@ -267,7 +281,7 @@ export default function CardDetail({ card }: { card: Card }) {
   const allSources = Array.from(
     new Set(Object.values(marketPricesById).flatMap((arr) => arr.map((p) => p.source)))
   );
-  function getPriceForCol(source: string, colKey: ColKey): MarketPrice | undefined {
+  function getPriceForCol(source: string, colKey: "base" | VariantKind): MarketPrice | undefined {
     const id = colKey === "base" ? card.id : `${card.id}::${colKey}`;
     return (marketPricesById[id] ?? []).find((p) => p.source === source);
   }
@@ -293,8 +307,21 @@ export default function CardDetail({ card }: { card: Card }) {
     },
   ].filter(Boolean) as { label: string; className: string }[];
 
+  const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
+  const shortDate = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const today = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  const { summary, stats, sales } = insights;
+
   return (
     <div className="mx-auto max-w-4xl px-6 py-10">
+      {/* Breadcrumb */}
+      <nav className="mb-4 flex flex-wrap items-center gap-1.5 text-xs text-zinc-500">
+        <a href="/vibes" className="hover:text-zinc-300">Vibes TCG</a>
+        <span>›</span>
+        <a href={`/vibes?set=${encodeURIComponent(card.set)}`} className="hover:text-zinc-300">{card.set}</a>
+        <span>›</span>
+        <span className="text-zinc-400">{card.name}</span>
+      </nav>
       <div className="grid gap-8 sm:grid-cols-[320px_1fr]">
         {/* Card image — the source PNGs have a transparent margin baked in
             around the rounded card art, so a slight zoom crops that margin
@@ -323,6 +350,7 @@ export default function CardDetail({ card }: { card: Card }) {
           {/* Title + tags */}
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-zinc-100">{card.name}</h1>
+            <p className="mt-1 text-sm text-zinc-500">{card.set} · {card.rarity} · {colorLabel}</p>
             <div className="mt-2 flex flex-wrap gap-1.5">
               {tags.map((tag) => (
                 <span
@@ -333,6 +361,11 @@ export default function CardDetail({ card }: { card: Card }) {
                 </span>
               ))}
             </div>
+            {/* One-line value summary */}
+            <p className="mt-3 text-sm text-zinc-300">
+              <span className="font-semibold text-zinc-100">{card.name}</span> ({card.set}) is{" "}
+              <span className="font-semibold tabular-nums text-purple-300">${card.price.toFixed(2)}</span> as of {today}.
+            </p>
           </div>
 
           {banned && (
@@ -436,8 +469,8 @@ export default function CardDetail({ card }: { card: Card }) {
                 <thead>
                   <tr className="border-b border-zinc-800 text-right text-xs text-zinc-500">
                     <th className="px-4 py-2 text-left"></th>
-                    {VARIANT_COL_KEYS.map((col) => (
-                      <th key={col} className="px-3 py-2 font-medium">{COL_LABEL[col]}</th>
+                    {colKeys.map((col) => (
+                      <th key={col} className="px-3 py-2 font-medium">{VARIANT_LABEL[col]}</th>
                     ))}
                   </tr>
                 </thead>
@@ -457,7 +490,7 @@ export default function CardDetail({ card }: { card: Card }) {
                             )}
                           </div>
                         </td>
-                        {VARIANT_COL_KEYS.map((col) => {
+                        {colKeys.map((col) => {
                           const mp = getPriceForCol(source, col);
                           return (
                             <td key={col} className="px-3 py-3 text-right">
@@ -485,6 +518,50 @@ export default function CardDetail({ card }: { card: Card }) {
                       </tr>
                     );
                   })}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Market snapshot — only shows facts we actually have. Range stats
+              unlock once there's ≥7 days of price history. */}
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4">
+            <h3 className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-500">Market Snapshot</h3>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <StatBox label="Current price" value={`$${card.price.toFixed(2)}`} />
+              <StatBox label="Last sold" value={stats.lastSold ? money(stats.lastSold.priceCents) : "—"} />
+              <StatBox label="Units sold" value={stats.unitsSold || "—"} />
+              {summary.ready && (
+                <>
+                  <StatBox label="30d low" value={summary.low30Cents != null ? money(summary.low30Cents) : "—"} />
+                  <StatBox label="30d high" value={summary.high30Cents != null ? money(summary.high30Cents) : "—"} />
+                  <StatBox label="90d median" value={summary.median90Cents != null ? money(summary.median90Cents) : "—"} />
+                  <StatBox label="7d change" value={summary.change7dPct != null ? `${summary.change7dPct > 0 ? "+" : ""}${summary.change7dPct}%` : "—"} />
+                  <StatBox label="30d change" value={summary.change30dPct != null ? `${summary.change30dPct > 0 ? "+" : ""}${summary.change30dPct}%` : "—"} />
+                </>
+              )}
+            </div>
+            {!summary.ready && (
+              <p className="mt-3 text-xs text-zinc-500">
+                📈 Price history{summary.trackingSince ? ` — tracking since ${shortDate(summary.trackingSince)}` : " starts once this card is priced/stocked"}.
+                Change %, highs/lows and the chart unlock after 7 days of data.
+              </p>
+            )}
+          </div>
+
+          {/* Recent sales — from our own completed orders, never any buyer info */}
+          {sales.length > 0 && (
+            <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50">
+              <h3 className="px-4 pt-3 pb-2 text-xs font-semibold uppercase tracking-widest text-zinc-500">Recent Sales</h3>
+              <table className="w-full text-sm">
+                <tbody className="divide-y divide-zinc-800/60">
+                  {sales.map((s, i) => (
+                    <tr key={i}>
+                      <td className="px-4 py-2 text-zinc-400">{shortDate(s.soldAt)}</td>
+                      <td className="px-3 py-2 text-zinc-400">{VARIANT_LABEL[s.variant] ?? s.variant}{s.qty > 1 ? ` ×${s.qty}` : ""}</td>
+                      <td className="px-4 py-2 text-right font-medium tabular-nums text-zinc-100">{money(s.priceCents)}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
