@@ -51,7 +51,7 @@ export default async function OrderReceiptPage({ params }: { params: Promise<{ i
       </div>
 
       {/* The "paper" — white so it reads on screen and prints clean */}
-      <div className="rounded-xl bg-white p-8 text-black shadow-lg print:rounded-none print:p-6 print:shadow-none">
+      <div id="receipt-paper" className="rounded-xl bg-white p-8 text-black shadow-lg print:rounded-none print:p-6 print:shadow-none">
         <div className="flex items-start justify-between border-b-2 border-black pb-4">
           <div>
             <p className="text-2xl font-extrabold tracking-tight">BADGY TCG</p>
