@@ -29,6 +29,10 @@ export default function AdminHome() {
           <h2 className="font-semibold text-zinc-100">Orders</h2>
           <p className="mt-1 text-sm text-zinc-400">Paid orders once checkout is live; update fulfillment status.</p>
         </Link>
+        <Link href="/admin/meta-decks" className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 hover:border-purple-500">
+          <h2 className="font-semibold text-zinc-100">Meta Decks</h2>
+          <p className="mt-1 text-sm text-zinc-400">Import &amp; manage &quot;via Vibes Decks&quot; decks shown on card pages.</p>
+        </Link>
       </div>
     </div>
   );

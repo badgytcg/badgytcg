@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getEffectiveCardById } from "@/lib/catalog";
 import { marketSummary } from "@/lib/cardMarket";
 import { recentSales, salesStats } from "@/lib/sales";
+import { decksForCard } from "@/lib/metaDecks";
 import CardDetail from "./CardDetail";
 
 // Dynamic (not statically generated) so admin-edited stock/price always
@@ -15,11 +16,12 @@ export default async function CardPage({ params }: { params: Promise<{ id: strin
 
   // Base id for market/sales lookups (strip any variant suffix).
   const baseId = id.replace(/::(foil|arctic|birb|pengu)$/, "");
-  const [summary, stats, sales] = await Promise.all([
+  const [summary, stats, sales, playedIn] = await Promise.all([
     marketSummary(baseId, "base"),
     salesStats(baseId),
     recentSales(baseId, 8),
+    decksForCard(baseId),
   ]);
 
-  return <CardDetail card={card} insights={{ summary, stats, sales }} />;
+  return <CardDetail card={card} insights={{ summary, stats, sales }} playedIn={playedIn} />;
 }
