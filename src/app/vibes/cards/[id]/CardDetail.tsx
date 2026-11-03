@@ -6,6 +6,8 @@ import { Card } from "@/lib/types";
 import { useStore } from "@/context/StoreContext";
 import { colorCategory } from "@/lib/colors";
 import { BAN_ANNOUNCEMENT_URL } from "@/lib/banned";
+import PlayedInDecks from "@/components/PlayedInDecks";
+import type { MetaDeckView } from "@/lib/metaDecks";
 
 interface MarketPrice {
   source: string;
@@ -227,7 +229,7 @@ function AbilityText({ text }: { text: string }) {
   );
 }
 
-export default function CardDetail({ card, insights }: { card: Card; insights: Insights }) {
+export default function CardDetail({ card, insights, playedIn }: { card: Card; insights: Insights; playedIn: MetaDeckView[] }) {
   const { addToCart, addToWishlist } = useStore();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
@@ -570,6 +572,8 @@ export default function CardDetail({ card, insights }: { card: Card; insights: I
           <PriceChart history={history} />
         </div>
       </div>
+
+      <PlayedInDecks decks={playedIn} />
     </div>
   );
 }
