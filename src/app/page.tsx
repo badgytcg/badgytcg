@@ -6,6 +6,13 @@ import CardFan from "@/components/CardFan";
 
 const RARITY_RANK: Record<string, number> = { Epic: 0, Rare: 1, Uncommon: 2, Common: 3 };
 
+const RARITY_CHIP: Record<string, string> = {
+  Common: "border-zinc-600 bg-zinc-700/40 text-zinc-300",
+  Uncommon: "border-green-600 bg-green-900/40 text-green-300",
+  Rare: "border-blue-500 bg-blue-900/40 text-blue-300",
+  Epic: "border-purple-500 bg-purple-900/40 text-purple-300",
+};
+
 // Dynamic, not statically generated, so "In Stock Now" reflects live
 // admin-edited inventory instead of whatever was true at build time.
 export const dynamic = "force-dynamic";
@@ -99,21 +106,37 @@ export default async function Home() {
             </div>
 
             <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-              {trending.map((card) => (
-                <Link
-                  key={card.id}
-                  href={`/vibes/cards/${card.id}`}
-                  className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 ring-1 ring-purple-500/20 transition-transform hover:-translate-y-1"
-                >
-                  <div className="relative h-36 w-full bg-zinc-800">
-                    <Image src={card.image} alt={card.name} fill sizes="160px" className="object-contain" unoptimized />
-                  </div>
-                  <div className="p-3">
-                    <p className="truncate text-sm font-semibold text-white">{card.name}</p>
-                    <p className="mt-0.5 text-xs text-zinc-500">{card.rarity} · ${card.price.toFixed(2)}</p>
-                  </div>
-                </Link>
-              ))}
+              {trending.map((card) => {
+                const low = card.stock > 0 && card.stock <= 5;
+                return (
+                  <Link
+                    key={card.id}
+                    href={`/vibes/cards/${card.id}`}
+                    className="group flex flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900 ring-1 ring-purple-500/20 p-3 transition duration-200 hover:-translate-y-1 hover:border-zinc-600 hover:shadow-xl hover:shadow-black/40"
+                  >
+                    <div className="relative mb-3 overflow-hidden rounded-xl border border-zinc-800/80 bg-zinc-950" style={{ aspectRatio: "3/4" }}>
+                      <Image
+                        src={card.image}
+                        alt={card.name}
+                        fill
+                        sizes="(max-width: 640px) 50vw, 200px"
+                        style={{ transform: "scale(1.04)" }}
+                        className="object-cover transition-transform duration-300 group-hover:scale-[1.07]"
+                        unoptimized
+                      />
+                    </div>
+                    <p className="truncate text-sm font-semibold text-white" title={card.name}>{card.name}</p>
+                    <div className="mt-1 flex items-center gap-1.5">
+                      <span className="truncate text-[11px] text-zinc-500">{card.set}</span>
+                      <span className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[10px] font-medium ${RARITY_CHIP[card.rarity] ?? "border-zinc-700 bg-zinc-800/50 text-zinc-300"}`}>{card.rarity}</span>
+                    </div>
+                    <div className="mt-2 flex items-end justify-between">
+                      <span className="text-lg font-bold tabular-nums text-purple-300">${card.price.toFixed(2)}</span>
+                      <span className={`text-[11px] font-medium ${low ? "text-amber-400" : "text-green-400"}`}>{low ? `Low: ${card.stock}` : `${card.stock} in stock`}</span>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </section>
