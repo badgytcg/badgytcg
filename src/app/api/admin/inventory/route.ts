@@ -46,5 +46,9 @@ export async function PATCH(request: Request) {
     request,
   });
 
+  // Capture a price-history point on every edit (fire-and-forget).
+  const { snapshotCard } = await import("@/lib/priceSnapshots");
+  await snapshotCard(cardId, price, stock);
+
   return NextResponse.json({ override });
 }

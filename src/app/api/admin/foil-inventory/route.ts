@@ -61,5 +61,10 @@ export async function PATCH(request: Request) {
     create: { cardId, kind, price, stock },
     update: { price, stock },
   });
+
+  // Capture a price-history point for this variant on every edit.
+  const { snapshotCard } = await import("@/lib/priceSnapshots");
+  await snapshotCard(`${cardId}::${kind}`, price, stock);
+
   return NextResponse.json({ override });
 }

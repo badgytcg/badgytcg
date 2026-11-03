@@ -8,6 +8,7 @@ export async function register() {
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
 
   let lastSentDate: string | null = null;
+  let lastSnapshotDate: string | null = null;
 
   setInterval(async () => {
     const now = new Date();
@@ -23,6 +24,18 @@ export async function register() {
     const get = (type: string) => pacific.find((p) => p.type === type)?.value ?? "";
     const dateKey = `${get("year")}-${get("month")}-${get("day")}`;
     const hour = get("hour");
+
+    // Daily price snapshot at 5 AM Pacific — builds the card-page price history.
+    if (hour === "05" && lastSnapshotDate !== dateKey) {
+      lastSnapshotDate = dateKey;
+      try {
+        const { captureDailySnapshots } = await import("@/lib/priceSnapshots");
+        const result = await captureDailySnapshots();
+        console.log(`[price snapshot] ${dateKey}: ${result.rows} rows`);
+      } catch (err) {
+        console.error("[price snapshot] failed:", err);
+      }
+    }
 
     if (hour !== "06" || lastSentDate === dateKey) return;
     lastSentDate = dateKey;
