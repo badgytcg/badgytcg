@@ -29,6 +29,40 @@ const INDEX_TTL = 120_000;
 
 function money(cents: number) { return `$${(cents / 100).toFixed(2)}`; }
 
+// Token-AND matching: every whitespace-separated word in the query must appear
+// somewhere in the item's searchable text. This makes scattered multi-word
+// queries work ("bunkus stars" -> "Bunkus, Who Is the Stars", "popcorn peng"
+// -> "Popcorn Penguin"), which a single whole-string fuzzy match misses.
+function norm(s: string) { return s.replace(/[^a-z0-9]/gi, "").toLowerCase(); }
+function queryTokens(q: string) { return q.trim().toLowerCase().split(/\s+/).map(norm).filter(Boolean); }
+
+function tokenScore(name: string, extra: string, toks: string[]): number {
+  const n = norm(name);
+  const full = n + norm(extra);
+  let score = 0;
+  for (const t of toks) {
+    if (n.startsWith(t)) score += 3;
+    else if (n.includes(t)) score += 2;
+    else if (full.includes(t)) score += 1;
+    else return -1; // this token isn't present anywhere -> not a match
+  }
+  return score;
+}
+
+// Merge token matches (primary) with Fuse matches (typo tolerance), deduped.
+function mergeHits<T>(tokenRanked: T[], fuse: T[], keyOf: (t: T) => string, limit: number): T[] {
+  const out: T[] = [];
+  const seen = new Set<string>();
+  for (const x of [...tokenRanked, ...fuse]) {
+    const k = keyOf(x);
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push(x);
+    if (out.length >= limit) break;
+  }
+  return out;
+}
+
 function loadRecent(): string[] {
   try { return JSON.parse(localStorage.getItem(RECENT_KEY) || "[]").slice(0, 6); } catch { return []; }
 }
@@ -103,12 +137,26 @@ export default function SiteSearch() {
   const cardHits = useMemo<CardHit[]>(() => {
     if (!index) return [];
     if (!q) return [...index.cards].filter((c) => c.stock > 0).sort((a, b) => (RARITY_RANK[a.rarity] ?? 9) - (RARITY_RANK[b.rarity] ?? 9) || b.price - a.price).slice(0, 6);
-    return (cardFuse?.search(q, { limit: 6 }) ?? []).map((r) => r.item);
+    const toks = queryTokens(q);
+    const tokenRanked = index.cards
+      .map((c) => ({ c, s: tokenScore(c.name, `${c.set} ${c.rarity} ${c.color}`, toks) }))
+      .filter((x) => x.s >= 0)
+      .sort((a, b) => b.s - a.s || b.c.stock - a.c.stock)
+      .map((x) => x.c);
+    const fuse = (cardFuse?.search(q, { limit: 6 }) ?? []).map((r) => r.item);
+    return mergeHits(tokenRanked, fuse, (c) => c.id, 6);
   }, [q, index, cardFuse]);
 
   const deckHits = useMemo<DeckHit[]>(() => {
     if (!index || !q) return [];
-    return (deckFuse?.search(q, { limit: 4 }) ?? []).map((r) => r.item);
+    const toks = queryTokens(q);
+    const tokenRanked = index.decks
+      .map((d) => ({ d, s: tokenScore(d.name, `${d.author ?? ""} ${d.archetype ?? ""}`, toks) }))
+      .filter((x) => x.s >= 0)
+      .sort((a, b) => b.s - a.s)
+      .map((x) => x.d);
+    const fuse = (deckFuse?.search(q, { limit: 4 }) ?? []).map((r) => r.item);
+    return mergeHits(tokenRanked, fuse, (d) => d.key, 4);
   }, [q, index, deckFuse]);
 
   // Flat, keyboard-navigable item list.
