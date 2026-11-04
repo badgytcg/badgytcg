@@ -197,7 +197,7 @@ function buildDeckView(src: DeckSource, index: Map<string, Card>): MetaDeckView 
   };
 }
 
-interface BuiltIndex { byCard: Map<string, MetaDeckView[]>; builtAt: number }
+interface BuiltIndex { byCard: Map<string, MetaDeckView[]>; all: MetaDeckView[]; builtAt: number }
 let cache: BuiltIndex | null = null;
 const TTL_MS = 60_000;
 
@@ -212,8 +212,10 @@ async function getIndex(): Promise<BuiltIndex> {
   }
 
   const byCard = new Map<string, MetaDeckView[]>();
+  const all: MetaDeckView[] = [];
   for (const src of sources) {
     const view = buildDeckView(src, index);
+    all.push(view);
     const seenForDeck = new Set<string>();
     for (const line of view.cards) {
       if (!line.cardId || seenForDeck.has(line.cardId)) continue;
@@ -224,8 +226,19 @@ async function getIndex(): Promise<BuiltIndex> {
     }
   }
 
-  cache = { byCard, builtAt: Date.now() };
+  cache = { byCard, all, builtAt: Date.now() };
   return cache;
+}
+
+/** Flat list of every deck (own first, then vibesdecks by popularity proxy) —
+ * for the site-wide search index. */
+export async function allDecks(): Promise<MetaDeckView[]> {
+  const { all } = await getIndex();
+  return [...all].sort((a, b) => {
+    if (a.source !== b.source) return a.source === "badgytcg" ? -1 : 1;
+    if (b.popularity !== a.popularity) return b.popularity - a.popularity;
+    return b.inStockCopies - a.inStockCopies;
+  });
 }
 
 /** Decks that contain `cardId`, own decks first, then vibesdecks by popularity.

@@ -114,7 +114,7 @@ export default function DeckDetailPage() {
           }`}>
             {deck.type === "meta" ? "Meta Deck" : "Starter Deck"}
           </span>
-          <h1 className="mt-3 text-3xl font-extrabold text-white sm:text-4xl">{deck.name}</h1>
+          <h1 className="mt-3 text-3xl font-extrabold text-zinc-100 sm:text-4xl">{deck.name}</h1>
           {deck.description && (
             <p className="mt-2 max-w-xl text-zinc-400">{deck.description}</p>
           )}
@@ -134,7 +134,7 @@ export default function DeckDetailPage() {
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">In Stock</p>
-            <p className="text-2xl font-extrabold text-white">{inStockCount} <span className="text-lg text-zinc-500">/ {totalCount}</span></p>
+            <p className="text-2xl font-extrabold text-zinc-100">{inStockCount} <span className="text-lg text-zinc-500">/ {totalCount}</span></p>
           </div>
           {result.missing.length > 0 && (
             <div>
