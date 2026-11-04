@@ -294,6 +294,12 @@ export default function VibesBrowsePage() {
   const [extraDeckCards, setExtraDeckCards] = useState<Record<string, Card>>({});
 
   const [query, setQuery] = useState("");
+  // Seed the search box from ?q= so the site-wide search's "See all results"
+  // lands here with the query already applied.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get("q");
+    if (q) setQuery(q);
+  }, []);
   const [sets, setSets] = useState<string[]>([]);
   const [colors, setColors] = useState<string[]>([]);
   const [types, setTypes] = useState<string[]>([]);
