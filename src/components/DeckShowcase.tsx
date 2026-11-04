@@ -115,7 +115,7 @@ export default function DeckShowcase({ catalog }: { catalog: Card[] }) {
         <div className="mb-8 flex items-center justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-purple-400">Ready to Play</p>
-            <h2 className="mt-1 font-[var(--font-baloo)] text-2xl font-extrabold uppercase text-white sm:text-3xl">
+            <h2 className="mt-1 font-[var(--font-baloo)] text-2xl font-extrabold uppercase text-zinc-100 sm:text-3xl">
               Pre-Built Decks
             </h2>
           </div>

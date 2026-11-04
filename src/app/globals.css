@@ -1,7 +1,15 @@
 @import "tailwindcss";
 
-/* The whole site is dark-themed — never follow the browser's light mode,
-   otherwise pages outside a themed layout (cart, checkout) flash white. */
+/* ---------------------------------------------------------------------------
+   Theming. The site is designed dark-first; those are the default token
+   values. Light mode is a faithful counterpart produced by flipping the
+   neutral (zinc) ramp and nudging the accent shades that are used as text so
+   they stay legible on light surfaces. The brand purple for solid buttons
+   (purple-500/600/700) is intentionally left alone in both modes.
+
+   `data-theme` ("dark" | "light") is set on <html> before paint by an inline
+   script in the root layout, so there's no flash of the wrong theme.
+--------------------------------------------------------------------------- */
 :root {
   --background: #0a0a0a;
   --foreground: #ededed;
@@ -13,6 +21,10 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
+
+/* Light-mode token overrides live in a raw <style> in the root layout head
+   (Tailwind/Lightning CSS strips a [data-theme] custom-property block from
+   this file), and win by specificity. See src/app/layout.tsx. */
 
 body {
   background: var(--background);

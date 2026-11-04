@@ -34,7 +34,7 @@ export default async function Home() {
                 Browse. Buy.
               </span>
               <br />
-              <span className="text-white">Build the Vibe.</span>
+              <span className="text-zinc-100">Build the Vibe.</span>
             </h1>
             <p className="mx-auto mt-4 max-w-md text-zinc-300 lg:mx-0">
               Singles, decks, foils, and graded cards for Pudgy Penguins&apos;
@@ -62,28 +62,28 @@ export default async function Home() {
 
       <section className="bg-zinc-900/60 px-6 py-16 text-center">
         <p className="text-xs font-bold uppercase tracking-widest text-purple-400">Why BadgyTCG</p>
-        <h2 className="mt-2 font-[var(--font-baloo)] text-2xl font-extrabold uppercase text-white sm:text-3xl">
+        <h2 className="mt-2 font-[var(--font-baloo)] text-2xl font-extrabold uppercase text-zinc-100 sm:text-3xl">
           Everything You Need to Build a Deck
         </h2>
 
         <div className="mx-auto mt-10 grid max-w-5xl gap-4 sm:grid-cols-3">
           <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
             <div className="text-3xl">🔍</div>
-            <h3 className="mt-3 font-bold uppercase text-white">Browse or Build</h3>
+            <h3 className="mt-3 font-bold uppercase text-zinc-100">Browse or Build</h3>
             <p className="mt-2 text-sm text-zinc-400">
               Filter the full singles catalog, or pick cards one by one and watch your deck&apos;s total cost add up live.
             </p>
           </div>
           <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
             <div className="text-3xl">⚡</div>
-            <h3 className="mt-3 font-bold uppercase text-white">We Fill What&apos;s in Stock</h3>
+            <h3 className="mt-3 font-bold uppercase text-zinc-100">We Fill What&apos;s in Stock</h3>
             <p className="mt-2 text-sm text-zinc-400">
               Import a deck code and we&apos;ll add everything available straight to your cart — no guessing.
             </p>
           </div>
           <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
             <div className="text-3xl">🎯</div>
-            <h3 className="mt-3 font-bold uppercase text-white">We Hunt Down the Rest</h3>
+            <h3 className="mt-3 font-bold uppercase text-zinc-100">We Hunt Down the Rest</h3>
             <p className="mt-2 text-sm text-zinc-400">
               Missing cards land on your wishlist automatically. We track them down and follow up once they&apos;re ready.
             </p>
@@ -97,7 +97,7 @@ export default async function Home() {
         <section className="bg-zinc-950 px-6 py-16">
           <div className="mx-auto max-w-6xl">
             <div className="flex items-center justify-between">
-              <h2 className="font-[var(--font-baloo)] text-2xl font-extrabold uppercase text-white sm:text-3xl">
+              <h2 className="font-[var(--font-baloo)] text-2xl font-extrabold uppercase text-zinc-100 sm:text-3xl">
                 In Stock Now
               </h2>
               <Link href="/vibes" className="text-sm font-bold text-purple-400 hover:underline">
@@ -125,7 +125,7 @@ export default async function Home() {
                         unoptimized
                       />
                     </div>
-                    <p className="truncate text-sm font-semibold text-white" title={card.name}>{card.name}</p>
+                    <p className="truncate text-sm font-semibold text-zinc-100" title={card.name}>{card.name}</p>
                     <div className="mt-1 flex items-center gap-1.5">
                       <span className="truncate text-[11px] text-zinc-500">{card.set}</span>
                       <span className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[10px] font-medium ${RARITY_CHIP[card.rarity] ?? "border-zinc-700 bg-zinc-800/50 text-zinc-300"}`}>{card.rarity}</span>

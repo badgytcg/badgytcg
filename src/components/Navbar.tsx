@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useStore } from "@/context/StoreContext";
 import SiteSearch from "@/components/SiteSearch";
+import ThemeToggle from "@/components/ThemeToggle";
 
 // Add new games here as you expand beyond Vibes. `comingSoon: true` renders
 // the tab as a disabled badge instead of a link.
@@ -30,6 +31,7 @@ export default function Navbar() {
         </Link>
         <div className="flex items-center gap-4 text-sm font-medium text-zinc-300 sm:gap-6">
           <SiteSearch />
+          <ThemeToggle />
           {session?.user?.isAdmin && (
             <Link href="/admin" className="text-amber-400 hover:text-amber-300">
               Admin
